@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done; stage 2 (vendor spike) next, then stop for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): protocol and budget written in `06-clone-vendor-decision.md`; the spike itself is blocked on the founder's inputs listed there (§8). Stopped for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 

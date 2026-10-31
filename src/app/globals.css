@@ -1,12 +1,6 @@
 @import "tailwindcss";
 
 /*
- * Timbre design tokens. Dark theme only for v0.
- * Tailwind v4 reads its theme from CSS: the @theme block below is the
- * "Tailwind config" that maps these tokens to utilities (bg-surface,
- * text-muted, border-border, text-accent, ...).
- */
-/*
  * Timbre design tokens (direction C in DESIGN.md). Light theme.
  * The @theme block below maps them to Tailwind utilities.
  */
@@ -26,7 +20,14 @@
   --warn: #8a5300;
   --danger: #b42318;
 
+  /* Motion tokens (DESIGN.md, Motion). */
+  --duration-state: 150ms;
+  --duration-enter: 250ms;
+  --duration-bar: 600ms;
+  --sweep: 1400ms;
+
   color-scheme: light;
+  interpolate-size: allow-keywords;
 }
 
 @theme inline {
@@ -56,7 +57,12 @@
   --container-copy: 54ch;
   --container-copy-narrow: 44ch;
 
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
   --animate-wave: wave 1.6s ease-in-out infinite;
+  --animate-enter: enter var(--duration-enter) var(--ease-out) both;
+  --animate-pop: pop 300ms var(--ease-out) both;
 
   @keyframes wave {
     0%,
@@ -68,7 +74,19 @@
     }
   }
 
+  @keyframes enter {
+    from {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
 
+  @keyframes pop {
+    from {
+      opacity: 0;
+      scale: 0.6;
+    }
+  }
 }
 
 html {
@@ -95,13 +113,297 @@ dialog::backdrop {
   background: rgb(14 27 38 / 0.45);
 }
 
+/* Waveform. Each bar carries --at (its 0-1 position) so delays can follow a sweep. */
+.wave-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--duration-state) var(--ease-out);
+  transition-delay: calc(var(--at) * var(--wave-sweep, 0ms));
+}
+
+.wave-bar[data-lit]::after {
+  opacity: 1;
+}
+
+/* Intro: bars rise as the playhead passes; lit stretches light up just after. */
+.wave-intro .wave-bar {
+  animation: bar-rise var(--duration-bar) var(--ease-out) both;
+  animation-delay: calc(var(--wave-start, 0ms) + var(--at) * var(--sweep));
+}
+
+.wave-intro .wave-bar[data-lit]::after {
+  animation: lit-on 400ms var(--ease-out) both;
+  animation-delay: calc(var(--wave-start, 0ms) + var(--at) * var(--sweep) + 120ms);
+}
+
+@keyframes bar-rise {
+  from {
+    transform: scaleY(0.08);
+    opacity: 0.4;
+  }
+}
+
+@keyframes lit-on {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Playhead: a full-width layer whose right edge is the line, moved from -100% to 0. */
+.wave-playhead {
+  position: absolute;
+  inset: 0;
+  border-right: 2px solid var(--accent);
+  animation:
+    playhead var(--sweep) linear var(--wave-start, 0ms) both,
+    playhead-out 300ms ease-out calc(var(--wave-start, 0ms) + var(--sweep)) both;
+}
+
+@keyframes playhead {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes playhead-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Hero copy and notes. --delay is set inline where the moment depends on position. */
+.rise {
+  animation: rise 700ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+.note-drop {
+  animation: note-drop 500ms var(--ease-out) both;
+  animation-delay: calc(var(--wave-start, 0ms) + var(--at) * var(--sweep));
+}
+
+.note-drop > [data-connector] {
+  transform-origin: bottom;
+  animation: connector 400ms var(--ease-out) both;
+  animation-delay: calc(var(--wave-start, 0ms) + var(--at) * var(--sweep) + 100ms);
+}
+
+@keyframes note-drop {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+}
+
+@keyframes connector {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* Pointer lift on the hero waveform. --px is the pointer's 0-1 position, -1 when away. */
+.wave-react .wave-bar {
+  --near: max(0, 1 - max(var(--px, -1) - var(--at), var(--at) - var(--px, -1)) * 9);
+  scale: 1 calc(1 + 0.25 * var(--near));
+  transition: scale 350ms var(--ease-out);
+}
+
+/* Disclosures open to their height. Browsers without ::details-content just snap. */
+.disclosure::details-content {
+  block-size: 0;
+  opacity: 0;
+  overflow: clip;
+  transition:
+    block-size var(--duration-enter) var(--ease-out),
+    opacity var(--duration-enter) var(--ease-out),
+    content-visibility var(--duration-enter) allow-discrete;
+}
+
+.disclosure[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+/* Sheet dialog: slides up on phones, scales in from sm up. */
+dialog.sheet,
+dialog.sheet::backdrop {
+  transition:
+    opacity var(--duration-enter) var(--ease-out),
+    translate 350ms var(--ease-out),
+    scale var(--duration-enter) var(--ease-out),
+    overlay var(--duration-enter) allow-discrete,
+    display var(--duration-enter) allow-discrete;
+  opacity: 0;
+}
+
+dialog.sheet {
+  translate: 0 100%;
+}
+
+dialog.sheet[open],
+dialog.sheet[open]::backdrop {
+  opacity: 1;
+}
+
+dialog.sheet[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  dialog.sheet[open],
+  dialog.sheet[open]::backdrop {
+    opacity: 0;
+  }
+
+  dialog.sheet[open] {
+    translate: 0 100%;
+  }
+}
+
+@media (min-width: 40rem) {
+  dialog.sheet {
+    translate: 0 0;
+    scale: 0.98;
+  }
+
+  dialog.sheet[open] {
+    scale: 1;
+  }
+
+  @starting-style {
+    dialog.sheet[open] {
+      translate: 0 0;
+      scale: 0.98;
+    }
+  }
+}
+
+/* Route changes (React <ViewTransition>, see PageTransition.tsx). */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.page) {
+  animation: vt-fade 120ms ease-in both reverse;
+}
+
+::view-transition-new(.page) {
+  animation:
+    vt-fade 220ms var(--ease-out) 80ms both,
+    vt-rise 400ms var(--ease-out) both;
+}
+
+::view-transition-old(.nav-forward) {
+  --slide: -48px;
+  animation:
+    vt-fade 120ms ease-in both reverse,
+    vt-slide 350ms var(--ease-in-out) both reverse;
+}
+
+::view-transition-new(.nav-forward) {
+  --slide: 48px;
+  animation:
+    vt-fade 220ms var(--ease-out) 100ms both,
+    vt-slide 350ms var(--ease-in-out) both;
+}
+
+::view-transition-old(.nav-back) {
+  --slide: 48px;
+  animation:
+    vt-fade 120ms ease-in both reverse,
+    vt-slide 350ms var(--ease-in-out) both reverse;
+}
+
+::view-transition-new(.nav-back) {
+  --slide: -48px;
+  animation:
+    vt-fade 220ms var(--ease-out) 100ms both,
+    vt-slide 350ms var(--ease-in-out) both;
+}
+
+/* Headers and the sidebar stay put while the content moves. */
+.chrome-site {
+  view-transition-name: site-header;
+  view-transition-class: chrome;
+}
+
+.chrome-onboarding {
+  view-transition-name: onboarding-header;
+  view-transition-class: chrome;
+}
+
+.chrome-sidebar {
+  view-transition-name: app-sidebar;
+  view-transition-class: chrome;
+}
+
+.chrome-topbar {
+  view-transition-name: app-topbar;
+  view-transition-class: chrome;
+}
+
+::view-transition-group(.chrome) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(.chrome) {
+  display: none;
+}
+
+::view-transition-new(.chrome) {
+  animation: none;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-rise {
+  from {
+    translate: 0 8px;
+  }
+}
+
+@keyframes vt-slide {
+  from {
+    translate: var(--slide) 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+
+  .wave-react .wave-bar {
+    scale: none;
+  }
+
+
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
     transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
 }

@@ -34,13 +34,13 @@ function SelfFixes({ source }: { source: Source }) {
       </p>
       <div className="mt-5 divide-y divide-border rounded-field border border-border">
         {guide.options.map((option, i) => (
-          <details key={option.title} className="group px-4" open={i === 0}>
+          <details key={option.title} className="disclosure group px-4" open={i === 0}>
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
               <span>
                 <span className="block text-sm font-medium">{option.title}</span>
                 <span className="block text-xs text-muted">{option.summary}</span>
               </span>
-              <ChevronDown aria-hidden className="size-4 shrink-0 text-muted transition-transform group-open:rotate-180" />
+              <ChevronDown aria-hidden className="size-4 shrink-0 text-muted transition-transform duration-250 ease-out group-open:rotate-180" />
             </summary>
             <ol className="space-y-2 pb-4 text-sm">
               {option.steps.map((step, n) => (
@@ -107,7 +107,7 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
       />
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Button variant="secondary" onClick={copy}>
-          {copied ? <Check aria-hidden className="size-4 text-accent" /> : <Copy aria-hidden className="size-4" />}
+          {copied ? <Check key="done" aria-hidden className="size-4 animate-pop text-accent" /> : <Copy key="copy" aria-hidden className="size-4" />}
           {copied ? "Copied" : "Copy request"}
         </Button>
         <a
@@ -148,7 +148,11 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
   }
 
   const back = (
-    <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-text">
+    <Link
+      href={backHref}
+      transitionTypes={["nav-back"]}
+      className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-text"
+    >
       <ArrowLeft aria-hidden className="size-4" />
       All sources
     </Link>

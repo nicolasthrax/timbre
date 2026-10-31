@@ -10,7 +10,7 @@ const links = [
 
 export function MarketingHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 bg-bg">
+    <header className="chrome-site sticky top-0 z-30 border-b border-border/60 bg-bg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">

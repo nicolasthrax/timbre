@@ -1,5 +1,6 @@
-import { createRng } from "@/lib/random";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
+import { createRng } from "@/lib/random";
 
 /** Deterministic speech-like envelope, so server and client render the same bars. */
 export function waveformHeights(count: number, seed: number): number[] {
@@ -24,11 +25,13 @@ export interface WaveformProps {
   highlight?: [number, number][];
   /** Playback progress 0–1; bars before it are drawn in accent. */
   progress?: number;
+  /** Pulse the bars while something is running. */
   animated?: boolean;
+  /** Play the one-off sweep where bars rise left to right (globals.css, .wave-intro). */
+  intro?: boolean;
+  /** When the lit set changes, light bars left to right over this many ms instead of all at once. */
+  sweepMs?: number;
   className?: string;
-  /** Bar colours; default to accent (found) and bar (other audio). */
-  litClassName?: string;
-  unlitClassName?: string;
   /** Accessible description. Without it the waveform is decorative. */
   label?: string;
 }
@@ -40,9 +43,9 @@ export function Waveform({
   highlight = [],
   progress,
   animated = false,
+  intro = false,
+  sweepMs,
   className,
-  litClassName = "bg-accent",
-  unlitClassName = "bg-bar",
   label,
 }: WaveformProps) {
   const heights = levels && levels.length > 0 ? levels : waveformHeights(bars, seed);
@@ -52,7 +55,8 @@ export function Waveform({
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      className={cn("flex h-24 w-full items-center gap-[3px]", className)}
+      className={cn("flex h-24 w-full items-center gap-[3px]", intro && "wave-intro", className)}
+      style={sweepMs ? ({ "--wave-sweep": `${sweepMs}ms` } as CSSProperties) : undefined}
     >
       {heights.map((h, i) => {
         const at = (i + 0.5) / count;
@@ -62,15 +66,19 @@ export function Waveform({
         return (
           <span
             key={i}
+            data-lit={lit || undefined}
             className={cn(
-              "min-w-[2px] flex-1 origin-center rounded-full transition-[height,background-color] duration-150",
-              lit ? litClassName : unlitClassName,
+              "wave-bar relative min-w-[2px] flex-1 origin-center rounded-full bg-bar after:bg-accent",
+              levels && "transition-[height] duration-150",
               animated && "animate-wave",
             )}
-            style={{
-              height: `${Math.max(6, h * 100)}%`,
-              animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
-            }}
+            style={
+              {
+                height: `${Math.max(6, h * 100)}%`,
+                "--at": at.toFixed(3),
+                animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
+              } as CSSProperties
+            }
           />
         );
       })}

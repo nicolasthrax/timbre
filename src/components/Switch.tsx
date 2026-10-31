@@ -28,14 +28,14 @@ export function Switch({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
-        "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50",
         checked ? "border-accent bg-accent" : "border-field bg-surface-2",
       )}
     >
       <span
         aria-hidden
         className={cn(
-          "inline-block size-5 rounded-full transition-transform",
+          "inline-block size-5 rounded-full transition duration-250 ease-out",
           checked ? "translate-x-6 bg-surface" : "translate-x-1 bg-field",
         )}
       />

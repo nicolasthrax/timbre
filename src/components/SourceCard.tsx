@@ -99,7 +99,7 @@ export function SourceCard({ source }: { source: Source }) {
     return <div className={className}>{body}</div>;
   }
   return (
-    <Link href={`/sources/${source.id}`} className={className}>
+    <Link href={`/sources/${source.id}`} transitionTypes={["nav-forward"]} className={className}>
       {body}
     </Link>
   );

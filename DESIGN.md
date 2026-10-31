@@ -59,9 +59,23 @@ Example scan. We found 47 minutes ...
 
 ## Motion
 
-- The waveform pulses only while something is happening (a scan running or a clone being generated).
-- Button and toggle state changes are short colour transitions.
-- Everything respects `prefers-reduced-motion`.
+Motion shows what changed after someone acts, and the waveform is the one place it gets expressive. All of it is CSS (transitions, keyframes, `@starting-style`, view transitions) plus one small `requestAnimationFrame` counter. There is no animation library. Animations use `transform`, `scale`, `translate` and `opacity`; the one exception is the disclosure height, which is the only way to show an answer opening without a jump.
+
+Tokens live in `globals.css`: `--ease-out` (fast start, long settle) for things arriving, `--ease-in-out` for things moving between two places, and durations of 150 ms (state changes), 250 ms (enter, exit) and 600 ms (the waveform sweep per bar).
+
+| Moment | What moves | Why |
+|---|---|---|
+| Landing load (the one orchestrated non-user moment) | Headline and subline rise in, a playhead sweeps the waveform left to right, each bar rises as it passes, the found stretches light up and their notes drop in when the playhead reaches them. About 1.8 s, CTA usable after 0.4 s. | It acts out a scan finding the voice, which is what the product does. |
+| Pointer over the hero waveform (fine pointers only) | Bars near the pointer lift slightly. | The example reads as audio you can scrub, not a picture. |
+| Results and dashboard load | The minutes figure counts up and the waveform sweeps in once. | The number is the answer to the scan, so it arrives as a result. |
+| Scan running, then done | Bars pulse while running; on completion the bars light up left to right and each step's check pops in. | Shows progress and the moment it finished. |
+| Route change | Old page fades out fast, new page rises 8 px and fades in. The header and sidebar stay still. Moving forward (into a source, to the next onboarding step) slides left; "All sources" slides right. | Tells the person the content changed and in which direction they moved. |
+| Paywall dialog | Sheet slides up on phones; on wider screens it scales from 98 % and fades. The backdrop fades. Closing reverses it. | Shows where the dialog came from and where it went. |
+| Disclosure (FAQ, fix steps) | The answer opens to its height and fades in; the chevron turns. | Keeps the reader's place instead of jumping the page. |
+| Buttons, switches, billing toggle | Press scales to 98 %; switch thumb and billing indicator slide with `--ease-out`. | Confirms the press or the new choice. |
+| Banners, mobile menu, "Copied" | Short fade and 4 px drop on mount. | Marks new information that appeared after an action. |
+
+Sections do not fade in on scroll and cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
 
 ## Icons
 

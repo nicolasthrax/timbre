@@ -1,8 +1,10 @@
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
+import { PageTransition } from "@/components/PageTransition";
+import { PointerLift } from "@/components/PointerLift";
 import { PricingCards } from "@/components/PricingCards";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
@@ -41,57 +43,89 @@ function SectionHeading({ children, intro }: { children: React.ReactNode; intro?
   );
 }
 
+const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
+
+/** The scan line that crosses the hero waveform once on load. */
+function Playhead() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <span className="wave-playhead" />
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
-    <>
+    <PageTransition>
       <Suspense fallback={null}>
         <DeletedNotice />
       </Suspense>
 
-      {/* Hero: the waveform is the subject (DESIGN.md, direction C). */}
+      {/* Hero: the waveform is the subject (DESIGN.md, direction C). The load sequence is in DESIGN.md, Motion. */}
       <section className="pb-20 pt-14 lg:pt-24">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-5 lg:items-end">
-          <h1 className="max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
+          <h1 className="rise max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
             {hero.headline}
           </h1>
-          <p className="max-w-copy-narrow text-lg leading-relaxed text-muted lg:col-span-2">{hero.subline}</p>
+          <p className="rise max-w-copy-narrow text-lg leading-relaxed text-muted lg:col-span-2"
+            style={delay(120)}>
+            {hero.subline}
+          </p>
         </div>
 
-        <figure className="mt-14" aria-labelledby="example-caption">
+        <figure className="mt-14" style={{ "--wave-start": "300ms" } as CSSProperties} aria-labelledby="example-caption">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <ol className="relative hidden h-28 md:block" aria-label="Where the voice in this example was found">
               {exampleScan.found.map((f) => (
-                <li key={f.where} className="absolute top-0 flex flex-col" style={{ left: `${f.range[0] * 100}%` }}>
+                <li
+                  key={f.where}
+                  className="note-drop absolute top-0 flex flex-col"
+                  style={{ left: `${f.range[0] * 100}%`, "--at": f.range[0] } as CSSProperties}
+                >
                   <span className="rounded-field border border-border bg-surface px-3 py-2 text-sm">
                     <span className="block font-bold">{f.where}</span>
                     <span className="block text-muted">{f.detail}</span>
                   </span>
-                  <span aria-hidden className="ml-4 h-10 w-px bg-bar" />
+                  <span aria-hidden data-connector className="ml-4 h-10 w-px bg-bar" />
                 </li>
               ))}
             </ol>
-            <Waveform bars={48} seed={7} className="h-28 md:hidden" highlight={exampleScan.found.map((f) => f.range)} />
-            <Waveform
-              bars={96}
-              seed={7}
-              className="hidden h-40 md:flex"
-              highlight={exampleScan.found.map((f) => f.range)}
-              label="A voice waveform with three highlighted stretches where the voice was found online"
-            />
+            <div className="relative md:hidden">
+              <Waveform bars={48} seed={7} intro className="h-28" highlight={exampleScan.found.map((f) => f.range)} />
+              <Playhead />
+            </div>
+            <PointerLift className="relative hidden md:block">
+              <Waveform
+                bars={96}
+                seed={7}
+                intro
+                className="h-40"
+                highlight={exampleScan.found.map((f) => f.range)}
+                label="A voice waveform with three highlighted stretches where the voice was found online"
+              />
+              <Playhead />
+            </PointerLift>
             <ul className="mt-6 space-y-2 md:hidden">
               {exampleScan.found.map((f) => (
-                <li key={f.where} className="text-sm">
+                <li key={f.where} className="note-drop text-sm" style={{ "--at": f.range[0] } as CSSProperties}>
                   <span className="font-bold">{f.where}</span> <span className="text-muted">{f.detail}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <figcaption id="example-caption" className="mx-auto mt-4 max-w-6xl px-4 text-sm text-muted sm:px-6">
+          <figcaption
+            id="example-caption"
+            className="rise mx-auto mt-4 max-w-6xl px-4 text-sm text-muted sm:px-6"
+            style={delay(1600)}
+          >
             Example scan. {exampleScan.line}
           </figcaption>
         </figure>
 
-        <div className="mx-auto mt-12 flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 sm:px-6">
+        <div
+          className="rise mx-auto mt-12 flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 sm:px-6"
+          style={delay(400)}
+        >
           <ButtonLink href="/signin" size="lg">
             {hero.cta}
           </ButtonLink>
@@ -167,10 +201,10 @@ export default function LandingPage() {
         <SectionHeading>Questions</SectionHeading>
         <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
           {faq.map((item) => (
-            <details key={item.q} className="group">
+            <details key={item.q} className="disclosure group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold [&::-webkit-details-marker]:hidden">
                 {item.q}
-                <ChevronDown aria-hidden className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180" />
+                <ChevronDown aria-hidden className="size-5 shrink-0 text-muted transition-transform duration-250 ease-out group-open:rotate-180" />
               </summary>
               <p className="max-w-copy pb-6 leading-relaxed text-muted">{item.a}</p>
             </details>
@@ -185,6 +219,6 @@ export default function LandingPage() {
           {hero.cta}
         </ButtonLink>
       </Section>
-    </>
+    </PageTransition>
   );
 }

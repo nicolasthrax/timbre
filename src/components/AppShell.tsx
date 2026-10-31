@@ -2,7 +2,7 @@
 
 import { AudioLines, FlaskConical, LogOut, Menu, Settings, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
@@ -33,13 +33,14 @@ function PlanBadge({ user }: { user: User }) {
 
 export function AppShell({ user, children }: { user: User; children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { openPaywall } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const items = navItems(user);
 
   async function signOut() {
     await api.signOut();
-    window.location.assign("/");
+    router.push("/");
   }
 
   const links = (onNavigate?: () => void) => (

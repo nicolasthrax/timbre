@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/Badge";
 import { Banner } from "@/components/Banner";
@@ -50,6 +51,7 @@ function planLabel(user: User): string {
 }
 
 export function SettingsView() {
+  const router = useRouter();
   const { me, setMe, openPaywall } = useSession();
   const [billingNote, setBillingNote] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -86,8 +88,8 @@ export function SettingsView() {
     setDeleting(true);
     try {
       await api.deleteAllData();
-      // Full navigation so no in-memory state survives the deletion.
-      window.location.assign("/?deleted=1");
+      // Leaving the (app) group unmounts the session, so no user state survives.
+      router.push("/?deleted=1");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't delete your data.");
       setDeleting(false);

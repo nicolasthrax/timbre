@@ -72,32 +72,35 @@ export function useRecorder() {
     recorderRef.current = null;
   }, [stopLoop]);
 
-  const tick = useCallback(() => {
-    const analyser = analyserRef.current;
-    if (!analyser) return;
-    const buffer = new Float32Array(analyser.fftSize);
-    analyser.getFloatTimeDomainData(buffer);
-    let sum = 0;
-    for (let i = 0; i < buffer.length; i++) sum += buffer[i] * buffer[i];
-    const rms = Math.sqrt(sum / buffer.length);
+  const startLoop = useCallback(() => {
+    const tick = () => {
+      const analyser = analyserRef.current;
+      if (!analyser) return;
+      const buffer = new Float32Array(analyser.fftSize);
+      analyser.getFloatTimeDomainData(buffer);
+      let sum = 0;
+      for (let i = 0; i < buffer.length; i++) sum += buffer[i] * buffer[i];
+      const rms = Math.sqrt(sum / buffer.length);
 
-    const now = performance.now();
-    if (now - lastUpdateRef.current >= UPDATE_MS) {
-      lastUpdateRef.current = now;
-      const samples = rmsWindowRef.current;
-      samples.push(rms);
-      if (samples.length > 25) samples.shift();
-      const avg = samples.reduce((a, b) => a + b, 0) / samples.length;
-      const floor = [...samples].sort((a, b) => a - b)[Math.floor(samples.length * 0.1)] ?? 0;
-      const display = Math.min(1, rms * 7);
+      const now = performance.now();
+      if (now - lastUpdateRef.current >= UPDATE_MS) {
+        lastUpdateRef.current = now;
+        const samples = rmsWindowRef.current;
+        samples.push(rms);
+        if (samples.length > 25) samples.shift();
+        const avg = samples.reduce((a, b) => a + b, 0) / samples.length;
+        const floor = [...samples].sort((a, b) => a - b)[Math.floor(samples.length * 0.1)] ?? 0;
+        const display = Math.min(1, rms * 7);
 
-      setLevel(display);
-      setLevels((prev) => [...prev.slice(-(HISTORY - 1)), Math.max(0.06, display)]);
-      setElapsedMs(accumulatedRef.current + (now - segmentStartRef.current));
-      if (samples.length >= 8) {
-        setQuality(avg < QUIET_RMS ? "too-quiet" : floor > NOISE_FLOOR_RMS ? "noisy" : "good");
+        setLevel(display);
+        setLevels((prev) => [...prev.slice(-(HISTORY - 1)), Math.max(0.06, display)]);
+        setElapsedMs(accumulatedRef.current + (now - segmentStartRef.current));
+        if (samples.length >= 8) {
+          setQuality(avg < QUIET_RMS ? "too-quiet" : floor > NOISE_FLOOR_RMS ? "noisy" : "good");
+        }
       }
-    }
+      rafRef.current = requestAnimationFrame(tick);
+    };
     rafRef.current = requestAnimationFrame(tick);
   }, []);
 
@@ -115,7 +118,7 @@ export function useRecorder() {
       existing.resume();
       segmentStartRef.current = performance.now();
       setStatus("recording");
-      rafRef.current = requestAnimationFrame(tick);
+      startLoop();
       return;
     }
 
@@ -145,13 +148,13 @@ export function useRecorder() {
       segmentStartRef.current = performance.now();
       setElapsedMs(0);
       setStatus("recording");
-      rafRef.current = requestAnimationFrame(tick);
+      startLoop();
     } catch (e) {
       release();
       setError(classifyError(e));
       setStatus("error");
     }
-  }, [release, tick]);
+  }, [release, startLoop]);
 
   const pause = useCallback(() => {
     const recorder = recorderRef.current;

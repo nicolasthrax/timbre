@@ -10,12 +10,10 @@ import {
 import {
   ApiError,
   type AccountsInput,
-  type BillingInterval,
   type CloneTestResult,
   type ConsentRecord,
   type DataExport,
   type LinkedAccount,
-  type Plan,
   type Platform,
   type Scan,
   type ScanIssue,
@@ -30,6 +28,8 @@ import {
 
 const STORAGE_KEY = "timbre:mock:v1";
 const SCAN_DURATION_MS = 10_000;
+/** Manual scans are limited to one per user per day (.plans/01-prd.md F4). */
+const SCAN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const CLONE_SENTENCE =
   "Every voice has a timbre, a colour that makes it yours and no one else's.";
 
@@ -112,12 +112,6 @@ function requireUser(store: MockStore): User {
     throw new ApiError("unauthenticated", "Please sign in to continue.");
   }
   return store.user;
-}
-
-/** Simulated server-side redaction. UI never decides what to hide. */
-function present(source: Source, plan: Plan): Source {
-  if (plan === "pro") return { ...source };
-  return { ...source, url: null, title: null, thumbnail: null, author: null };
 }
 
 function countByPlatform(sources: Source[]): Record<Platform, number> {
@@ -242,12 +236,9 @@ export class MockTimbreApi implements TimbreApi {
       store.user = {
         id: `usr_${hashString(email).toString(36)}`,
         email,
-        plan: "free",
         consentVersion: null,
         consentAt: null,
         fullName: null,
-        billingInterval: null,
-        lapsedAt: null,
         monitoring: false,
         emailAlerts: true,
         createdAt: new Date().toISOString(),
@@ -339,17 +330,22 @@ export class MockTimbreApi implements TimbreApi {
     return this.mutate((store) => {
       const user = requireUser(store);
       if (!store.voiceprint) throw new ApiError("invalid", "Record your voice before scanning.");
-      if (user.plan !== "pro" && store.scans.length > 0) {
-        throw new ApiError("forbidden", "The free plan includes one scan. Upgrade to scan again.");
+      const latest = store.scans[0];
+      if (latest) {
+        const waitMs = new Date(latest.startedAt).getTime() + SCAN_COOLDOWN_MS - Date.now();
+        if (waitMs > 0) {
+          const hours = Math.ceil(waitMs / 3_600_000);
+          throw new ApiError("rate_limited", `You can run one scan a day. Try again in ${hours} hour${hours === 1 ? "" : "s"}.`);
+        }
       }
       const scan: StoredScan = {
         id: id("scan"),
         userId: user.id,
-        type: type ?? (user.plan === "pro" ? "paid" : "free"),
+        type: type ?? "manual",
         startedAt: new Date().toISOString(),
         durationMs: SCAN_DURATION_MS,
         finishedAt: null,
-        candidatesCount: user.plan === "pro" ? 120 : 50,
+        candidatesCount: 50,
         issues: [],
         matchedSeconds: 0,
         sourceCount: 0,
@@ -383,49 +379,34 @@ export class MockTimbreApi implements TimbreApi {
   async listSources(filter: SourceFilter = {}): Promise<Source[]> {
     await latency();
     return this.mutate((store) => {
-      const user = requireUser(store);
+      requireUser(store);
       this.settle(store);
       return store.sources
         .filter((s) => !filter.platform || s.platform === filter.platform)
         .filter((s) => !filter.status || s.status === filter.status)
         .sort((a, b) => b.matchedSeconds - a.matchedSeconds)
-        .map((s) => present(s, user.plan));
+        .map((s) => ({ ...s }));
     });
   }
 
   async getSource(sourceId: string): Promise<Source> {
     await latency();
     const store = load();
-    const user = requireUser(store);
+    requireUser(store);
     const source = store.sources.find((s) => s.id === sourceId);
     if (!source) throw new ApiError("not_found", "We couldn't find that source.");
-    return present(source, user.plan);
+    return { ...source };
   }
 
   async updateSourceStatus(sourceId: string, status: SourceStatus): Promise<Source> {
     await latency();
     return this.mutate((store) => {
-      const user = requireUser(store);
-      if (user.plan !== "pro") throw new ApiError("forbidden", "Guided fixes are part of Pro.");
+      requireUser(store);
       const source = store.sources.find((s) => s.id === sourceId);
       if (!source) throw new ApiError("not_found", "We couldn't find that source.");
       // TODO(real): fixed items are re-verified on the next scan.
       source.status = status;
-      return present(source, user.plan);
-    });
-  }
-
-  async upgrade(interval: BillingInterval): Promise<User> {
-    await latency();
-    // TODO(real): Stripe Checkout session → webhook updates users.plan.
-    return this.mutate((store) => {
-      const user = requireUser(store);
-      user.plan = "pro";
-      user.billingInterval = interval;
-      user.lapsedAt = null;
-      user.monitoring = true;
-      if (store.scenario === "lapsed") store.scenario = "high";
-      return { ...user };
+      return { ...source };
     });
   }
 
@@ -433,7 +414,6 @@ export class MockTimbreApi implements TimbreApi {
     await latency();
     return this.mutate((store) => {
       const user = requireUser(store);
-      if (user.plan !== "pro" && enabled) throw new ApiError("forbidden", "Monitoring is part of Pro.");
       user.monitoring = enabled;
       return { ...user };
     });
@@ -451,11 +431,10 @@ export class MockTimbreApi implements TimbreApi {
   async requestCloneTest(liveSample: Blob): Promise<CloneTestResult> {
     await latency();
     await latency();
-    // TODO(real): POST /api/clone-test: paid only, liveness re-check,
-    // rate-limited (3/month), audit-logged, watermarked, streamed, not stored.
+    // TODO(real, stage 11 in .plans/pivot-review.md): POST /api/clone with a
+    // server-issued challenge, rate limits, deletion after generation.
     const store = load();
-    const user = requireUser(store);
-    if (user.plan !== "pro") throw new ApiError("forbidden", "The clone test is part of Pro.");
+    requireUser(store);
     if (liveSample.size === 0) throw new ApiError("invalid", "The recording was empty. Please try again.");
     return {
       id: id("clone"),
@@ -479,7 +458,7 @@ export class MockTimbreApi implements TimbreApi {
         voiceprint: store.voiceprint,
         linkedAccounts: store.accounts,
         scans: store.scans.map((s) => this.view(store, s)),
-        sources: store.sources.map((s) => present(s, user.plan)),
+        sources: store.sources.map((s) => ({ ...s })),
         note: "Mock export. Raw audio is never stored, so none is included. Voiceprint embeddings are omitted from exports.",
       };
     });
@@ -501,35 +480,21 @@ export class MockTimbreApi implements TimbreApi {
   setScenario(scenario: Scenario): void {
     this.mutate((store) => {
       store.scenario = scenario;
-      if (!store.user) return;
-      if (scenario === "lapsed" && store.user.plan !== "lapsed") {
-        store.user.plan = "lapsed";
-        store.user.lapsedAt = new Date(Date.now() - 2 * 86_400_000).toISOString();
-        store.user.monitoring = false;
-      } else if (scenario !== "lapsed" && store.user.plan === "lapsed") {
-        store.user.plan = "pro";
-        store.user.lapsedAt = null;
-        store.user.monitoring = true;
-      }
     });
   }
 
   /** Creates a signed-in account with a finished scan, skipping onboarding. */
-  seedDemo(plan: Plan): void {
-    const store = load();
-    const scenario = plan === "lapsed" ? "lapsed" : store.scenario === "lapsed" ? "high" : store.scenario;
+  seedDemo(): void {
+    const scenario = load().scenario;
     const fresh = emptyStore(scenario);
     const now = Date.now();
     const user: User = {
       id: "usr_demo",
       email: "kai.chan@example.com",
-      plan,
       consentVersion: "2026-10-v2",
       consentAt: new Date(now - 40 * 86_400_000).toISOString(),
       fullName: "Kai Chan",
-      billingInterval: plan === "free" ? null : "month",
-      lapsedAt: plan === "lapsed" ? new Date(now - 2 * 86_400_000).toISOString() : null,
-      monitoring: plan === "pro",
+      monitoring: false,
       emailAlerts: true,
       createdAt: new Date(now - 40 * 86_400_000).toISOString(),
     };
@@ -543,15 +508,15 @@ export class MockTimbreApi implements TimbreApi {
       { id: "acct_yt", userId: user.id, platform: "youtube", handle: "kaichanvlogs" },
     ];
 
-    // Pro accounts get a few weeks of monitoring history for the trend line.
-    const history = plan === "free" || scenario === "none" ? 0 : 4;
+    // A few weeks of earlier scans, so the trend line has data.
+    const history = scenario === "none" ? 0 : 4;
     const totals = [3420, 3180, 3060, 2940];
     for (let i = history; i >= 0; i--) {
       const started = now - i * 7 * 86_400_000 - SCAN_DURATION_MS - 60_000;
       fresh.scans.unshift({
         id: i === 0 ? "scan_demo" : `scan_demo_${i}`,
         userId: user.id,
-        type: i === history ? (plan === "free" ? "free" : "paid") : "monitor",
+        type: i === history ? "manual" : "monitor",
         startedAt: new Date(started).toISOString(),
         durationMs: SCAN_DURATION_MS,
         finishedAt: i === 0 ? null : new Date(started + SCAN_DURATION_MS).toISOString(),

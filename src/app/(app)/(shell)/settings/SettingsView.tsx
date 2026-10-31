@@ -3,14 +3,12 @@
 import { Download, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Badge } from "@/components/Badge";
 import { Banner } from "@/components/Banner";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { useSession } from "@/components/SessionProvider";
 import { Switch } from "@/components/Switch";
-import { PRICES } from "@/content/pricing";
-import { api, type User } from "@/lib/api";
+import { api } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 
 function Row({
@@ -43,17 +41,9 @@ function Row({
   );
 }
 
-function planLabel(user: User): string {
-  if (user.plan === "free") return "Free";
-  const interval = user.billingInterval ?? "month";
-  const price = `${PRICES[interval].label}${PRICES[interval].per}`;
-  return user.plan === "pro" ? `Pro, ${price}` : `Pro (lapsed), ${price}`;
-}
-
 export function SettingsView() {
   const router = useRouter();
-  const { me, setMe, openPaywall } = useSession();
-  const [billingNote, setBillingNote] = useState(false);
+  const { me, setMe } = useSession();
   const [confirmText, setConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -107,36 +97,7 @@ export function SettingsView() {
           <Row title="Email" description={<span className="break-all tabular-nums text-xs">{user.email}</span>}>
             <span className="text-xs text-muted">Member since {formatDate(user.createdAt)}</span>
           </Row>
-          <Row
-            title="Plan"
-            description={
-              user.plan === "lapsed"
-                ? "Payment failed. Your data is kept for 30 days."
-                : user.plan === "pro"
-                  ? "Renews automatically. Cancel anytime."
-                  : "1 scan included. Source details are hidden."
-            }
-          >
-            <div className="flex items-center gap-3">
-              <Badge tone={user.plan === "pro" ? "accent" : user.plan === "lapsed" ? "warn" : "neutral"}>{planLabel(user)}</Badge>
-              {user.plan === "pro" ? (
-                <Button variant="secondary" size="sm" onClick={() => setBillingNote(true)}>
-                  Manage billing
-                </Button>
-              ) : (
-                <Button size="sm" onClick={openPaywall}>
-                  {user.plan === "lapsed" ? "Renew" : "Upgrade"}
-                </Button>
-              )}
-            </div>
-          </Row>
         </div>
-        {billingNote && (
-          <p role="status" className="mt-4 rounded-field border border-border bg-surface-2 p-3 text-sm text-muted">
-            Preview build: the billing portal is simulated. {/* TODO(real): open Stripe Customer Portal. */}
-            In the live app this opens Stripe&apos;s secure billing page.
-          </p>
-        )}
       </Card>
 
       <Card>
@@ -146,12 +107,11 @@ export function SettingsView() {
             title="Weekly scans"
             titleId="monitoring-label"
             descriptionId="monitoring-desc"
-            description={user.plan === "pro" ? "Re-scan your accounts and the web every week." : "Available on Pro."}
+            description="Re-scan your accounts every week."
           >
             <Switch
               id="monitoring"
               checked={user.monitoring}
-              disabled={user.plan !== "pro"}
               onChange={(next) => toggle("monitoring", next)}
               labelledBy="monitoring-label"
               describedBy="monitoring-desc"

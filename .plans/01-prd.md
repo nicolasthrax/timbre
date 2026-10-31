@@ -50,7 +50,7 @@ v0 is a demo for a YC application. It has to work end to end with real users and
 
 ### F3. Play it to your family, and share
 
-- After the result, a full-screen "play it to your family" step: hand the phone to a parent, play the clone, then show them the code-word suggestion.
+- After the result, a full-screen "play it to your family" step: hand the phone to a parent and play the clone, followed by a short message to read to them. No code-word box or other family feature; the code word stays a static tip on the landing page and in the checklist.
 - A share card (an image, no audio, no video titles or links) saying the user heard a clone of their own voice, with a link to try it.
 
 ### F4. YouTube exposure scan

@@ -37,7 +37,7 @@ The app nav has three items: Clone test, Your exposure, Settings.
 
 ### Flow B. Play it to your family
 
-- Full-screen, large type, one button: "Play the clone". After it plays: "That wasn't really me. If you ever get a call like this, hang up and call me back." Then the code-word suggestion with a text box to note it (stored only on the device).
+- Full-screen, large type, one button: "Play the clone". After it plays: "That wasn't really me. If you ever get a call like this, hang up and call me back." Nothing else: no code-word box and no stored family data (founder decision, 31 Oct 2026). The code word appears only as a static tip on the landing page and in the checklist.
 - Works without reading English for the parent if the user reads it out; a Cantonese version is v1.
 
 ### Flow C. Share card

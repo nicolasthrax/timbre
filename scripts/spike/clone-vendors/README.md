@@ -50,3 +50,19 @@ Clips go to `outputs/google/`, with timings in `outputs/google/timings.json`. Th
 ## 5. Clean up
 
 When the decision is written up, delete `recordings/`, `outputs/` and `listening-test/`, and delete any copies in Google Drive.
+
+## 6. Landing-page example (founder only)
+
+The hero on the landing page plays a real recording and its clone. Use your own spike files:
+
+- Real: `recordings/<your folder>/real.*`, the fixed sentence "Every voice has a timbre, a colour that makes it yours and no one else's."
+- Clone: `outputs/<chosen provider>/<your folder>_1.wav`, the same sentence from the provider the spike picks.
+
+Convert both to MP3 (mono, 44.1 kHz, 128 kbps, about 4 to 6 seconds, at most 0.3 s of silence at each end, similar loudness):
+
+```
+ffmpeg -i recordings/speaker1/real.m4a -af "silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,loudnorm" -ac 1 -ar 44100 -b:a 128k example-real.mp3
+ffmpeg -i outputs/google/speaker1_1.wav -af "silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,loudnorm" -ac 1 -ar 44100 -b:a 128k example-clone.mp3
+```
+
+Put them in `public/audio/` as `example-real.mp3` and `example-clone.mp3`, then set `realSrc` and `cloneSrc` in `exampleClone` (`src/content/landing.ts`) to `/audio/example-real.mp3` and `/audio/example-clone.mp3`. These two files are the only voice audio that may be committed, and only with your written consent.

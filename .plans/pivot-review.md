@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) done and confirmed. Stage 4 (landing structure) done; stopped for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) done and confirmed. Stage 4 (landing structure) done. Stage 5 (plans and billing removed) done; stopped for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 
@@ -29,6 +29,7 @@ Revision 4 (31 Oct 2026, plan approved):
 15. Still open: age floor (default stays 18+). Headline, CTA and family heading confirmed (decision 17).
 16. The spike is free: Google on free trial credit, CosyVoice 2 on free Google Colab, ElevenLabs dropped entirely. Decision 12's paid GPU is no longer needed.
 17. Confirmed copy: headline "Hear an AI clone of your own voice", subheading "Your voice can be copied in seconds. Hear it for yourself.", CTA "Hear my clone", family heading "Your voice is the weapon. Your parents are the target." with three static tips and no family features. Contact email is hello@ plus the configured domain.
+18. The "play it to your family" replay screen stays; the code-word box is cut. The founder records the hero example during the spike (instructions in `scripts/spike/clone-vendors/README.md` §6).
 
 ## 1. v0 demo scope
 

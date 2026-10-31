@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { ResultsView } from "./ResultsView";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Your results" };
-
+// Results and the dashboard were split by plan. With plans removed there is one view.
 export default function ResultsPage() {
-  return <ResultsView />;
+  redirect("/dashboard");
 }

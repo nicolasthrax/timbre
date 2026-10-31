@@ -19,9 +19,6 @@ export const cloneTestCopy = {
       body: "Your recording is deleted once the clone is made, and the clone is deleted when you leave this page.",
     },
   ],
-  lockedTitle: "The clone test is part of Pro",
-  lockedBody:
-    "Hearing a clone of your own voice is the clearest way to understand the risk. It's limited to Pro accounts so every test is tied to a verified, paying person.",
   generating: "Generating a watermarked clone…",
   // Links to the exposure view; becomes "Check your YouTube" when the connect flow lands (stage 8).
   cta: "See your exposure",

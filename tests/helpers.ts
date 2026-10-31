@@ -28,11 +28,10 @@ export async function mockMicrophone(page: Page) {
 }
 
 /** Seeds a signed-in demo account via the hidden dev page. */
-export async function seed(page: Page, plan: "free" | "pro" | "lapsed") {
+export async function seed(page: Page) {
   await page.goto("/dev/states");
-  const label = { free: "Seed free user", pro: "Seed Pro user", lapsed: "Seed lapsed user" }[plan];
-  await page.getByRole("button", { name: label }).click();
-  await expect(page.getByText(`Seeded ${plan} account.`)).toBeVisible();
+  await page.getByRole("button", { name: "Seed demo account" }).click();
+  await expect(page.getByText("Seeded demo account.")).toBeVisible();
 }
 
 export const SOURCE_URL_PATTERN = /(youtube\.com\/watch|instagram\.com\/reel|tiktok\.com\/@)/;

@@ -191,7 +191,7 @@ No other runtime dependencies.
 
 ## 8. GitHub
 
-Pushed to `nicolasthrax/timbre`, branch `claude/beautiful-allen-34hdx1`, with a draft PR into the default branch (link in the PR list: https://github.com/nicolasthrax/timbre/pulls). To work locally:
+Pushed to `nicolasthrax/timbre`, branch `claude/beautiful-allen-34hdx1`, draft PR: https://github.com/nicolasthrax/timbre/pull/1. To work locally:
 
 ```bash
 git clone https://github.com/nicolasthrax/timbre.git

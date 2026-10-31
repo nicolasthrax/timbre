@@ -8,6 +8,6 @@ export const site = {
   description:
     "Hear a short AI clone of your own voice, see how much of it is public on your YouTube channel, and get steps to protect your family from voice-clone scams.",
   url: siteUrl,
-  // TODO(stage 9, .plans/pivot-review.md): derive from the real domain once one is registered.
-  contactEmail: "privacy@timbre.ai",
+  // Follows the configured domain, so it updates once one is registered.
+  contactEmail: `hello@${new URL(siteUrl).hostname.replace(/^www\./, "")}`,
 } as const;

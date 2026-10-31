@@ -100,8 +100,8 @@ Not run yet.
 
 1. Sign up for the Google Cloud free trial, create a project, enable Text-to-Speech and Speech-to-Text, set a budget alert, and check Instant Custom Voice access (§3).
 2. Collect consent and recordings from the 4 speakers (§4.1). I can prepare the consent text and a recording page from the existing `Recorder` component.
-3. Run the generation steps (§4.2). I can write the Colab notebook and a small script for the Google calls, for you to run in your own accounts.
-4. Run the listening test (§4.3) and send me the scores; I'll fill in §7 and write up the decision.
+3. Run the generation steps (§4.2) with the tools in `scripts/spike/clone-vendors/` (README there): `google_clone.py` for Google, `cosyvoice_colab.ipynb` for Colab. The dry run and the listening-test builder were checked with synthetic audio; the live Google calls couldn't be tested from the build session, so if one fails, compare its request body with Google's current docs.
+4. Build the listening test with `make_listening_test.py`, run it (§4.3), and send me the filled sheets and both `timings.json` files; I'll fill in §7 and write up the decision.
 
 ## 9. Sources
 

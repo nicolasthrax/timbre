@@ -1,5 +1,6 @@
 export const hero = {
   headline: "Hear an AI clone of your own voice",
+  subheading: "Your voice can be copied in seconds. Hear it for yourself.",
   subline:
     "Read a few sentences aloud and Timbre makes a short clone of your voice, so you can hear what a scammer could do with the videos you've posted. Then see what's public on your YouTube channel and what to change.",
   cta: "Hear my clone",
@@ -46,13 +47,13 @@ export const founder = {
   role: "founder of Timbre",
 };
 
-/** Founder's framing (.plans/pivot-review.md decision 7). Every risk line is paired with an action. */
+/** Founder's framing (.plans/pivot-review.md decision 7). Static tips only: no family features in v0. */
 export const platformsSection = {
   heading: "Your voice is the weapon. Your parents are the target.",
   intro: "Scammers call parents and grandparents with a clone of their child's voice and a story about an emergency. Three things make that call fail.",
   platforms: [
     { title: "Agree a code word", body: "Pick a word only your family knows. A clone can copy how you sound, but it can't know the word." },
-    { title: "Play them your clone", body: "Timbre has a step for this. Once they've heard how real a fake sounds, they know to be suspicious." },
+    { title: "Let them hear a clone", body: "Play them yours after you try the test. Once they've heard how real a fake sounds, they know to be suspicious." },
     { title: "Hang up and call back", body: "Tell them to end any urgent call and ring you back on the number they already have." },
   ],
   note: "Timbre doesn't screen calls or detect clones. It helps you and your family get ready for one.",

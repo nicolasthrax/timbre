@@ -1,0 +1,5 @@
+recordings/
+outputs/
+listening-test/
+*.zip
+__pycache__/

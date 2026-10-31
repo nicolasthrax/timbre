@@ -1,3 +1,5 @@
+import { site } from "./site";
+
 export interface LegalSection {
   id: string;
   title: string;
@@ -70,14 +72,14 @@ export const privacySections: LegalSection[] = [
     id: "rights",
     title: "7. Access, correction and deletion (DPP6)",
     paragraphs: [
-      "You can export a copy of your data or delete all of it at any time from Settings. Deletion is immediate and covers your voiceprint, linked accounts, scans and account. You can also make a data access or correction request by emailing privacy@timbre.ai; we will respond within 40 days as required by the PDPO.",
+      `You can export a copy of your data or delete all of it at any time from Settings. Deletion is immediate and covers your voiceprint, linked accounts, scans and account. You can also make a data access or correction request by emailing ${site.contactEmail}; we will respond within 40 days as required by the PDPO.`,
     ],
   },
   {
     id: "openness",
     title: "8. Openness and contact (DPP5)",
     paragraphs: [
-      "We will keep this policy public and written in plain English, and tell you about material changes before they take effect. Questions or complaints: privacy@timbre.ai. You may also contact the Office of the Privacy Commissioner for Personal Data, Hong Kong.",
+      `We will keep this policy public and written in plain English, and tell you about material changes before they take effect. Questions or complaints: ${site.contactEmail}. You may also contact the Office of the Privacy Commissioner for Personal Data, Hong Kong.`,
     ],
   },
 ];

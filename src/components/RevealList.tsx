@@ -3,10 +3,11 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /**
- * An <ol> whose items pop in as they scroll into view (globals.css, .reveal-list).
- * Items that enter together are staggered. It only arms itself when the list
- * starts below the fold, so without JS, on reload mid-page, or under reduced
- * motion every item is simply visible.
+ * An <ol> whose items rise into place as they are scrolled into view
+ * (globals.css, .reveal-list). Where CSS scroll timelines exist the motion is
+ * tied to scroll position and this component does nothing. Elsewhere it falls
+ * back to a timed pop-in when each item enters, staggered for items entering
+ * together, and only when the list starts below the fold.
  */
 export function RevealList({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLOListElement>(null);
@@ -14,6 +15,7 @@ export function RevealList({ children, className }: { children: ReactNode; class
   useEffect(() => {
     const list = ref.current;
     if (!list || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (CSS.supports("animation-timeline: view()")) return;
     if (list.getBoundingClientRect().top < window.innerHeight) return;
     list.dataset.armed = "";
     const observer = new IntersectionObserver(

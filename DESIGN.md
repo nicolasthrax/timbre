@@ -69,7 +69,7 @@ Example scan. We found 47 minutes ...
 
 - The waveform pulses only while something is happening (a scan running or a clone being generated).
 - Button and toggle state changes are short colour transitions.
-- The three "How a scan works" steps pop in (fade, rise 32 px, scale from 96 %) as each enters the viewport, staggered 120 ms when they enter together. They are only hidden when the list starts below the fold and motion is allowed.
+- The three "How a scan works" steps rise into place with scroll (fade, rise 48 px, scale from 96 %): each on its own when stacked, staggered across the row from `md`. Browsers without scroll timelines get a timed pop-in instead, and only when the list starts below the fold.
 - Three landing figures are linked to scroll with CSS scroll timelines: the "after fixing" figure counts down from the "before" value while the fixed stretches go dark; the voiceprint waveform flattens left to right and its numbers appear on the line; the platform example card cross-fades (300 ms) when the platform in view changes. Without scroll timelines, or with reduced motion, each shows its finished state.
 - Everything respects `prefers-reduced-motion`.
 

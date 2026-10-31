@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/*
+ * Timbre design tokens. Dark theme only for v0.
+ * Tailwind v4 reads its theme from CSS: the @theme block below is the
+ * "Tailwind config" that maps these tokens to utilities (bg-surface,
+ * text-muted, border-border, text-accent, ...).
+ */
+:root {
+  --bg: #0b0d10;
+  --surface: #13161b;
+  --surface-2: #1a1e25;
+  --border: #262b33;
+  --text: #e8eaed;
+  --text-muted: #9aa1ac;
+  --accent: #2ee6c5;
+  --warn: #ffb020;
+  --danger: #ff5a5f;
+  --on-accent: #0b0d10;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --animate-wave: wave 1.6s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-scan: scan 2.4s linear infinite;
+
+  @keyframes wave {
+    0%,
+    100% {
+      transform: scaleY(0.55);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scan {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(400%);
+    }
+  }
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+dialog::backdrop {
+  background: rgb(5 6 8 / 0.72);
+  backdrop-filter: blur(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

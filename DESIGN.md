@@ -45,6 +45,9 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 
 - Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
 - Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are separated by a rule, not by cards or backgrounds.
+- How a scan works ends with "What fixing looks like": a before and after pair labelled as an example.
+- What we look for: from `lg` up, the platform list scrolls past an example find that stays in place and changes with the platform in view. Below `lg` each platform has its own example card.
+- What we keep opens with the recording-to-voiceprint figure: a waveform above its example numbers.
 - App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 
 ```
@@ -61,6 +64,7 @@ Example scan. We found 47 minutes ...
 
 - The waveform pulses only while something is happening (a scan running or a clone being generated).
 - Button and toggle state changes are short colour transitions.
+- Three landing figures are linked to scroll with CSS scroll timelines: the "after fixing" figure counts down from the "before" value while the fixed stretches go dark; the voiceprint waveform flattens left to right and its numbers appear on the line; the platform example card cross-fades (300 ms) when the platform in view changes. Without scroll timelines, or with reduced motion, each shows its finished state.
 - Everything respects `prefers-reduced-motion`.
 
 ## Icons

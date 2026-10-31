@@ -35,6 +35,18 @@ export const steps = {
   ],
 };
 
+/**
+ * Before-and-after example under "How a scan works". Illustrative numbers, not
+ * a customer result: the UI labels it as an example, like the hero scan.
+ */
+export const fixExample = {
+  heading: "What fixing looks like",
+  before: { label: "Before", minutes: 47, videos: 12 },
+  after: { label: "After fixing", minutes: 9, videos: 3 },
+  caption:
+    "Example. Making your own videos private and asking for reposts to come down took this account from 47 minutes of public voice to 9.",
+};
+
 export const founder = {
   heading: "Why Timbre exists",
   quote:
@@ -60,6 +72,11 @@ export const platformsSection = {
 
 export const privacyPromise = {
   heading: "What we keep, and what we delete",
+  /** Shown with the waveform that turns into numbers. The values are illustrative. */
+  voiceprint: {
+    values: ["0.12", "−0.48", "0.91", "0.07", "−0.33", "0.64", "−0.15", "0.28"],
+    caption: "Example. Your recording becomes a voiceprint: a list of numbers that can't be played back.",
+  },
   points: [
     {
       title: "Your recording is deleted",

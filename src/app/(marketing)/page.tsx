@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
+import { FixExample } from "@/components/FixExample";
+import { PlatformTour } from "@/components/PlatformTour";
 import { PricingCards } from "@/components/PricingCards";
+import { VoiceprintFigure } from "@/components/VoiceprintFigure";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
 import {
@@ -110,6 +113,7 @@ export default function LandingPage() {
             </li>
           ))}
         </ol>
+        <FixExample />
       </Section>
 
       <Section>
@@ -133,19 +137,15 @@ export default function LandingPage() {
 
       <Section>
         <SectionHeading intro={platformsSection.intro}>{platformsSection.heading}</SectionHeading>
-        <dl className="mt-12 grid gap-8 md:grid-cols-3">
-          {platformsSection.platforms.map((p) => (
-            <div key={p.title}>
-              <dt className="text-xl font-bold">{p.title}</dt>
-              <dd className="mt-2 leading-relaxed text-muted">{p.body}</dd>
-            </div>
-          ))}
-        </dl>
+        <PlatformTour
+          stops={platformsSection.platforms.map((p, i) => ({ ...p, example: exampleScan.found[i] }))}
+        />
         <p className="mt-10 max-w-copy text-muted">{platformsSection.note}</p>
       </Section>
 
       <Section id="privacy">
         <SectionHeading>{privacyPromise.heading}</SectionHeading>
+        <VoiceprintFigure />
         <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
           {privacyPromise.points.map((p) => (
             <div key={p.title} className="max-w-copy">

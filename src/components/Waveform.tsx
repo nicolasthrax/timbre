@@ -1,5 +1,6 @@
-import { createRng } from "@/lib/random";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
+import { createRng } from "@/lib/random";
 
 /** Deterministic speech-like envelope, so server and client render the same bars. */
 export function waveformHeights(count: number, seed: number): number[] {
@@ -67,10 +68,15 @@ export function Waveform({
               lit ? litClassName : unlitClassName,
               animated && "animate-wave",
             )}
-            style={{
-              height: `${Math.max(6, h * 100)}%`,
-              animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
-            }}
+            style={
+              {
+                height: `${Math.max(6, h * 100)}%`,
+                animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
+                // Position and height for scroll-linked effects in globals.css (.wave-flatten).
+                "--at": at.toFixed(3),
+                "--h": Math.max(0.06, h).toFixed(3),
+              } as CSSProperties
+            }
           />
         );
       })}

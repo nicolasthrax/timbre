@@ -56,7 +56,17 @@
   --container-copy: 54ch;
   --container-copy-narrow: 44ch;
 
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
   --animate-wave: wave 1.6s ease-in-out infinite;
+  --animate-swap: swap 300ms var(--ease-out) both;
+
+  @keyframes swap {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
 
   @keyframes wave {
     0%,
@@ -93,6 +103,96 @@ body {
 
 dialog::backdrop {
   background: rgb(14 27 38 / 0.45);
+}
+
+/* Scroll-linked landing figures. Elsewhere each shows its finished state. */
+@property --fix-min {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.fix-count {
+  counter-reset: fix-min var(--fix-min);
+}
+
+.fix-count::after {
+  content: counter(fix-min);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* "What fixing looks like": the after figure counts down and fixed stretches go dark. */
+    .fix-example {
+      view-timeline-name: --fix;
+    }
+
+    .fix-count {
+      animation: fix-count linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
+    }
+
+    .fix-fade {
+      animation: fade-out linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
+    }
+
+    /* Voiceprint: the waveform flattens left to right, then the numbers appear on the line. */
+    .voiceprint {
+      view-timeline-name: --voiceprint;
+    }
+
+    .voiceprint .wave-flatten > span {
+      animation: flatten linear both;
+      animation-timeline: --voiceprint;
+      animation-range: cover calc(25% + var(--at) * 12%) cover calc(33% + var(--at) * 12%);
+    }
+
+    .voiceprint-values {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      align-items: center;
+    }
+
+    .voiceprint-values > li {
+      animation: fade-in linear both;
+      animation-timeline: --voiceprint;
+      animation-range: cover calc(45% + var(--i) * 1.5%) cover calc(49% + var(--i) * 1.5%);
+    }
+  }
+}
+
+@keyframes fix-count {
+  from {
+    --fix-min: var(--fix-from);
+  }
+  to {
+    --fix-min: var(--fix-to);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes flatten {
+  to {
+    transform: scaleY(calc(0.05 / var(--h)));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

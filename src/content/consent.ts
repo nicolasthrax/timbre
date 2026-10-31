@@ -6,7 +6,7 @@ export const consentCopy = {
   stored: [
     {
       title: "A voiceprint, not a recording",
-      body: "We convert your recording into a voiceprint — a list of numbers that describes how your voice sounds. It can't be played back or turned back into audio.",
+      body: "We convert your recording into a voiceprint: a list of numbers that describes how your voice sounds. It can't be played back or turned back into audio.",
     },
     {
       title: "Raw audio is deleted",

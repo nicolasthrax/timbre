@@ -108,7 +108,7 @@ export function DashboardView() {
               </span>
             ) : (
               <span>
-                Weekly scans off ·{" "}
+                Weekly scans are off.{" "}
                 <Link href="/settings" className="text-text underline underline-offset-2">
                   Turn on
                 </Link>
@@ -138,7 +138,7 @@ export function DashboardView() {
             <Card className="p-5">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-sm font-medium">Exposure trend</h2>
-                <span className="font-mono text-xs text-muted">
+                <span className="tabular-nums text-xs text-muted">
                   {finished.length} scan{finished.length === 1 ? "" : "s"}
                 </span>
               </div>
@@ -154,7 +154,7 @@ export function DashboardView() {
             <Card className="grid grid-cols-3 gap-2 p-5 text-center">
               {(["open", "fixed", "ignored"] as const).map((k) => (
                 <div key={k}>
-                  <p className="font-mono text-2xl font-semibold tabular-nums">{counts[k]}</p>
+                  <p className="tabular-nums text-2xl font-semibold tabular-nums">{counts[k]}</p>
                   <p className="text-xs capitalize text-muted">{k}</p>
                 </div>
               ))}
@@ -186,7 +186,7 @@ export function DashboardView() {
               {STATUS_FILTERS.map((f) => (
                 <FilterChip key={f.value} active={status === f.value} onClick={() => setStatus(f.value)}>
                   {f.label}
-                  {f.value !== "all" && <span className="font-mono text-xs opacity-80">{counts[f.value]}</span>}
+                  {f.value !== "all" && <span className="tabular-nums text-xs opacity-80">{counts[f.value]}</span>}
                 </FilterChip>
               ))}
             </div>

@@ -29,14 +29,14 @@ export function Switch({
       onClick={() => onChange(!checked)}
       className={cn(
         "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-        checked ? "border-accent/60 bg-accent/80" : "border-border bg-surface-2",
+        checked ? "border-accent bg-accent" : "border-field bg-surface-2",
       )}
     >
       <span
         aria-hidden
         className={cn(
-          "inline-block size-5 rounded-full bg-text shadow transition-transform",
-          checked ? "translate-x-6" : "translate-x-1",
+          "inline-block size-5 rounded-full transition-transform",
+          checked ? "translate-x-6 bg-surface" : "translate-x-1 bg-field",
         )}
       />
     </button>

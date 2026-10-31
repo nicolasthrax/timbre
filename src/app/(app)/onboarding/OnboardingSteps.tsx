@@ -14,7 +14,7 @@ export function OnboardingSteps() {
   const current = STEPS.findIndex((s) => pathname.startsWith(s.path));
   return (
     <nav aria-label="Onboarding progress">
-      <p className="font-mono text-xs text-muted sm:hidden">
+      <p className="tabular-nums text-xs text-muted sm:hidden">
         Step {current + 1} of {STEPS.length}
       </p>
       <ol className="hidden items-center gap-2 sm:flex">
@@ -31,7 +31,7 @@ export function OnboardingSteps() {
                     : "border-border text-muted",
               )}
             >
-              <span className="font-mono">{i + 1}</span>
+              <span className="tabular-nums">{i + 1}</span>
               {step.label}
               {i < current && <span className="sr-only">(done)</span>}
             </span>

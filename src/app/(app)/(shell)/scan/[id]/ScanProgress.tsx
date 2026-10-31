@@ -70,7 +70,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
     {
       label: "Collecting public videos",
       detail: scan ? (
-        <span className="font-mono tabular-nums">
+        <span className="tabular-nums">
           {scan.candidatesProcessed}/{scan.candidatesCount}
         </span>
       ) : null,
@@ -91,12 +91,6 @@ export function ScanProgress({ scanId }: { scanId: string }) {
       <Card className="mt-8">
         <div className="relative overflow-hidden">
           <Waveform bars={48} seed={23} animated={!done} highlight={done ? [[0, 1]] : []} className="h-16" />
-          {!done && (
-            <div
-              aria-hidden
-              className="absolute inset-y-0 left-0 w-1/4 animate-scan bg-gradient-to-r from-transparent via-accent/20 to-transparent"
-            />
-          )}
         </div>
         <ol className="mt-6 space-y-4" aria-live="polite">
           {steps.map((step, i) => (
@@ -106,7 +100,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
                   "flex size-6 shrink-0 items-center justify-center rounded-full",
                   states[i] === "done" && "bg-accent/15 text-accent",
                   states[i] === "active" && "text-accent",
-                  states[i] === "pending" && "text-[#5b636e]",
+                  states[i] === "pending" && "text-muted",
                 )}
               >
                 {states[i] === "done" ? (
@@ -120,7 +114,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
               <span className={cn("flex-1 text-sm", states[i] === "pending" ? "text-muted" : "text-text")}>
                 {step.label}
                 {states[i] === "active" && "…"}
-                <span className="sr-only"> — {states[i]}</span>
+                <span className="sr-only"> ({states[i]})</span>
               </span>
               {step.detail && <span className="text-sm text-muted">{step.detail}</span>}
             </li>
@@ -131,7 +125,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
       {!done && (
         <p className="mt-6 flex items-start gap-2 text-sm text-muted">
           <Mail aria-hidden className="mt-0.5 size-4 shrink-0" />
-          You can leave — we&apos;ll email you when it&apos;s done. Scans usually take a few minutes.
+          You can leave this page. We&apos;ll email you when it&apos;s done. Scans usually take a few minutes.
         </p>
       )}
       {done && (

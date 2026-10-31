@@ -11,5 +11,5 @@ export function Spinner({ label = "Loading", className }: { label?: string; clas
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("animate-pulse rounded-lg bg-surface-2", className)} />;
+  return <div aria-hidden className={cn("animate-pulse rounded-field bg-surface-2", className)} />;
 }

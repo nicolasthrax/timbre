@@ -56,7 +56,7 @@ export function ClonePlayer({
   return (
     <div
       className={cn(
-        "rounded-xl border bg-surface p-4 sm:p-5",
+        "rounded-card border bg-surface p-4 sm:p-5",
         watermarked ? "border-accent/40" : "border-border",
       )}
       onContextMenu={(e) => e.preventDefault()}
@@ -70,14 +70,14 @@ export function ClonePlayer({
         <button
           type="button"
           onClick={toggle}
-          className="inline-flex size-11 items-center justify-center rounded-full bg-accent text-on-accent hover:bg-[#5bf0d6]"
+          className="inline-flex size-11 items-center justify-center rounded-full bg-accent text-on-accent hover:bg-accent-hover"
         >
           {playing ? <Pause aria-hidden className="size-5" /> : <Play aria-hidden className="ml-0.5 size-5" />}
           <span className="sr-only">
             {playing ? "Pause" : "Play"} {label}
           </span>
         </button>
-        <span className="font-mono text-sm tabular-nums text-muted">
+        <span className="tabular-nums text-sm tabular-nums text-muted">
           {formatClock(time)} / {formatClock(duration)}
         </span>
       </div>

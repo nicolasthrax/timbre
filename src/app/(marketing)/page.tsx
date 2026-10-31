@@ -1,19 +1,19 @@
-import { ArrowRight, ChevronDown, Lock, Mic, ScanSearch, ShieldCheck, Sparkles, Trash2, Wrench } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
-import { PlatformIcon } from "@/components/PlatformIcon";
 import { PricingCards } from "@/components/PricingCards";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
 import {
+  exampleScan,
   finalCta,
   founder,
   hero,
   platformsSection,
+  pricingSection,
   privacyPromise,
-  sampleResult,
   steps,
 } from "@/content/landing";
 import { site } from "@/content/site";
@@ -24,15 +24,19 @@ export const metadata: Metadata = {
   openGraph: { title: site.title, description: site.description },
 };
 
-const stepIcons = [Mic, ScanSearch, Wrench];
-const promiseIcons = [Trash2, ShieldCheck, Lock, Sparkles];
-
-function SectionHeading({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
+function Section({ id, children, className }: { id?: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="max-w-2xl">
-      <p className="font-mono text-xs uppercase tracking-widest text-accent">{eyebrow}</p>
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h2>
-      {intro && <p className="mt-4 text-pretty text-muted">{intro}</p>}
+    <section id={id} className={`scroll-mt-20 border-t border-border ${className ?? ""}`}>
+      <div className="mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6">{children}</div>
+    </section>
+  );
+}
+
+function SectionHeading({ children, intro }: { children: React.ReactNode; intro?: string }) {
+  return (
+    <div className="max-w-copy">
+      <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">{children}</h2>
+      {intro && <p className="mt-4 text-lg leading-relaxed text-muted">{intro}</p>}
     </div>
   );
 }
@@ -44,203 +48,143 @@ export default function LandingPage() {
         <DeletedNotice />
       </Suspense>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-40 h-[480px] bg-[radial-gradient(ellipse_at_center,rgba(46,230,197,0.14),transparent_60%)]"
-        />
-        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs text-muted">
-              <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-              {hero.eyebrow}
-            </p>
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">{hero.headline}</h1>
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
-              {hero.subline}
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <ButtonLink href="/signin" size="lg" className="w-full sm:w-auto">
-                {hero.cta}
-                <ArrowRight aria-hidden className="size-4" />
-              </ButtonLink>
-              <ButtonLink href="#how-it-works" variant="secondary" size="lg" className="w-full sm:w-auto">
-                {hero.secondaryCta}
-              </ButtonLink>
-            </div>
-            <p className="mt-4 text-xs text-muted">{hero.footnote}</p>
-          </div>
-
-          <div className="mx-auto mt-14 max-w-4xl rounded-xl border border-border bg-surface/80 p-5 sm:p-8">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-muted">{sampleResult.caption}</p>
-                <p className="mt-2 flex items-baseline gap-2 font-mono">
-                  <span className="text-5xl font-semibold text-text sm:text-6xl">{sampleResult.minutes}</span>
-                  <span className="text-lg text-muted">min of voice found</span>
-                </p>
-              </div>
-              <p className="max-w-xs text-sm text-muted">{sampleResult.line}</p>
-            </div>
-            <Waveform
-              className="mt-6 h-20 sm:h-28"
-              bars={72}
-              seed={11}
-              animated
-              highlight={[
-                [0.08, 0.2],
-                [0.34, 0.41],
-                [0.55, 0.72],
-                [0.84, 0.9],
-              ]}
-              label="Waveform with highlighted segments where a voice was found"
-            />
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted">
-              <span className="inline-flex items-center gap-2">
-                <span aria-hidden className="h-2 w-4 rounded-full bg-accent" /> Your voice found
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <span aria-hidden className="h-2 w-4 rounded-full bg-[#3a414c]" /> Other audio
-              </span>
-            </div>
-          </div>
+      {/* Hero: the waveform is the subject (DESIGN.md, direction C). */}
+      <section className="pb-20 pt-14 lg:pt-24">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-5 lg:items-end">
+          <h1 className="max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
+            {hero.headline}
+          </h1>
+          <p className="max-w-copy-narrow text-lg leading-relaxed text-muted lg:col-span-2">{hero.subline}</p>
         </div>
-      </section>
 
-      {/* How it works */}
-      <section id="how-it-works" className="scroll-mt-20 border-t border-border/60">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <SectionHeading eyebrow="How it works" title="Three steps. About five minutes." />
-          <ol className="mt-10 grid gap-4 md:grid-cols-3">
-            {steps.map((step, i) => {
-              const Icon = stepIcons[i];
-              return (
-                <li key={step.title} className="rounded-xl border border-border bg-surface p-6">
-                  <div className="flex items-center justify-between">
-                    <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-surface-2 text-accent">
-                      <Icon aria-hidden className="size-5" />
-                    </span>
-                    <span className="font-mono text-sm text-muted">0{i + 1}</span>
-                  </div>
-                  <h3 className="mt-5 text-lg font-semibold">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
+        <figure className="mt-14" aria-labelledby="example-caption">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <ol className="relative hidden h-28 md:block" aria-label="Where the voice in this example was found">
+              {exampleScan.found.map((f) => (
+                <li key={f.where} className="absolute top-0 flex flex-col" style={{ left: `${f.range[0] * 100}%` }}>
+                  <span className="rounded-field border border-border bg-surface px-3 py-2 text-sm">
+                    <span className="block font-bold">{f.where}</span>
+                    <span className="block text-muted">{f.detail}</span>
+                  </span>
+                  <span aria-hidden className="ml-4 h-10 w-px bg-bar" />
                 </li>
-              );
-            })}
-          </ol>
+              ))}
+            </ol>
+            <Waveform bars={48} seed={7} className="h-28 md:hidden" highlight={exampleScan.found.map((f) => f.range)} />
+            <Waveform
+              bars={96}
+              seed={7}
+              className="hidden h-40 md:flex"
+              highlight={exampleScan.found.map((f) => f.range)}
+              label="A voice waveform with three highlighted stretches where the voice was found online"
+            />
+            <ul className="mt-6 space-y-2 md:hidden">
+              {exampleScan.found.map((f) => (
+                <li key={f.where} className="text-sm">
+                  <span className="font-bold">{f.where}</span> <span className="text-muted">{f.detail}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <figcaption id="example-caption" className="mx-auto mt-4 max-w-6xl px-4 text-sm text-muted sm:px-6">
+            Example scan. {exampleScan.line}
+          </figcaption>
+        </figure>
+
+        <div className="mx-auto mt-12 flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 sm:px-6">
+          <ButtonLink href="/signin" size="lg">
+            {hero.cta}
+          </ButtonLink>
+          <p className="text-sm text-muted">{hero.reassurance}</p>
         </div>
       </section>
 
-      {/* Founder story */}
-      <section className="border-t border-border/60 bg-gradient-to-b from-surface/60 to-transparent">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.2fr] lg:items-center">
-          <SectionHeading eyebrow="Our story" title={founder.heading} />
-          <figure className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-            <blockquote className="text-lg leading-relaxed text-text text-pretty">“{founder.quote}”</blockquote>
+      <Section id="how-it-works">
+        <SectionHeading>{steps.heading}</SectionHeading>
+        <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+          {steps.items.map((step, i) => (
+            <li key={step.title} className="border-t-2 border-text pt-5">
+              <p className="text-sm font-bold text-muted">Step {i + 1}</p>
+              <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
+              <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      <Section>
+        <div className="grid gap-10 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <SectionHeading>{founder.heading}</SectionHeading>
+          </div>
+          <figure className="max-w-copy lg:col-span-3">
+            <blockquote className="text-2xl leading-snug text-pretty">“{founder.quote}”</blockquote>
             {founder.body.map((p) => (
-              <p key={p} className="mt-4 text-sm leading-relaxed text-muted">
+              <p key={p} className="mt-5 leading-relaxed text-muted">
                 {p}
               </p>
             ))}
-            <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-              <span
-                aria-hidden
-                className="flex size-10 items-center justify-center rounded-full border border-border bg-surface-2 font-mono text-sm text-accent"
-              >
-                NF
-              </span>
-              <span>
-                <span className="block text-sm font-medium">{founder.name}</span>
-                <span className="block text-xs text-muted">{founder.role}</span>
-              </span>
+            <figcaption className="mt-6 text-sm">
+              <span className="font-bold">{founder.name}</span>, <span className="text-muted">{founder.role}</span>
             </figcaption>
           </figure>
         </div>
-      </section>
+      </Section>
 
-      {/* What we look for */}
-      <section className="border-t border-border/60">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <SectionHeading eyebrow="Coverage" title={platformsSection.heading} intro={platformsSection.intro} />
-          <ul className="mt-10 grid gap-4 md:grid-cols-3">
-            {platformsSection.platforms.map((p) => (
-              <li key={p.platform} className="rounded-xl border border-border bg-surface p-6">
-                <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-surface-2 text-text">
-                  <PlatformIcon platform={p.platform} />
-                </span>
-                <h3 className="mt-5 text-lg font-semibold">{p.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 text-sm text-muted">
-            We only look at public content. We never access private accounts, messages or anything behind a login.
-          </p>
-        </div>
-      </section>
+      <Section>
+        <SectionHeading intro={platformsSection.intro}>{platformsSection.heading}</SectionHeading>
+        <dl className="mt-12 grid gap-8 md:grid-cols-3">
+          {platformsSection.platforms.map((p) => (
+            <div key={p.title}>
+              <dt className="text-xl font-bold">{p.title}</dt>
+              <dd className="mt-2 leading-relaxed text-muted">{p.body}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-10 max-w-copy text-muted">{platformsSection.note}</p>
+      </Section>
 
-      {/* Privacy promise */}
-      <section id="privacy" className="scroll-mt-20 border-t border-border/60">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <SectionHeading eyebrow="Privacy" title={privacyPromise.heading} intro={privacyPromise.intro} />
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {privacyPromise.points.map((p, i) => {
-              const Icon = promiseIcons[i];
-              return (
-                <li key={p.title} className="rounded-xl border border-border bg-surface p-6">
-                  <Icon aria-hidden className="size-5 text-accent" />
-                  <h3 className="mt-4 font-semibold">{p.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
-                </li>
-              );
-            })}
-          </ul>
+      <Section id="privacy">
+        <SectionHeading>{privacyPromise.heading}</SectionHeading>
+        <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
+          {privacyPromise.points.map((p) => (
+            <div key={p.title} className="max-w-copy">
+              <h3 className="text-lg font-bold">{p.title}</h3>
+              <p className="mt-1.5 leading-relaxed text-muted">{p.body}</p>
+            </div>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Pricing */}
-      <section id="pricing" className="scroll-mt-20 border-t border-border/60">
-        <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6">
-          <SectionHeading eyebrow="Pricing" title="Start free. Upgrade when you want the details." />
-          <div className="mt-10">
-            <PricingCards />
-          </div>
+      <Section id="pricing">
+        <SectionHeading intro={pricingSection.intro}>{pricingSection.heading}</SectionHeading>
+        <div className="mt-12 max-w-4xl">
+          <PricingCards />
         </div>
-      </section>
+      </Section>
 
-      {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 border-t border-border/60">
-        <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-          <SectionHeading eyebrow="FAQ" title="Honest answers" />
-          <div className="mt-10 divide-y divide-border rounded-xl border border-border bg-surface">
-            {faq.map((item) => (
-              <details key={item.q} className="group px-5 py-1 sm:px-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <ChevronDown
-                    aria-hidden
-                    className="size-4 shrink-0 text-muted transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                <p className="pb-5 text-sm leading-relaxed text-muted">{item.a}</p>
-              </details>
-            ))}
-          </div>
+      <Section id="faq">
+        <SectionHeading>Questions</SectionHeading>
+        <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
+          {faq.map((item) => (
+            <details key={item.q} className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <ChevronDown aria-hidden className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="max-w-copy pb-6 leading-relaxed text-muted">{item.a}</p>
+            </details>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Final CTA */}
-      <section className="border-t border-border/60">
-        <div className="mx-auto max-w-6xl px-4 py-20 text-center sm:px-6">
-          <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{finalCta.heading}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted">{finalCta.body}</p>
-          <ButtonLink href="/signin" size="lg" className="mt-8">
-            {hero.cta}
-            <ArrowRight aria-hidden className="size-4" />
-          </ButtonLink>
-        </div>
-      </section>
+      <Section>
+        <h2 className="max-w-copy text-3xl font-bold tracking-tight text-balance sm:text-4xl">{finalCta.heading}</h2>
+        <p className="mt-4 max-w-copy text-lg text-muted">{finalCta.body}</p>
+        <ButtonLink href="/signin" size="lg" className="mt-8">
+          {hero.cta}
+        </ButtonLink>
+      </Section>
     </>
   );
 }

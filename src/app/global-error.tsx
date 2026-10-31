@@ -1,7 +1,6 @@
 "use client";
 
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
+import "@fontsource-variable/atkinson-hyperlegible-next";
 import { useEffect } from "react";
 import { Button } from "@/components/Button";
 import { ErrorScreen } from "@/components/ErrorScreen";
@@ -13,8 +12,8 @@ export default function GlobalError({ error, retry }: { error: unknown; retry: (
   }, [error]);
 
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className="min-h-dvh antialiased">
+    <html lang="en">
+      <body className="min-h-dvh">
         <ErrorScreen
           code="Error"
           title="Timbre couldn't load"

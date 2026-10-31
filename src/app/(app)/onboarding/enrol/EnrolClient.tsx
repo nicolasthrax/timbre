@@ -22,11 +22,11 @@ export function EnrolClient({ phrases }: { phrases: string[] }) {
   }
 
   return (
-    <div className="animate-fade-up">
+    <div>
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Record your voice</h1>
       <p className="mt-2 text-muted">
         Read the three phrases below out loud. They&apos;re random each time, which proves the voice is yours.
-        Find a quiet spot — it takes about 20 seconds.
+        Find a quiet spot. It takes about 20 seconds.
       </p>
       <div className="mt-8">
         <Recorder phrases={phrases} minSeconds={MIN_ENROL_SECONDS} submitLabel="Create voiceprint" onComplete={enrol} />

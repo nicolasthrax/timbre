@@ -2,7 +2,9 @@
 
 Complete marketing site + app UI for Timbre AI, running on a **mocked backend** behind one swappable API layer (`src/lib/api/`). No real auth, database, payments or ML yet.
 
-Stack: Next.js 16.4 (App Router, Turbopack) · React 19 · TypeScript strict · Tailwind CSS v4 · Geist Sans/Mono · lucide-react · Playwright.
+Stack: Next.js 16.4 (App Router, Turbopack), React 19, TypeScript strict, Tailwind CSS v4, Atkinson Hyperlegible Next, lucide-react and Playwright.
+
+**Redesign (PR #2):** the v0 dark Geist look was replaced by direction C from three hero explorations: a light blue-grey palette, cobalt accent and Atkinson Hyperlegible Next. The token plan is in `DESIGN.md`, and the anti-slop rules it follows are in `AGENTS.md` and `docs/anti-slop.md`. The prompt's original token table and Geist fonts are superseded by that plan.
 
 ---
 
@@ -116,8 +118,8 @@ Schema columns not in the prompt's list that the UI uses: `users.full_name`, `us
 - **Repo/branch:** the session is attached to the existing `nicolasthrax/timbre` repo and pinned to branch `claude/beautiful-allen-34hdx1`, and `gh` is not available here. So instead of creating a new private repo and pushing `main`, I pushed to that branch and opened a draft PR.
 - **Next.js 16 defaults:** `create-next-app` turned on `cacheComponents` + `partialPrefetching`. I turned them off. They keep routes mounted in `<Activity>` and need Suspense around all dynamic reads. With a client-side mock store, that's needless complexity and could leave hidden-but-mounted pages in the DOM (which matters for the "no source URLs in the DOM" check).
 - **Tailwind v4:** there's no `tailwind.config.*` in v4. The "Tailwind config" mapping is the `@theme inline` block in `globals.css`, which maps the CSS variable tokens to utilities (`bg-surface`, `text-muted`, `border-border`, …).
-- **Fonts:** used the `geist` package (local font files) rather than `next/font/google`, so builds don't need network access.
-- **Brand icons:** lucide-react 1.x no longer ships Instagram/YouTube logos. I drew simple generic glyphs (`PlatformIcon`), always shown with a text label. These are not official logos.
+- **Fonts:** fonts come from a local npm package (`@fontsource-variable/atkinson-hyperlegible-next`) rather than `next/font/google`, so builds don't need network access.
+- **Platform names:** lucide-react 1.x has no Instagram/YouTube/TikTok logos, and the design rules forbid hand-drawn icons, so platforms are named in text only.
 - **Risk thresholds:** the PRD says >15 min = Critical, but the prompt's example is "47 min, High risk". To reconcile them, Critical requires >15 min **and** ≥40% high-confidence (clean) audio. Low <30 s, Medium 30 s–3 min, High otherwise (`src/lib/risk.ts`).
 - **Plan model:** `Plan = "free" | "pro" | "lapsed"`. Lapsed users get redacted data (same as free) and a banner saying data is kept 30 days.
 - **Extra API methods** beyond the prompt's list: `getVoiceprint`, `getAccounts`, `listScans`, `setEmailAlerts`. Routing, the sparkline and settings need them.
@@ -181,7 +183,7 @@ Platform names were also truncated at 375px; I fixed that too. All screenshots n
   8. Pull the remaining inline UI strings into `src/content/` for Cantonese / Traditional Chinese.
 
 **Dependencies added** beyond the scaffold:
-- `geist`: local Geist fonts.
+- `@fontsource-variable/atkinson-hyperlegible-next`: the site's only typeface.
 - `lucide-react`: icons.
 - `@playwright/test` (dev): smoke tests.
 

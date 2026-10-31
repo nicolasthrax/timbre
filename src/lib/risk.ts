@@ -35,7 +35,7 @@ export const riskCopy: Record<RiskLevel, { label: string; summary: string }> = {
   },
   high: {
     label: "High",
-    summary: "Several minutes of public audio — enough for a convincing clone.",
+    summary: "Several minutes of public audio, enough for a convincing clone.",
   },
   critical: {
     label: "Critical",

@@ -8,7 +8,7 @@ export interface RemediationOption {
 
 /**
  * Guided fixes for videos the user posted themselves.
- * Menu labels change often — keep these reviewed against each platform's help centre.
+ * Menu labels change often, so keep these reviewed against each platform's help centre.
  */
 export const selfFixes: Record<Platform, { helpUrl: string; options: RemediationOption[] }> = {
   instagram: {

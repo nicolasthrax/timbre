@@ -1,4 +1,4 @@
-/** mulberry32 — tiny deterministic PRNG. */
+/** mulberry32: a tiny deterministic PRNG. */
 export function createRng(seed: number): () => number {
   let a = seed >>> 0;
   return () => {

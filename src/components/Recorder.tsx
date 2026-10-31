@@ -13,7 +13,7 @@ const BARS = 56;
 const errorCopy: Record<RecorderError, { title: string; body: string }> = {
   denied: {
     title: "Microphone access is blocked",
-    body: "Allow microphone access for this site — usually via the lock icon next to the address bar, or in your browser's site settings — then try again.",
+    body: "Allow microphone access for this site, then try again. It's usually under the lock icon next to the address bar, or in your browser's site settings.",
   },
   "no-mic": {
     title: "No microphone found",
@@ -21,7 +21,7 @@ const errorCopy: Record<RecorderError, { title: string; body: string }> = {
   },
   unsupported: {
     title: "This browser can't record audio",
-    body: "Open Timbre in a recent version of Chrome, Safari, Edge or Firefox. In-app browsers (like Instagram's) often block the microphone — use \"Open in browser\".",
+    body: "Open Timbre in a recent version of Chrome, Safari, Edge or Firefox. In-app browsers (like Instagram's) often block the microphone, so use \"Open in browser\".",
   },
   unknown: {
     title: "Something went wrong with the microphone",
@@ -30,15 +30,15 @@ const errorCopy: Record<RecorderError, { title: string; body: string }> = {
 };
 
 const qualityCopy: Record<AudioQuality, { label: string; Icon: typeof Mic; className: string }> = {
-  "too-quiet": { label: "Too quiet — move closer", Icon: Volume1, className: "border-warn/40 text-warn" },
-  good: { label: "Good", Icon: CircleCheck, className: "border-accent/40 text-accent" },
+  "too-quiet": { label: "Too quiet, move closer", Icon: Volume1, className: "border-warn/40 text-warn" },
+  good: { label: "Good", Icon: CircleCheck, className: "border-success/40 text-success" },
   noisy: { label: "Background noise", Icon: TriangleAlert, className: "border-warn/40 text-warn" },
 };
 
 export function MicErrorState({ kind, onRetry }: { kind: RecorderError; onRetry?: () => void }) {
   const copy = errorCopy[kind];
   return (
-    <div role="alert" className="rounded-xl border border-warn/40 bg-warn/5 p-5">
+    <div role="alert" className="rounded-card border border-warn/40 bg-warn/5 p-5">
       <div className="flex gap-3">
         <MicOff aria-hidden className="mt-0.5 size-5 shrink-0 text-warn" />
         <div>
@@ -108,25 +108,25 @@ export function Recorder({
     <div className="space-y-5">
       <ol className="space-y-2" aria-label="Phrases to read aloud">
         {phrases.map((phrase, i) => (
-          <li key={phrase} className="flex gap-3 rounded-xl border border-border bg-surface p-4">
-            <span className="font-mono text-sm text-accent">{i + 1}</span>
+          <li key={phrase} className="flex gap-3 rounded-card border border-border bg-surface p-4">
+            <span className="tabular-nums text-sm text-accent">{i + 1}</span>
             <span className="text-base leading-relaxed text-text sm:text-lg">{phrase}</span>
           </li>
         ))}
       </ol>
 
-      <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
+      <div className="rounded-card border border-border bg-surface p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <span className="flex items-center gap-2 text-sm">
             <span
               aria-hidden
-              className={cn("size-2 rounded-full", recording ? "animate-pulse bg-danger" : "bg-[#3a414c]")}
+              className={cn("size-2 rounded-full", recording ? "animate-pulse bg-danger" : "bg-bar")}
             />
             <span className="text-muted">
               {recording ? "Recording" : rec.status === "paused" ? "Paused" : rec.status === "requesting" ? "Waiting for microphone…" : rec.status === "finished" ? "Recorded" : "Ready"}
             </span>
           </span>
-          <span className="font-mono text-sm tabular-nums" aria-label={`Recorded ${Math.floor(seconds)} of ${minSeconds} seconds`}>
+          <span className="tabular-nums text-sm tabular-nums" aria-label={`Recorded ${Math.floor(seconds)} of ${minSeconds} seconds`}>
             {formatClock(seconds)} <span className="text-muted">/ {formatClock(minSeconds)}</span>
           </span>
         </div>
@@ -182,12 +182,12 @@ export function Recorder({
         <p className="mt-2 text-xs text-muted">
           {enough
             ? "That's enough audio. You can continue."
-            : `Read all three phrases at a normal pace. At least ${minSeconds} seconds needed — ${Math.max(0, Math.ceil(minSeconds - seconds))}s to go.`}
+            : `Read all three phrases at a normal pace. At least ${minSeconds} seconds needed, ${Math.max(0, Math.ceil(minSeconds - seconds))}s to go.`}
         </p>
       </div>
 
       {submitError && (
-        <p role="alert" className="text-sm text-[#ff8a8e]">
+        <p role="alert" className="text-sm text-danger">
           {submitError}
         </p>
       )}
@@ -225,7 +225,7 @@ export function Recorder({
       </div>
 
       <p className="flex items-start gap-2 text-xs leading-relaxed text-muted">
-        <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
+        <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-success" />
         Your audio stays in this browser and is never stored. In this preview it&apos;s discarded as soon as you continue.
       </p>
     </div>

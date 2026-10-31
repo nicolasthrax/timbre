@@ -1,6 +1,6 @@
 export const cloneTestCopy = {
   title: "Clone test",
-  intro: "Hear how convincing a clone of your voice can be — using only your own voice.",
+  intro: "Hear how convincing a clone of your voice can be. The test only uses your own voice.",
   safeguards: [
     {
       title: "Only your own voice",

@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Banner } from "@/components/Banner";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { PlatformIcon } from "@/components/PlatformIcon";
 import { useSession } from "@/components/SessionProvider";
 import { SourceStatusBadge } from "@/components/SourceCard";
 import { Skeleton } from "@/components/Spinner";
@@ -31,9 +30,9 @@ function SelfFixes({ source }: { source: Source }) {
     <Card>
       <h2 className="font-semibold">Reduce this exposure</h2>
       <p className="mt-1 text-sm text-muted">
-        You posted this, so you can fix it in a minute. Pick whichever option suits you — making it private is quickest.
+        You posted this, so you can fix it in a minute. Pick whichever option suits you. Making it private is quickest.
       </p>
-      <div className="mt-5 divide-y divide-border rounded-lg border border-border">
+      <div className="mt-5 divide-y divide-border rounded-field border border-border">
         {guide.options.map((option, i) => (
           <details key={option.title} className="group px-4" open={i === 0}>
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3.5 [&::-webkit-details-marker]:hidden">
@@ -46,7 +45,7 @@ function SelfFixes({ source }: { source: Source }) {
             <ol className="space-y-2 pb-4 text-sm">
               {option.steps.map((step, n) => (
                 <li key={step} className="flex gap-3">
-                  <span className="font-mono text-accent">{n + 1}</span>
+                  <span className="tabular-nums text-accent">{n + 1}</span>
                   <span className="text-muted">{step}</span>
                 </li>
               ))}
@@ -94,7 +93,7 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
       <h2 className="font-semibold">Ask {platformLabel[source.platform]} to remove it</h2>
       <p className="mt-1 text-sm text-muted">
         Someone else posted this. Copy the request below and send it through {platformLabel[source.platform]}&apos;s report form.
-        You can also message the poster directly — most people take things down when asked.
+        You can also message the poster directly. Most people take things down when asked.
       </p>
       <label htmlFor="takedown" className="sr-only">
         Takedown request text
@@ -104,7 +103,7 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
         readOnly
         value={draft}
         rows={12}
-        className="mt-4 w-full resize-y rounded-lg border border-border bg-bg p-3 font-mono text-xs leading-relaxed text-text"
+        className="mt-4 w-full resize-y rounded-field border border-field bg-surface p-3 tabular-nums text-xs leading-relaxed text-text"
       />
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Button variant="secondary" onClick={copy}>
@@ -115,7 +114,7 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
           href={report.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm text-text hover:bg-surface-2"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-field border border-border px-4 text-sm text-text hover:bg-surface-2"
         >
           Open {report.label}
           <ExternalLink aria-hidden className="size-4" />
@@ -182,7 +181,6 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
       <Card>
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 text-sm">
-            <PlatformIcon platform={source.platform} className="size-4" />
             {platformLabel[source.platform]}
           </span>
           {!redacted && <SourceStatusBadge status={source.status} />}
@@ -195,7 +193,7 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-flex max-w-full items-center gap-1.5 font-mono text-xs text-muted hover:text-text"
+            className="mt-2 inline-flex max-w-full items-center gap-1.5 tabular-nums text-xs text-muted hover:text-text"
           >
             <span className="truncate" data-testid="source-url">{source.url}</span>
             <ExternalLink aria-hidden className="size-3.5 shrink-0" />
@@ -206,14 +204,14 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
           <Fact label="Posted">{formatDate(source.postedAt)}</Fact>
           <Fact label="Posted by">
             {isSelf ? "You" : source.postedBy === "other" ? "Someone else" : "Unknown"}
-            {source.author && <span className="ml-1 font-mono text-xs text-muted">{source.author}</span>}
+            {source.author && <span className="ml-1 tabular-nums text-xs text-muted">{source.author}</span>}
           </Fact>
           <Fact label="Seconds matched">
-            <span className="font-mono tabular-nums">{Math.round(source.matchedSeconds)} s</span>
+            <span className="tabular-nums">{Math.round(source.matchedSeconds)} s</span>
             <span className="ml-1 text-xs text-muted">({formatDuration(source.matchedSeconds)})</span>
           </Fact>
           <Fact label="Confidence">
-            <span className="font-mono tabular-nums">{formatPercent(source.confidence)}</span>
+            <span className="tabular-nums">{formatPercent(source.confidence)}</span>
           </Fact>
           <Fact label="First seen">{formatDate(source.firstSeenAt)}</Fact>
           <Fact label="Platform">{platformLabel[source.platform]}</Fact>
@@ -225,11 +223,11 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
           <div className="flex gap-3">
             <Lock aria-hidden className="mt-0.5 size-5 shrink-0 text-accent" />
             <div>
-              <p className="font-medium">Link, title and fixes are part of Pro</p>
+              <p className="font-medium">The link, title and fixes are part of Pro</p>
               <p className="mt-1 text-sm text-muted">Upgrade to see where this video is and get step-by-step help removing it.</p>
             </div>
           </div>
-          <Button onClick={openPaywall}>Unlock</Button>
+          <Button onClick={openPaywall}>Upgrade to Pro</Button>
         </Card>
       ) : (
         <>

@@ -39,7 +39,7 @@ const PREVIEW_LAPSED_AT = "2026-10-29T00:00:00.000Z";
 
 const scenarioCopy: Record<Scenario, string> = {
   high: "12 sources, 47 min, High risk",
-  none: "Nothing found — Low exposure",
+  none: "Nothing found, low exposure",
   partial: "Some sources unreachable / private",
   lapsed: "Pro subscription lapsed",
 };
@@ -47,7 +47,7 @@ const scenarioCopy: Record<Scenario, string> = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-3">
-      <h2 className="font-mono text-xs uppercase tracking-widest text-muted">{title}</h2>
+      <h2 className="text-sm font-bold">{title}</h2>
       {children}
     </section>
   );
@@ -108,16 +108,16 @@ export function StatesGallery() {
                     aria-pressed={scenario === s}
                     onClick={() => chooseScenario(s)}
                     className={cn(
-                      "rounded-lg border px-3 py-2 text-left text-sm",
+                      "rounded-field border px-3 py-2 text-left text-sm",
                       scenario === s ? "border-accent/50 bg-accent/10 text-accent" : "border-border text-muted hover:text-text",
                     )}
                   >
-                    <span className="block font-mono">{s}</span>
+                    <span className="block tabular-nums">{s}</span>
                     <span className="block text-xs opacity-80">{scenarioCopy[s]}</span>
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-xs text-muted">Also settable with <code className="font-mono">?scenario=</code> on any page.</p>
+              <p className="mt-2 text-xs text-muted">Also settable with <code className="tabular-nums">?scenario=</code> on any page.</p>
             </div>
             <div>
               <p className="text-sm font-medium">Seed a signed-in demo account (skips onboarding)</p>
@@ -172,7 +172,7 @@ export function StatesGallery() {
         <SourceCard source={redactedSource} />
       </Section>
 
-      <Section title="Source card — redacted (free) vs full (Pro)">
+      <Section title="Source card, redacted (free) and full (Pro)">
         <SourceCard source={redactedSource} />
         <SourceCard source={sampleSource} />
       </Section>
@@ -197,7 +197,7 @@ export function StatesGallery() {
           <Button variant="danger" onClick={() => setCrash(true)}>Trigger error page</Button>
         </div>
         <p className="text-xs text-muted">
-          <Badge>Note</Badge> In development, Next.js shows its error overlay on top of the error page — close it to see the branded page.
+          <Badge>Note</Badge> In development, Next.js shows its error overlay on top of the error page. Close it to see the branded page.
         </p>
       </Section>
     </div>

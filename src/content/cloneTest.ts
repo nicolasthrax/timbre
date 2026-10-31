@@ -11,8 +11,8 @@ export const cloneTestCopy = {
       body: "You'll read one random phrase aloud. This confirms it's really you before anything is generated.",
     },
     {
-      title: "Can't be downloaded",
-      body: "The clip is streamed, watermarked and can't be saved. The sentence is fixed by us, so it can't be used as a script.",
+      title: "No download, and watermarked",
+      body: "We don't offer the clip as a download, and it carries a watermark. The sentence is fixed by us, so it can't be used as a script.",
     },
     {
       title: "Deleted after this session",

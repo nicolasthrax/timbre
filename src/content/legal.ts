@@ -112,7 +112,7 @@ export const termsSections: LegalSection[] = [
     id: "clone-test",
     title: "4. Clone test",
     paragraphs: [
-      "The clone test is available to Pro users only. It uses a fresh live recording of your own voice and a fixed sentence chosen by us. Generated audio is watermarked, streamed, cannot be downloaded and is deleted at the end of your session. Misuse leads to immediate account termination.",
+      "The clone test is available to Pro users only. It uses a fresh live recording of your own voice and a fixed sentence chosen by us. Generated audio is watermarked and streamed, is not offered as a download, and is deleted at the end of your session. Recording or redistributing it is not allowed (see section 3). Misuse leads to immediate account termination.",
     ],
   },
   {

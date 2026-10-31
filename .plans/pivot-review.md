@@ -1,12 +1,25 @@
 # Pivot review
 
-Status: review only, nothing implemented. Written 31 Oct 2026 against `main` at `5e04de6`. Waiting for founder approval before any change.
+Status: review only. Revision 2, 31 Oct 2026, against `main` at `5e04de6`. Waiting for founder approval before implementation. The only code change on this branch is the "can't be downloaded" wording fix (§3.2).
+
+## 0. Decisions recorded
+
+From the founder, 31 Oct 2026:
+
+1. The free exposure scan is a real automated scan. The 5-place checklist is the "what to do next" step after it.
+2. Monitoring stays: it re-scans for new exposure and alerts the user.
+3. The clone test is English only in v0, with room for Cantonese later.
+4. Share format: a share card with no audio, plus a "play it to your family" moment on the same device.
+5. Email-only sign-in. Rate limits per device and IP protect the free clone test.
+6. The goal is a YC application: a working demo and user growth over revenue. The paywall stays paused.
+
+These answers change §2 points 2, 3, 4 and 9 and most of §3. The biggest change is in §3.3. The platforms' official APIs give metadata, not audio, so a voice-matching scan that stays within their terms only works on audio the user hands us. The scan needs to be redesigned around that.
 
 ## 1. What exists today
 
 - Docs: `.plans/00` to `05` describe a paid consumer product. A voiceprint is stored, public Instagram, TikTok and YouTube videos are scanned and matched automatically, a free scan shows a blurred report, and Pro (HK$68/month) unlocks sources, fixes, takedown drafts, the clone test and weekly monitoring. `DESIGN.md` is the token plan (direction C, "Where it was found"). `BUILD_REPORT.md` is the route map and mock/real table.
 - Code: a Next.js 16 app with a mocked backend behind one interface (`src/lib/api/client.ts`, implemented by `mock.ts`, with `supabase.ts` stubbed). The landing page is `src/app/(marketing)/page.tsx`, with its copy in `src/content/`. The app flow is sign-in → consent → enrol (voiceprint) → accounts → scan progress → free results or Pro dashboard → source detail → clone test (Pro only) → settings (billing, monitoring, export, delete). Mic recording, level meter and random phrases are real. Everything else is mocked. Playwright smoke tests cover the happy path, upgrade, clone-test locking and deletion.
-- The current product depends on three things the pivot removes: the voiceprint, automated scanning and the paywall. Most of the app UI is built on them.
+- With scanning and monitoring kept, more of the existing UI survives than revision 1 assumed: onboarding, scan progress, results and source detail can be adapted. The paywall, the Pro/free split and the precise risk score go.
 
 ## 2. Gap analysis
 
@@ -16,267 +29,289 @@ Key: **C** = change, **R** = remove, **A** = add.
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/01-prd.md` §3, §4 F4, §7, §8 | Goals, feature list, metrics and assumptions centre on the scan. F4 is "paid" | C: make F4 the primary feature and the activation metric ("% of signups who hear their clone") |
-| `.plans/02-design.md` §1, §2, §3 Flow A/C, §4 | The IA starts with the scan. The clone test is a leaf reached from the paid report | C: new IA, Landing → sign in → consent → clone test → result → share / checklist |
+| `.plans/01-prd.md` §3, §4 F4, §7, §8 | Goals, features, metrics and assumptions centre on the scan. F4 is "paid" | C: F4 becomes the lead feature. Activation metric is "% of signups who hear their clone" |
+| `.plans/02-design.md` §1 to §4 | IA starts with the scan. The clone test is a leaf of the paid report | C: Landing → sign in → consent → clone test → result → share / start scan |
 | `.plans/05-gtm-roadmap.md` §1, §2.6 | Positioning and share card are built on "47 minutes" | C |
-| `DESIGN.md` Subject, Layout | The headline "How much of your voice is out there?", the CTA and the waveform hero are fixed by the old brief | C: new fixed copy and a new hero direction. Direction C is about *where the voice was found*, which no longer exists |
-| `src/content/landing.ts` `hero`, `exampleScan`, `steps`, `finalCta` | Everything is scan copy | C |
-| `src/content/site.ts` | Title and description | C |
-| `src/app/(marketing)/page.tsx` | Hero figure with the example scan waveform | C: hero becomes a real/clone listen-and-compare demo |
+| `DESIGN.md` Subject, Layout | Headline, CTA and waveform hero fixed by the old brief | C: new fixed copy and a new hero direction |
+| `src/content/landing.ts` `hero`, `exampleScan`, `steps`, `finalCta`; `site.ts` | Scan-first copy | C |
+| `src/app/(marketing)/page.tsx` | Hero figure is the example scan | C: hero becomes a labelled example real/clone pair |
 | `src/components/MarketingHeader.tsx` | "Scan free" CTA, Pricing link | C |
-| `src/content/cloneTest.ts` | `lockedTitle` and `lockedBody` | C, R |
-| `clone-test/CloneTestView.tsx` | `LockedCloneTest` and the Pro gate | R gate, C flow |
-| `src/components/AppShell.tsx` | Nav order: Exposure first | C: clone test first |
-| `src/lib/routing.ts` `resolveHome` | Sends users to enrol → accounts → scan | C |
-| Share | None exists | A: share asset (see §3.2 for what it can safely contain) |
-| `tests/smoke.spec.ts` | Landing heading, "clone test is locked" test | C |
+| `src/content/cloneTest.ts` `lockedTitle`, `lockedBody`; `CloneTestView.tsx` `LockedCloneTest` | Pro gate | R |
+| `src/components/AppShell.tsx`, `src/lib/routing.ts` | Exposure first in nav and routing | C: clone test first |
+| Share card, "play it to your family" step | None | A: share card image with no audio and no scan numbers that identify sources; a full-screen replay step on the result screen |
+| `tests/smoke.spec.ts` | Landing heading, "clone test is locked" | C |
 
-### 2. Exposure scan becomes a free, one-time wake-up call with no precise score
+### 2. Free one-time exposure scan, no precise score
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/01-prd.md` §3 G1, §4 F2, F3, §5 | Freemium gate table, risk-score thresholds, "47 minutes" aha | R F3 and §5. C F2 |
-| `src/lib/risk.ts`, `RiskBadge.tsx` | Low/Medium/High/Critical from matched seconds | R or C to a coarse qualitative band from self-audit answers |
-| `ExposureSummary.tsx` `ExposureHero` | Large minutes number, risk badge | R |
-| `results/ResultsView.tsx`, `StateNotices.tsx` `UpgradeCard` | Blurred sources, upgrade card | C into the audit result, R the upgrade card |
-| `dashboard/DashboardView.tsx`, `Sparkline.tsx` | Repeat scans, trend | R |
-| `src/content/faq.ts` "What is the risk score?", "Why are source details hidden" | | R, C |
+| `.plans/01-prd.md` §4 F2, F3, §5 | Freemium gate table, minute thresholds, "47 minutes" aha | R F3 and §5. C F2 to the scan design in §3.3 |
+| `src/lib/risk.ts`, `RiskBadge.tsx` | Low/Medium/High/Critical from matched seconds | C: a coarse band ("a lot", "some", "little") with the facts behind it, never a single precise number |
+| `ExposureSummary.tsx` `ExposureHero` | Large minutes number | C: show counts we can actually measure (public videos with speech, rough speaking time) labelled as estimates |
+| `results/ResultsView.tsx`, `StateNotices.tsx` `UpgradeCard` | Blurred sources, upgrade card | C: show all sources to everyone. R upgrade card |
+| `mock.ts` `present()` redaction, the "no source URLs in free HTML" test | | R (nothing is hidden any more) |
+| "One-time" | `mock.ts` refuses a second free scan | Keep one *manual* full scan per account. Monitoring re-scans run on their own (point 4). Confirm (§5 Q1) |
+| `faq.ts` risk-score and "hidden on the free plan" answers | | C, R |
 
-### 3. No automated cross-platform scanning in v0; replace with a guided self-audit
-
-| Where | What | Action |
-|---|---|---|
-| `.plans/03-tech-spec.md` §2, §3.2, §3.3, §3.5, §7, §8 | Discovery, matching, diarisation, accuracy gate, search API, cost model | R from v0 (move to an appendix as "later") |
-| `.plans/04-privacy-legal.md` §4, §5 | Platform ToS and third-party voices exist because of scanning | Mostly moot. Keep a short note |
-| `.plans/05` Phase 1 gate (false positives < 2%) | | R |
-| `onboarding/accounts/AccountsForm.tsx`, `lib/platforms.ts` | Handles and full name for search | R or C into self-audit questions |
-| `scan/[id]/ScanProgress.tsx` | Progress steps | R |
-| `sources/[id]/SourceDetail.tsx`, `SourceCard.tsx` | Per-source detail, fixed/ignored state | R. Reuse the fix steps inside the audit |
-| `src/content/remediation.ts` | Per-platform fix steps and takedown draft | Keep and C: this becomes most of the self-audit content. Help URLs are still unverified (BUILD_REPORT §7) |
-| `src/content/landing.ts` `platformsSection` | "What we look for" | C into "the 5 places to check" |
-| Self-audit | None exists | A: `/check` flow with 5 steps, each with "how to check", "how to fix" and done/not yet/not applicable |
-| `lib/api/types.ts` `Scan`, `Source`, `ScanIssue`, `LinkedAccount`; `mock.ts`, `mock-data.ts` | | R, A audit types |
-| `public/thumbnails/*` | | R |
-
-### 4. Replace or cut monitoring
-
-There is nothing to monitor once scanning is gone (see §3.4). I recommend cutting it.
+### 3. Automated scanning stays (revision 1 cut it)
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/01` F6, §8.4; `02` Flow E; `03` scheduler, Resend; `05` §7 | | R |
-| `SettingsView.tsx` "Monitoring" card | Weekly scans and email alert toggles | R |
-| `DashboardView.tsx` `nextScanIn` | | R |
-| `types.ts` `User.monitoring`, `User.emailAlerts`; `client.ts` `setMonitoring`, `setEmailAlerts` | | R |
-| `faq.ts`, `pricing.ts` | Mentions weekly monitoring | R |
+| `.plans/03-tech-spec.md` §3.2 | Discovery table assumes we can fetch audio from the Instagram, TikTok and YouTube APIs | C: the APIs return metadata, not audio (§3.3). Rewrite around the three tiers there |
+| `.plans/03` §3.3, §3.5 | Matching, diarisation, < 2% false-positive target | Keep for tier B (user-provided audio). Move tier C to "later, needs legal sign-off" |
+| `.plans/04-privacy-legal.md` §4 | Already says "official APIs and user links, legal view before fetching" | C: make it concrete per platform with §3.3 |
+| `onboarding/accounts/AccountsForm.tsx`, `lib/platforms.ts` | Handle text fields | C: "Connect" buttons (OAuth) per platform, plus an "upload your data export or videos" option, plus full name for web search |
+| `scan/[id]/ScanProgress.tsx` | "Collecting public videos 32/50, matching your voice" | C: steps per tier ("Reading your public YouTube videos", "Checking your uploaded files", "Searching the web for reposts") |
+| `sources/[id]/SourceDetail.tsx`, `SourceCard.tsx` | Per-source detail, "seconds matched", "confidence" | C: show "seconds matched" only for tier B; tier A shows "public video with speech, N min long"; tier C shows "possible repost, check it" |
+| `types.ts` `Source` | `matchedSeconds`, `confidence` required | C: add `evidence: "metadata" | "voice-match" | "web-result"` with optional match fields |
+| `src/content/remediation.ts` | Per-platform fix steps, takedown draft | Keep. Reused by the checklist (point 6). Help URLs still unverified |
+| `ScanIssuesNotice` "platform limited our access" | Implies scraping | C: "not connected", "token expired, reconnect", "export couldn't be read" |
 
-### 5. Revenue moves to B2B2C (banks, telcos, insurers)
-
-| Where | What | Action |
-|---|---|---|
-| `.plans/01` §6, §7, §8.1; `05` §1, §2.5, §3, §4 Phase 2/4, §5 | Pricing hypothesis, funnel, "charge from day one", MRR | C: partner model, consumer activation metrics, partner pipeline |
-| `.plans/04` §1 | "Register a company before taking payments" | C: register before signing the first partner contract |
-| Partner entry | None | A later: partner codes or co-branded landing. Not needed for v0 |
-| `.plans/04` | No section on sharing data with partners | A: what a partner gets back (recommend aggregate only, see §3.5) |
-
-### 6. Concrete action checklist after the scan
+### 4. Monitoring stays, with defined alerts
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/01` F5 | Remediation is paid and per source | C into a free checklist |
-| `StateNotices.tsx` `LowExposureState` tips | Four tips, numbered like a sequence | C into the checklist and drop the numbering (it is not a sequence) |
-| `remediation.ts` | Privatise steps exist per platform. No voicemail or voice-verification content | A: voicemail greeting (per HK carrier), voice-only verification, family code word |
-| Checklist page | None | A: persisted checklist with progress |
+| `.plans/01` F6, `02` Flow E, `03` scheduler and Resend | Weekly re-scan, email on new matches | C: free for everyone, with the alert list from §3.4 |
+| `SettingsView.tsx` monitoring card | Pro only (`disabled={user.plan !== "pro"}`) | C: available to all; one toggle per alert type |
+| `DashboardView.tsx` | Pro dashboard with trend and filters | C: becomes the single results view for everyone, merged with `ResultsView.tsx` |
+| `types.ts` `User.monitoring`, `emailAlerts`; `client.ts` `setMonitoring` | | Keep; R the Pro check in `mock.ts` |
+| Stored OAuth tokens | Not modelled | A: `linked_accounts.oauth_token_enc` already in `03` §4; add revoke-on-delete and reconnect states |
+| Alert emails | None | A: templates for each alert in §3.4 |
 
-### 7. Messaging: protect your family
+### 5. Revenue moves to B2B2C
 
-| Where | What | Action |
-|---|---|---|
-| `.plans/02` §1 | "Calm confidence, never cheap fear tactics" | C: decide how hard to push (see §3.6) |
-| `.plans/01` §3 non-goals | Elder-side features are out | Decide whether a "share with your parents" message is in v0 |
-| `landing.ts` `hero.subline`, `founder.body` | Already mention families, but secondary | C |
-| `cloneTest.ts` result banner ("Why this matters") | | C |
-| `05` §2.3 | "Protect your parents" is channel 3 | C: becomes the main message |
-
-### 8. Strong live verification for the clone test
+Unchanged from revision 1, plus the YC framing.
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/03` §3.4, §6; `04` §6 | One random phrase, "paid = deterrent" | C: the deterrent is gone, so verification must carry more weight (see §3.1) |
-| `clone-test/page.tsx` | `pickPhrases(1)` picked in the page render, not tied to a server-issued challenge | C: server-issued challenge with expiry |
-| `Recorder.tsx`, `useRecorder.ts` | 3 s minimum for the clone test | C: a longer sample is needed for clone quality |
-| `phrases.ts` | English only | C: Cantonese phrases if the clone is in Cantonese |
+| `.plans/01` §6, §7, §8.1; `05` §1, §2.5, §3, §4, §5 | Pricing hypothesis, "charge from day one", MRR | C: partner model later; v0 metrics are activation, clone tests completed, shares, scans, week-over-week growth |
+| `.plans/04` §1 | Company before taking payments | C: before the first partner contract, or earlier if YC needs it |
+| `.plans/04` | No partner data rule | A: partners get aggregate data only (§3.5) |
+
+### 6. Action checklist after the scan
+
+| Where | What | Action |
+|---|---|---|
+| `.plans/01` F5 | Remediation is paid and per source | C: free; per-source fixes plus the 5-place checklist |
+| `StateNotices.tsx` `LowExposureState` tips | Four tips, numbered like a sequence | C into the checklist, drop the numbering |
+| `remediation.ts` | Privatise steps exist. No voicemail or voice-verification content | A: voicemail greeting (per HK carrier), "add a second factor to voice verification", family code word, turn off downloads/duets/stitches, check old accounts |
+| Checklist page | None | A: persisted, with progress; items link to the sources the scan found |
+
+### 7. Protect-your-family messaging
+
+Unchanged from revision 1: `.plans/02` §1 tone rule, `landing.ts` `hero.subline` and `founder.body`, the clone-test result banner, `05` §2.3. See §3.6.
+
+### 8. Live verification and abuse limits for the clone test
+
+| Where | What | Action |
+|---|---|---|
+| `.plans/03` §3.4, §6; `04` §6 | One random phrase, "paid = deterrent" | C: §3.1 design, with the rate limits from decision 5 |
+| `clone-test/page.tsx` | `pickPhrases(1)` in page render, no server challenge | C: server-issued challenge with expiry |
+| `Recorder.tsx`, `useRecorder.ts` | 3 s minimum | C: about 10 to 20 s across 3 or 4 phrases |
+| `phrases.ts` | English | Keep for v0. Add a `locale` field so Cantonese phrases can be added later |
 | `client.ts` `requestCloneTest(liveSample)` | No challenge ID | C: `startCloneChallenge()` then `requestCloneTest(challengeId, sample)` |
-| Verification failure states | None (only a generic error banner) | A: phrase mismatch, replay suspected, too short, rate-limited |
+| Failure states | Generic banner only | A: phrase mismatch, synthetic voice suspected, too short, rate-limited (with when to try again) |
 
 ### 9. Data minimisation and PDPO
 
 | Where | What | Action |
 |---|---|---|
-| `.plans/03` §3.1, §4 | ECAPA voiceprint, `voiceprints` table, pgvector | R: without matching there is no reason to keep a voiceprint |
-| `.plans/04` §2 DPP table, §3 | Written around a stored voiceprint | C, plus a PDPO checklist (§3.7) |
-| `src/content/consent.ts` | "A voiceprint, not a recording", "We keep a voiceprint" | C |
-| `landing.ts` `privacyPromise`, `faq.ts` "What happens to my recording?" | | C |
-| `legal.ts` privacy §2, §3, §4, §7; terms §1, §4, §5, §6 | | C |
-| `onboarding/enrol/*` | Voiceprint enrolment | R (the live recording moves into the clone test) |
-| `types.ts` `Voiceprint`, `getVoiceprint`, `enrolVoice` | | R |
-| `SettingsView.tsx` delete copy | "voiceprint, linked accounts, scans" | C |
+| `.plans/03` §3.1, §4 | Voiceprint stored in `voiceprints` with pgvector | C: no stored voiceprint by default (§3.7). Separate, encrypted table only if the user opts into repeat voice matching |
+| `.plans/04` §2, §3 | DPP table written around a stored voiceprint | C, plus the checklist in §3.8 |
+| `src/content/consent.ts` "It can't be played back or turned back into audio" | Overclaims (§3.7) | C |
+| `landing.ts` `privacyPromise`, `faq.ts` "What happens to my recording?" | "We keep a voiceprint" | C |
+| `legal.ts` privacy §2 to §7, terms §1, §5, §6 | | C |
+| `onboarding/enrol/*` | Voiceprint enrolment before scanning | C: the clone-test recording and the enrolment can be one recording, used once for both and then deleted (§3.7) |
+| `SettingsView.tsx` delete copy | | C: list exactly what is deleted, including connected-account tokens and vendor-side copies |
 
 ### 10. Mainland China is a separate future product
 
-| Where | What | Action |
-|---|---|---|
-| `.plans/00` | Mentions `../voice-exposure-scanner-spec.md` (not in the repo) | C: drop or add the file |
-| `.plans/04` §2 last line, `05` §7 | "If later serving Mainland users", "Future expansion: Mainland China" | C: one line saying it is a separate product with its own PIPL review, not a follow-on |
-| Code | Nothing Mainland-specific | No change |
+Unchanged from revision 1. `.plans/00` links `../voice-exposure-scanner-spec.md`, which is not in the repo. `.plans/04` §2 and `05` §7 get one line saying Mainland is a separate product with its own PIPL review. No code is Mainland-specific.
 
 ### 11. Billing and paywall paused
 
-| Where | What | Action |
-|---|---|---|
-| `.plans/01` §6, `03` Stripe, webhook, `subscriptions` table, `04` §1 | | C: mark as paused |
-| `src/content/pricing.ts`, `PricingCards.tsx`, `Paywall.tsx` | | R |
-| `SessionProvider.tsx` `openPaywall` and the mounted `<Paywall>` | | R |
-| `AppShell.tsx` upgrade button, `PlanBadge` | | R |
-| `StateNotices.tsx` `LapsedBanner`, `UpgradeCard` | | R |
-| `SettingsView.tsx` Plan row, Manage billing | | R |
-| `types.ts` `Plan`, `BillingInterval`, `lapsedAt`; `client.ts` `upgrade`; mock redaction (`present`) | | R |
-| `legal.ts` terms §5 "Subscriptions and billing" | | R |
-| Landing `#pricing` section | | R |
-| `dev/states/StatesGallery.tsx`, `tests/helpers.ts` `seed(plan)`, `screenshots.spec.ts` paywall shot, smoke "upgrade" test | | C, R |
+Unchanged from revision 1. Remove `pricing.ts`, `PricingCards.tsx`, `Paywall.tsx`, `openPaywall`, `PlanBadge`, `UpgradeCard`, `LapsedBanner`, the Settings plan row, `Plan`/`BillingInterval`/`lapsedAt`/`upgrade` in the API layer, terms §5, the landing `#pricing` section, the `/dev/states` plan seeds and the upgrade smoke test. Mark Stripe and `subscriptions` in `.plans/03` as paused.
 
-## 3. Challenges to the pivot
+## 3. Challenges
 
-### 3.1 How live verification would work, and what it does not stop
+### 3.1 Live verification and abuse limits
 
-The threat is someone producing a clone of *another person's* voice through Timbre. The strongest control is structural: **the clone is built only from audio captured live in that session**, never from an upload, a stored voiceprint or anything found online. If someone records themselves, they only get a clone of themselves. So the attacks that matter are feeding someone else's voice into the microphone during the session:
+The threat is someone producing a clone of another person's voice through Timbre. The main control is structural: the clone is built only from audio captured live in that session, never from an upload, a stored voiceprint or anything found online. If someone records themselves, they only get a clone of themselves. The remaining attacks are feeding someone else's voice into the microphone:
 
-1. Replaying an existing recording of the victim. A random, server-issued challenge stops this. The server issues 3 to 4 phrases with a one-use ID and a 2 to 3 minute expiry. Speech-to-text must match the phrases (the current tech spec says at least 80%). The audio must be one continuous capture of plausible length. Old recordings do not contain the phrases.
-2. Live voice conversion or TTS of the victim saying the phrases. The challenge does not stop this, because an attacker who already has a clone can make it say anything. Add an anti-spoofing (synthetic speech) check on the live sample, from the vendor or an open model such as AASIST (check its licence). The marginal harm is low here: the attacker already has a working clone, and Timbre adds only a watermarked clip of one fixed sentence.
-3. A coerced or tricked victim (a "read this aloud for me" prank). Rate limits and the fixed sentence limit the value. This cannot be fully prevented.
+1. Replaying an existing recording of the victim. A server-issued challenge stops this: 3 or 4 random phrases with a one-use ID and a 2 to 3 minute expiry, a speech-to-text match of at least 80% (the existing spec's threshold), and one continuous capture of plausible length.
+2. Live voice conversion or TTS of the victim. The challenge doesn't stop this. Add a synthetic-speech check on the live sample (from the vendor, or an open model such as AASIST after a licence check). The marginal harm is low: the attacker already has a clone, and Timbre adds only one watermarked fixed sentence.
+3. A tricked or coerced victim. Rate limits and the fixed sentence limit the value. Not fully preventable.
 
-Supporting controls: sign-in with a verified email or HK phone number, one account per phone number, about 3 tests per account per month, a fixed harmless output sentence, audible plus inaudible watermarking, and an audit log of challenge IDs and outcomes (not the audio).
+Abuse limits for a free test with email-only sign-in (decision 5):
 
-What the pivot loses: `04` §6 relied on "paid accounts only (payment identity = deterrent)". A free, viral clone test removes that. Phone verification is the cheapest replacement, but it adds friction at the moment you want sharing.
+- Per verified email: about 3 tests a month. The email must be verified before the challenge is issued. Block known disposable-email domains.
+- Per IP: a sliding window, for example 10 tests a day. Hong Kong mobile carriers and campuses put many people behind one IP, so a strict IP limit will block real users at a university talk, which is one of the planned channels. Keep the IP limit loose and lean on the email limit.
+- Per device: a signed, first-party cookie token. Avoid browser fingerprinting. It is personal data under the PDPO, needs disclosure, and is easy to get wrong.
+- A global daily cap on vendor spend, so a viral spike or an attack can't run up an unbounded bill. The UI says "the clone test is busy, try again after HH:MM".
+- Audit log of challenge IDs, outcomes and rate-limit hits, never the audio.
 
-**The current "can't be downloaded" promise is not true.** `controlsList="nodownload"` and a blocked context menu do not stop screen recording or the browser's network tab. `cloneTest.ts` and terms §4 should say "not offered as a download, watermarked, deleted after the session" instead.
+Vendor consent statements (Azure and Google require the speaker to read a fixed statement) can be one of the challenge phrases, so one recording does both jobs.
 
-Vendor consent recordings fit well here. Azure and Google both require the speaker to read a fixed consent statement (below). That statement can be part of the live challenge, so one recording does both jobs.
+### 3.2 "Can't be downloaded" (fixed on this branch)
 
-### 3.2 "Shareable moment" contradicts the safeguards
+`controlsList="nodownload"` and a blocked context menu remove the easy save paths, but screen recording and the browser's network panel still work. The copy now says the clip is not offered as a download and is watermarked:
 
-Point 1 wants the clone to be shareable. The existing safeguards (and point 9) say the clip is not downloadable and is deleted after the session. Sharing the audio would also put a clean sample of the user's real voice, plus a clone of it, onto Instagram, which is the exposure Timbre warns about. Options:
+- `src/content/cloneTest.ts`: safeguard title "No download, and watermarked"; body "We don't offer the clip as a download, and it carries a watermark. The sentence is fixed by us, so it can't be used as a script."
+- `src/content/legal.ts` terms §4: "watermarked and streamed, is not offered as a download, and is deleted at the end of your session. Recording or redistributing it is not allowed."
+- `src/components/ClonePlayer.tsx`: comment saying copy must never claim the clip can't be saved.
 
-- Share an outcome card with no audio ("I heard an AI clone of my voice. Took 2 minutes. Try yours") and a link. Recommended.
-- Share a short watermarked clone-only clip. It spreads the user's voice and conflicts with the product's own advice. I'd avoid it.
-- Let the user replay the result to a family member on the same device ("play it to your mum"). This fits point 7 and needs no file.
+The share card (decision 4) has no audio, so it doesn't reopen this.
 
-### 3.3 If there is no automated scan, what is the "exposure scan"?
+### 3.3 Which platforms we can scan without breaking their terms
 
-Points 2 and 3 conflict. Point 2 keeps a free one-time "exposure scan", and point 3 removes automated scanning. Without scanning, the "scan" is the self-audit questionnaire. Two readings:
+None of the three platforms' developer APIs gives us the audio of a user's videos to analyse. That is the constraint the scan has to be designed around.
 
-- (a) The scan *is* the 5-place self-audit, and the result is a qualitative band ("a lot of your voice is public") from the answers. Simplest, and no audio processing beyond the clone test.
-- (b) A thin automated check of links the user pastes, or their own YouTube channel through the official API. This brings back the voiceprint, matching, accuracy targets and platform ToS questions.
+| Platform | What the official API gives | Audio? | Terms risk |
+|---|---|---|---|
+| YouTube | YouTube Data API: the user's public uploads, titles, durations, view counts, captions metadata. Owners can authorise caption download | No. The Developer Policies bar API clients from storing copies of audiovisual content without YouTube's written approval, and the API has no media download | Low for metadata. Fetching audio (yt-dlp and similar) is a breach |
+| TikTok | Display API `video.list` and `video.query`: metadata of the user's own public videos, for embedding | No. The docs frame it as display and embed | Low for metadata. App review required. The Research API is for academics only |
+| Instagram | Basic Display API shut down on 4 Dec 2024. The Instagram API with Instagram Login gives own media (including `media_url`) for professional (business or creator) accounts. Sources disagree on personal accounts; most say professional only | Possibly, for professional accounts' own media, through `media_url`. Not for personal accounts | Medium: check Meta's Platform Terms on processing and storing media. Instagram's terms ban automated collection without permission, and Meta's Automated Data Collection Terms (Oct 2024) cover scrapers |
+| Reposts by other people (all three) | A web search API can list candidate URLs mentioning a name or handle | No | Listing is fine under the search API's terms. Fetching audio from those URLs is the platform-ToS breach the current docs already warn about |
 
-I recommend (a) for v0. It also means **no voiceprint is needed at all**, which settles most of point 9.
+So a real automated scan has three tiers:
 
-### 3.4 Monitoring has nothing to alert on
+- **Tier A, automated and within the terms: metadata scan of connected accounts.** The user connects YouTube and TikTok (and Instagram if professional) with OAuth. We list public videos, their length and whether they likely contain speech (from captions where the owner authorises it, otherwise from the user confirming "that's me talking" on a list). This measures exposure without touching audio: "38 public videos, about 2 hours long, 31 with speech". It needs no voiceprint.
+- **Tier B, voice matching on audio the user hands us.** The user uploads their platform data export (Instagram and TikTok "Download your data", Google Takeout for YouTube) or individual video files. These are the user's own copies, so platform terms don't apply to our processing. This gives true "minutes of your voice" for their own uploads. Exports can be several GB, so either match in the browser (a small speaker-embedding model in WebAssembly, so audio never leaves the device) or upload in chunks to the worker. In-browser matching is the stronger privacy story and removes server-side audio entirely.
+- **Tier C, reposts by others.** Web search lists candidate URLs; we show them as "possible reposts, check these" with the takedown draft. No audio is fetched. Automated voice matching of other people's posts needs either written platform permission or a legal opinion, so it stays out of v0.
 
-Without scanning, Timbre has no new exposure to detect. The alerts that could be defined are "new HK voice-scam pattern reported by the police" (content, not monitoring) or a periodic "re-check your 5 places" reminder. Neither justifies a subscription. Recommend: cut monitoring from v0 and the PRD, and keep "re-check reminder" as an opt-in email in the backlog.
+What this means for the founder's decisions:
 
-### 3.5 B2B2C questions
+- Decision 1 ("real automated scan") is met by tier A plus tier C, automatically, and tier B gives the "minutes of your voice" number for anyone who uploads. The headline result is less precise than "47 minutes found", which fits pivot point 2 (no precise score).
+- It covers the user's own accounts and lists reposts. It cannot confirm the user's voice in other people's videos.
+- Personal Instagram accounts can only be checked through tier B (the export) or tier C. Many people in the target group will have personal accounts.
+- App review: YouTube needs a verified Google OAuth app (sensitive scopes may need a security assessment), and TikTok needs app review for Display API scopes. Both take weeks. Start applications in stage 1, in parallel with docs.
 
-- Buyer and user don't match. Banks lose money when the *parent* (their account holder) transfers funds. Timbre's user is the young adult. That can be a strength ("we reach your customers' children") but it needs to be the pitch, and banks may want the parent-side features that the PRD lists as non-goals.
-- Tension with point 6. HSBC Hong Kong has offered Voice ID for phone banking. Telling users to "avoid voice-only verification" while pitching banks is awkward if the partner uses voice biometrics. The checklist wording needs care ("add a second factor" rather than "don't use your bank's voice ID").
-- Data back to partners. If a partner gets anything identifiable (who took the test, their results), that is a new purpose under DPP3, and possibly direct marketing under PDPO Part VI A if the partner uses it for marketing. Recommend: partners get aggregate counts only, written into the consent copy and the partner contract.
-- Validation order. Banks will ask for consumer traction first. With billing paused and no partner revenue, v0 is a pure demand test. The success metric should be stated as activation and sharing numbers that a partner would care about.
-- Age. The terms say 18+. "Young consumers" and campus channels may reach under-18s. Decide whether 18+ stays.
+I could not fetch the platforms' current terms pages from this environment. The table comes from developer docs and secondary sources found by search; check each primary page before building.
+
+### 3.4 Monitoring alerts, defined
+
+Monitoring is only worth keeping if each alert is something we can detect and the user can act on. With the tiers above, these can be detected:
+
+| Alert | Trigger | Source | User action |
+|---|---|---|---|
+| New public video on your account | A connected account has a new public video longer than 15 s since the last check | Tier A, daily or weekly API poll | Open it in the checklist: keep, make private or remove audio |
+| Old video made public again | A video previously marked fixed (private or deleted) is public again | Tier A | Re-fix |
+| Possible new repost | A new web-search result mentions the user's name or handle on one of the three platforms | Tier C, weekly | Review; use the takedown draft |
+| Account disconnected | OAuth token expired or revoked, so monitoring has stopped | Tier A | Reconnect |
+| Monthly summary | Once a month, only if there was activity | All | None |
+
+Not alertable: "your voice was found in someone else's video" (needs tier C matching) and "your voice was cloned" (not detectable, and the copy must keep saying so).
+
+Cost: tier A polling is API quota, not GPU. YouTube Data API's default daily quota is limited, so polling frequency per user needs a budget. Tier C needs a paid search API, so weekly at most.
+
+### 3.5 B2B2C
+
+Unchanged from revision 1, with the YC goal on top:
+
+- Buyer and user don't match. Banks lose money through the parent, not the young adult. That can be the pitch ("we reach your customers' children").
+- The checklist item "avoid voice-only verification" clashes with banks that use voice ID. I believe HSBC Hong Kong offers Voice ID for phone banking, but I haven't checked that in this session. Phrase it as "add a second factor".
+- Partners get aggregate data only, or a PDPO new-purpose (DPP3) and direct-marketing (Part VI A) review applies.
+- For YC, the numbers to show are clone tests completed, shares that turn into signups, scans connected and week-over-week growth. Set up analytics events for those in the clone-test and scan stages, not later.
+- Terms say 18+. Campus channels may reach under-18s. Still open (§5 Q4).
 
 ### 3.6 Family messaging vs the brand rules
 
-"Your voice is the weapon, your parents are the target" is stronger than `02` §1 ("never cheap fear tactics") and `04` §8 (no claims that Timbre stops scams). The line itself is accurate and not a claim about Timbre, so it can work. It needs one rule: every fear line is followed by a concrete action. Also confirm whether the tagline is English, Cantonese or both. Parents in HK are reached in Cantonese.
+Unchanged. "Your voice is the weapon, your parents are the target" is accurate and not a claim about Timbre, but it is stronger than `02` §1 ("never cheap fear tactics"). Suggested rule: every fear line is followed by a concrete action on the same screen. English only in v0 (decision 3), while parents are reached in Cantonese; the share card and the "play it to your family" step are where that gap shows first.
 
-### 3.7 Clone-test language
+### 3.7 Voiceprints: storage, deletion and security
 
-The scam call to a HK parent would be in Cantonese. An English clone is a weaker wake-up call, and Cantonese support among cloning vendors is uneven. This affects vendor choice more than anything else. The PRD currently lists non-English UI as a non-goal.
+With tier B the only place voice matching happens, a stored voiceprint is needed only if the user wants repeat matching on new uploads. Recommendation for v0: **don't store one**.
 
-### 3.8 Voice-cloning vendors
+- One recording, used twice, then deleted. The clone-test challenge recording (about 15 s of verified live speech) can also produce the embedding for tier B matching in the same session. The embedding lives in memory (or in the browser, if matching runs there) for the length of the scan and is then discarded. Raw audio is deleted when the clone is generated.
+- If the user later uploads more files, they record a new challenge. That costs 15 s and re-verifies them, which is also good for abuse control.
+- If repeat matching is added later (opt-in):
+  - Separate `voiceprints` table holding the embedding encrypted with a key held in a KMS (envelope encryption), not plain pgvector rows. Matching decrypts in the worker only.
+  - Row-level security that denies all client reads; only the worker's service role can read.
+  - Key per user, so deleting the key makes the embedding unrecoverable even in backups (crypto-shredding).
+  - Deletion: on account deletion, voiceprint deletion in Settings, consent withdrawal, or 12 months of inactivity. Backups: say in the privacy policy how long Supabase point-in-time recovery keeps data, and rely on the destroyed key for anything in backups.
+  - Audit log entry for every create, read by the worker, and delete.
+- Copy fix needed: `consent.ts` and `faq.ts` say the voiceprint "can't be played back or turned back into audio". It can't be played back, but speaker embeddings carry enough information that partial reconstruction of voice characteristics has been studied in research. I haven't checked the current state of that research in this session. Say "can't be played back" and drop "can't be turned back into audio" unless the chosen model's documentation supports it.
+- Clone-vendor copies: whichever vendor generates the clone may keep the uploaded sample or a speaker model. Use the vendor's delete API immediately after generation, and confirm in writing how long their logs keep audio. This is now the largest stored-voice risk, larger than our own database.
+- OAuth tokens for monitoring are also sensitive. Encrypt at rest, request read-only scopes, revoke at the platform on deletion, and show "connected accounts" with a disconnect button in Settings.
 
-I could not fetch primary terms pages from this environment. The points below come from vendor docs and secondary summaries found by web search, and must be checked against each vendor's current terms before choosing.
+### 3.8 PDPO items for a lawyer
 
-| Option | Consent and verification | Cantonese | Data and region | Notes |
-|---|---|---|---|---|
-| Microsoft Azure AI Speech, personal voice | A verbal consent statement read by the speaker is required. Microsoft uses it to check the speaker matches the sample. Access is Limited Access (application, approved use cases only) | The docs show a personal voice switching to zh-HK via SSML. Locale table not confirmed | Azure regions include East Asia (Hong Kong) for Speech in general. Check which regions host personal voice | Best consent fit. Risk: a tiny startup may not be approved, or "consumer clone demo" may not be an approved use case. Watermarking not confirmed |
-| Google Cloud Chirp 3 Instant Custom Voice | A fixed consent statement (no custom script) up to 10 s, recorded in the same environment as the reference audio | Not confirmed. Consent sentence is per locale, so check that a zh-HK / yue locale exists | Check region and model retention | Rate limit noted in docs: 10 voice-cloning keys per minute per project. Possibly allowlisted, not confirmed |
-| ElevenLabs | The usage policy bans cloning without consent. Professional cloning has a verification step. Instant cloning relies on the account holder's attestation | Anecdotal only | US company. Voices are stored on their side until deleted | As a platform letting end users clone, Timbre carries the consent responsibility. Check whether reselling cloning to end users is allowed on our plan |
-| Resemble AI | Requires a recorded consent clip in the target voice. Has a neural watermark (PerTh) | Not checked | Check | Watermark is a plus for our safeguards |
-| Self-hosted CosyVoice 2 (Alibaba) | None built in. We own all misuse controls | Cantonese is a listed language in the paper | Runs on our GPU, so nothing leaves our infrastructure | Licence reported as Apache-2.0 by third parties. Verify the code *and weights* licence on the official repo. No watermark: we add our own |
+1. Biometric data. The PCPD's *Guidance on Collection and Use of Biometric Data* (revised, date to confirm) asks for necessity, free and informed choice, consideration of less intrusive alternatives, and prompt purging. A transient embedding is still biometric data. The "don't store" default in §3.7 is the strongest answer to the necessity test.
+2. Vendor as data processor: DPP2(3) and DPP4(2) contractual controls on retention and security, for both the clone vendor and any cloud speech service.
+3. Cross-border transfer: vendor and Supabase regions must be disclosed. Section 33 is not in force, but DPP1 and DPP5 disclosure still applies.
+4. OAuth data from platforms: the platform metadata we pull is personal data too; retention and deletion rules apply.
+5. Web search results about the user can include other people's posts and names. Store only the URL and the matched handle, and only for the requesting user.
+6. Partner data sharing (§3.5): DPP3 and Part VI A.
+7. Minors, if 18+ is relaxed.
+8. Rate-limit data: device tokens and IPs kept for abuse control need a stated retention period (for example 30 days).
+9. A privacy impact assessment, which the PCPD guidance recommends for biometric systems.
+10. Any 2025 or 2026 PDPO amendment. A quick search found none; ask the lawyer to confirm.
 
-My recommendation: run a short spike (stage 2 below) comparing Azure personal voice and self-hosted CosyVoice 2 on Cantonese quality, with ElevenLabs as the quality benchmark. Score each on Cantonese quality, consent fit, deletion API, region and cost per test.
+### 3.9 Voice-cloning vendors
 
-Whatever the vendor, check: (1) whether they keep the uploaded sample or a speaker model after the call, and whether we can delete it immediately by API, (2) whether they train on customer data and how to opt out, (3) whether their terms allow a consumer-facing clone feature, (4) where processing happens, for the cross-border disclosure.
+Unchanged from revision 1, with Cantonese no longer a v0 requirement. That widens the choice for v0 but the spike should still record Cantonese quality so the later switch is known.
 
-### 3.9 PDPO items to check with a lawyer
+| Option | Consent and verification | Notes |
+|---|---|---|
+| Microsoft Azure AI Speech, personal voice | Speaker reads a consent statement, which Microsoft uses to check the speaker matches the sample. Limited Access application required | Best consent fit. Approval for a small startup is uncertain. Watermarking not confirmed |
+| Google Cloud Chirp 3 Instant Custom Voice | Fixed consent statement up to 10 s, recorded in the same environment as the reference audio. No custom consent script | Possibly allowlisted, not confirmed |
+| ElevenLabs | Usage policy bans cloning without consent. Professional cloning has a verification step; instant cloning relies on the account holder's attestation | Timbre carries the consent responsibility. Check that a consumer-facing clone feature is allowed on our plan |
+| Resemble AI | Recorded consent clip in the target voice. Neural watermark (PerTh) | The watermark helps our safeguards |
+| Self-hosted CosyVoice 2 | None built in | Cantonese supported. Licence reported as Apache-2.0 by third parties: verify code and weights. No watermark: add our own |
 
-Flagged per point 9. None of these is settled by these docs.
-
-1. Biometric data. The PCPD's *Guidance on Collection and Use of Biometric Data* asks for necessity, free and informed choice, and prompt purging. Even a transient voice sample is biometric data. Get a view on whether a live sample processed for seconds and then deleted still needs the full treatment (assume yes).
-2. Vendor as data processor. DPP2(3) and DPP4(2) require contractual controls on retention and security when a processor handles the data.
-3. Cross-border transfer. Vendor processing in the US or Singapore must be disclosed. Section 33 is not in force, but disclosure under DPP1 and DPP5 still applies.
-4. Partner data sharing (§3.5): DPP3 new purpose and Part VI A direct marketing.
-5. Minors, if 18+ is relaxed.
-6. Audit logs. Keep challenge IDs and outcomes, never audio or embeddings.
-7. Analytics and share links. Make sure no share URL carries anything identifying.
-8. Data access requests. With no voiceprint stored, the export becomes simpler. Confirm what must be included.
-9. A Privacy Impact Assessment, which the PCPD guidance recommends for biometric systems.
-
-I found no 2025 or 2026 PDPO amendment in a quick search. Ask the lawyer to confirm.
+For each: does it keep the sample or a speaker model, and can we delete it immediately by API; does it train on customer data; do its terms allow a consumer clone feature; where is processing done.
 
 ### 3.10 Smaller points
 
-- The clone test needs about 10 to 20 s of clean speech for a convincing zero-shot clone. The current 3 s minimum is too short. More phrases means more friction. Test it.
-- `DESIGN.md` says the headline, CTA and founder story are fixed by the brief. The pivot changes the brief, so the founder needs to supply new fixed copy, or approve mine.
-- `.plans/00` links a file that is not in the repo (`../voice-exposure-scanner-spec.md`).
-- Founder story: the grandparents' call happened in Mainland China. That is fine for HK messaging, but keep it out of any Mainland product claims.
+- 10 to 20 s of clean speech is needed for a convincing zero-shot clone. The current 3 s minimum is too short.
+- `DESIGN.md` says the headline, CTA and founder story are fixed by the brief. New fixed copy is needed.
+- `.plans/00` links a file that is not in the repo.
+- In-browser matching (tier B) adds a model download of a few MB to tens of MB. Check it on a mid-range phone, since most visitors arrive from Instagram on mobile.
 
 ## 4. Implementation plan
 
-Each stage is one small PR. No stage starts before you approve this review and answer §5.
+Each stage is one small PR. Stage 0 is already on this branch.
 
-1. **Docs.** Rewrite `01-prd.md` first (features, goals, non-goals, metrics, assumptions). Then `02-design.md` (IA, flows, screen list, states), `03-tech-spec.md` (remove scan pipeline and Stripe to a "later" appendix, add clone-test verification design, new data model with no voiceprints), `04-privacy-legal.md` (PDPO checklist from §3.9, partner data rule, new clone safeguards), `05-gtm-roadmap.md` (B2B2C, new funnel, Mainland as separate product), `00-README.md`. Update `DESIGN.md` Subject and fixed copy. Docs only.
-2. **Vendor spike, written up only.** `.plans/06-clone-vendor-decision.md`: test 2 or 3 vendors on Cantonese and English samples from consenting volunteers, record consent flow, retention, deletion, region and cost. A decision record, no app code.
-3. **Landing copy.** `src/content/landing.ts`, `faq.ts`, `site.ts`, `cloneTest.ts` intro copy. Run `scripts/slop-check.sh`. Update the landing smoke test heading.
-4. **Landing structure and paywall removal.** New hero (clone demo with a clearly labelled example clip), sections re-ordered for the new story, remove `#pricing`, `PricingCards`, `pricing.ts`, the header Pricing link. Hero direction goes into `DESIGN.md` first. Screenshot at 320 px and desktop.
-5. **Remove plans and billing from the app.** `Paywall`, `openPaywall`, `PlanBadge`, `UpgradeCard`, `LapsedBanner`, Settings plan row, `Plan`/`upgrade`/redaction in the API layer, related tests and `/dev/states` seeds.
-6. **Clone test flow (mocked).** Unlocked for every signed-in user. New API shape `startCloneChallenge()` → `requestCloneTest(challengeId, sample)`. Multi-phrase challenge, longer minimum, verification failure states, rate-limit state, result screen with the "play it to your family" moment and the share card. Update `routing.ts` so new users land here after consent. Update consent copy for the clone test.
-7. **Self-audit and checklist.** `/check` with the 5 places, reusing `remediation.ts`. A qualitative result band, then the action checklist (privatise videos, voicemail greeting, voice-only verification, family code word). Persist progress.
-8. **Remove the scan stack.** Enrol, accounts, scan progress, results, dashboard, sources, `risk.ts`, `Sparkline`, `SourceCard`, scan and voiceprint types, monitoring settings, thumbnails. Simplify Settings to email, export and delete.
-9. **Legal drafts.** `legal.ts` privacy and terms rewritten for the new data flows. Still marked as drafts pending lawyer review.
-10. **Tests and report.** Rewrite smoke and screenshot specs for the new flow, update `BUILD_REPORT.md` and `README.md`.
+0. **Done on this branch:** "can't be downloaded" wording (§3.2).
+1. **Docs.** `01-prd.md` (clone test first, tiered scan, defined alerts, free everything, YC metrics), `02-design.md` (IA, flows, screens, states for connect / upload / reconnect), `03-tech-spec.md` (tiers A to C, verification design, rate limits, no stored voiceprint, OAuth token handling, Stripe paused), `04-privacy-legal.md` (§3.7 storage rules, §3.8 checklist, per-platform terms from §3.3, partner data rule), `05-gtm-roadmap.md` (B2B2C later, YC metrics, Mainland separate), `00-README.md`, `DESIGN.md` subject. In parallel, outside the repo: start the Google OAuth verification and TikTok app review applications.
+2. **Vendor spike, written up only.** `.plans/06-clone-vendor-decision.md`. English quality first, Cantonese recorded for later, plus consent flow, deletion, region and cost.
+3. **Landing copy.** `landing.ts`, `faq.ts`, `site.ts`, `cloneTest.ts` intro, `consent.ts` voiceprint claims. `scripts/slop-check.sh`. Update the landing test.
+4. **Landing structure and paywall removal.** New hero with a labelled example clip, sections re-ordered, remove `#pricing`, `PricingCards`, `pricing.ts`, header Pricing link. Hero direction in `DESIGN.md` first. Screenshots at 320 px and desktop.
+5. **Remove plans and billing from the app.** `Paywall`, `openPaywall`, `PlanBadge`, `UpgradeCard`, `LapsedBanner`, Settings plan row, `Plan`/`upgrade`/redaction, related tests and seeds. All sources visible to everyone.
+6. **Clone test flow (mocked).** Unlocked for signed-in users. `startCloneChallenge()` → `requestCloneTest(challengeId, sample)`. 3 or 4 phrases, longer minimum, verification and rate-limit failure states, the "play it to your family" step, share card. New users land here after consent. Analytics events for the YC metrics.
+7. **Scan flow (mocked), tiers A and C.** Connect buttons per platform, full name for web search, new progress steps, results showing counts and a coarse band, `Source.evidence` types, reconnect states. Merge `ResultsView` and `DashboardView`.
+8. **Scan tier B (mocked).** Upload a data export or files, in-browser or chunked matching (decide in stage 1), reuse the clone-test recording for the embedding.
+9. **Checklist.** The 5 places plus per-source fixes from `remediation.ts`, progress saved, linked from results.
+10. **Monitoring.** Settings toggles per alert type (§3.4), connected-accounts list with disconnect, mocked alert history.
+11. **Legal drafts and Settings.** `legal.ts` for the new data flows, delete copy listing tokens and vendor copies, still marked as drafts.
+12. **Tests and report.** Smoke and screenshot specs for the new flow, `BUILD_REPORT.md`, `README.md`.
 
-Real backend work (Supabase auth, the verification service, the vendor integration) comes after stage 10 and after the vendor decision. It is not in this plan.
+Real backend work (Supabase, the verification service, the clone vendor, OAuth integrations, the matching worker, alert emails) follows, in the order the YC demo needs: clone test first, then tier A.
 
-## 5. Questions before starting
+## 5. Remaining questions
 
-1. **Exposure scan.** Is the "free one-time exposure scan" the self-audit questionnaire itself (§3.3 option a), or do you want any automated check in v0?
-2. **Monitoring.** OK to cut it entirely from v0 (§3.4)?
-3. **Clone language.** English, Cantonese, or both for the clone test? This decides the vendor shortlist.
-4. **Share.** Which share format: outcome card with no audio, a watermarked clip, or replay-on-device only (§3.2)?
-5. **Sign-in friction.** Email only, or require an HK phone number to replace the payment deterrent (§3.1)? Should visitors hear an example clone before signing in?
-6. **Age.** Keep 18+?
-7. **Partners.** Confirm partners get aggregate data only. Is there a named first partner type (bank, telco or insurer) to tailor the landing page or a partners page for, or is that out of v0?
-8. **Voice-only verification wording.** OK to phrase the checklist item as "add a second factor" so it doesn't attack banks' voice ID (§3.5)?
-9. **Copy.** Do you want to write the new headline and CTA, or should I propose options in stage 3? Is "Your voice is the weapon, your parents are the target" meant as the literal tagline?
-10. **Elder-side features.** Is anything for parents in v0 (for example, a "share this with your parents" message or code-word card), or still a non-goal?
-11. **Vendors.** Are you willing to apply for Azure Limited Access, and is self-hosting a GPU model acceptable cost-wise for the spike?
-12. **Missing file.** Does `voice-exposure-scanner-spec.md` exist somewhere, or should the link in `.plans/00` go?
+None of these block stage 1. Q1 and Q2 should be settled before stage 7.
+
+1. **"One-time" scan.** One manual full scan per account, with monitoring re-scans on top? Or should users be able to re-run it manually?
+2. **Tier B.** Is "upload your data export" acceptable friction for v0, and do you prefer in-browser matching (stronger privacy, heavier page) or server-side (simpler, audio leaves the device)?
+3. **Tier C matching.** Do you want a lawyer's view now on matching voices in other people's public posts, or leave it out until after the YC application?
+4. **Age.** Keep 18+?
+5. **Partners.** Confirm aggregate data only. Any partner-facing page in v0?
+6. **Voice-only verification wording.** OK to phrase it as "add a second factor"?
+7. **Copy.** Will you write the new headline and CTA, or should I propose options in stage 3? Is "Your voice is the weapon, your parents are the target" the literal tagline?
+8. **Elder-side features.** Anything for parents in v0 beyond the replay step (a code-word card, a message to send them)?
+9. **Vendors.** Willing to apply for Azure Limited Access? Is self-hosting a GPU model acceptable for the spike?
+10. **Missing file.** Does `voice-exposure-scanner-spec.md` exist, or should the link go?
 
 ## Sources
 
-- Microsoft, [What is personal voice for text to speech?](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-overview), [Create consent](https://learn.microsoft.com/en-my/Azure/ai-services/speech-service/personal-voice-create-consent), [How to use personal voice](https://learn.microsoft.com/fi-fi/azure/ai-services/speech-service/personal-voice-how-to-use), [Code of conduct](https://learn.microsoft.com/ko-kr/legal/cognitive-services/speech-service/text-to-speech/code-of-conduct), [Speaker recognition retirement](https://learn.microsoft.com/hr-hr/azure/cognitive-services/speech-service/speaker-recognition-overview)
-- The Register, [Microsoft updates Azure AI Speech](https://theregister.com/2025/07/31/microsoft_updates_azure_ai_speech) (July 2025)
+- YouTube, [API Services Developer Policies](https://developers.google.com/youtube/terms/developer-policies); [policies mirror quoting the storage clause](https://www.futo.org/legal/Youtube-Legal-1.pdf)
+- TikTok for Developers, [Display API overview](https://developers.tiktok.com/docs/en/display-api-overview?enter_method=left_navigation), [Display API get started](https://developers.tiktok.com/docs/en/display-api-get-started), [Video query](https://developers.tiktok.com/docs/en/tiktok-api-v2-video-query), [Scopes](https://developers.tiktok.com/doc/tiktok-api-scopes)
+- Meta, [Basic Display API media reference (deprecation notice)](https://developers.secure.facebook.com/docs/instagram-basic-display-api/reference/media); [developer forum thread on Instagram Login](https://developers.secure.facebook.com/community/threads/550093114183058); secondary: [Phyllo, Instagram API 2026 guide](https://www.getphyllo.com/post/instagram-api-guide), [Zernio, Instagram API 2026](https://zernio.com/blog/instagram-api)
+- Scraping law and terms: [Farella Braun + Martel on Meta v. Bright Data](https://www.fbm.com/post/102kqw7/) (N.D. Cal., Jan 2024); [ScrapeOps summary of Instagram and Meta terms](https://scrapeops.io/websites/instagram/)
+- Microsoft, [Personal voice overview](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-overview), [Create consent](https://learn.microsoft.com/en-my/Azure/ai-services/speech-service/personal-voice-create-consent), [How to use personal voice](https://learn.microsoft.com/fi-fi/azure/ai-services/speech-service/personal-voice-how-to-use), [Code of conduct](https://learn.microsoft.com/ko-kr/legal/cognitive-services/speech-service/text-to-speech/code-of-conduct), [Speaker recognition retirement](https://learn.microsoft.com/hr-hr/azure/cognitive-services/speech-service/speaker-recognition-overview); The Register, [Azure AI Speech updates](https://theregister.com/2025/07/31/microsoft_updates_azure_ai_speech)
 - Google Cloud, [Chirp 3: Instant Custom Voice](https://docs.cloud.google.com/text-to-speech/docs/chirp3-instant-custom-voice)
-- ElevenLabs policy summaries (secondary): [ConductAtlas, safety policy](https://conductatlas.com/platform/elevenlabs/elevenlabs-safety-policy/), [ConductAtlas, usage policy](https://conductatlas.com/platform/elevenlabs/elevenlabs-usage-policy/voice-cloning-without-consent-prohibition/), [Terms.law](https://terms.law/ai-output-rights/elevenlabs/)
+- ElevenLabs policy summaries (secondary): [ConductAtlas safety policy](https://conductatlas.com/platform/elevenlabs/elevenlabs-safety-policy/), [ConductAtlas usage policy](https://conductatlas.com/platform/elevenlabs/elevenlabs-usage-policy/voice-cloning-without-consent-prohibition/), [Terms.law](https://terms.law/ai-output-rights/elevenlabs/)
 - Resemble AI, [Ethics](https://www.resemble.ai/ethics/); Zohaib Ahmed, [Senate Judiciary testimony](https://www.judiciary.senate.gov/download/2024-04-16-pm-testimony-ahmed?download=1) (16 Apr 2024)
 - Du et al., [CosyVoice](https://arxiv.org/pdf/2407.05407) (2024); [WenetSpeech-Yue](https://arxiv.org/pdf/2509.03959) (2025)
-- PCPD, [Biometric data guidance](https://www.pcpd.org.hk/english/whatsnew/biometric_data.html), [Newsletter on biometric data](https://pcpd.org.hk/misc/dpoc/newsletter20.html)
+- PCPD, [Biometric data guidance](https://www.pcpd.org.hk/english/whatsnew/biometric_data.html), [Newsletter on biometric data](https://pcpd.org.hk/misc/dpoc/newsletter20.html); Baker McKenzie, [summary of the 2015 guidance](https://www.bakermckenzie.com/-/media/files/insight/publications/2015/07/privacy-commissioner/al_hongkong_cautionsbiometricdata_jul15.pdf?la=en)

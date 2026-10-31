@@ -10,6 +10,8 @@ import { formatClock } from "@/lib/format";
 /**
  * Custom audio player with no download affordance: no native controls,
  * `controlsList="nodownload"`, no context menu and no links to the file.
+ * This removes the easy save paths only. Screen recording and the network
+ * panel still work, so copy must never claim the clip "can't be saved".
  */
 export function ClonePlayer({
   label,

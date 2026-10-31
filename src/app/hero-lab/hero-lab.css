@@ -1,0 +1,51 @@
+/* Scoped token sets for the three hero directions. Values come from DESIGN.md. */
+.hero-a {
+  --hero-bg: #f4f7f9;
+  --hero-surface: #ffffff;
+  --hero-ink: #142231;
+  --hero-muted: #4b5b6b;
+  --hero-line: #d5dde4;
+  --hero-action: #0a6b52;
+  --hero-on-action: #ffffff;
+  --hero-font: "Public Sans Variable", sans-serif;
+  --hero-radius-field: 8px;
+  --hero-radius-card: 12px;
+  --hero-display-size: 3.5rem;
+  color-scheme: light;
+}
+
+.hero-b {
+  --hero-bg: #0f1b2d;
+  --hero-surface: #182a42;
+  --hero-ink: #eef2f7;
+  --hero-muted: #a9b6c7;
+  --hero-line: #2a3e5a;
+  --hero-action: #f5c04a;
+  --hero-on-action: #0f1b2d;
+  --hero-font: "Schibsted Grotesk Variable", sans-serif;
+  --hero-radius-field: 10px;
+  --hero-radius-card: 16px;
+  --hero-display-size: 3.75rem;
+  color-scheme: dark;
+}
+
+.hero-c {
+  --hero-bg: #e8eef3;
+  --hero-surface: #ffffff;
+  --hero-ink: #0e1b26;
+  --hero-muted: #44535f;
+  --hero-line: #afbcc8;
+  --hero-action: #1f47b8;
+  --hero-on-action: #ffffff;
+  --hero-font: "Atkinson Hyperlegible Next Variable", sans-serif;
+  --hero-radius-field: 6px;
+  --hero-radius-card: 6px;
+  --hero-display-size: 4rem;
+  color-scheme: light;
+}
+
+.hero-a :focus-visible,
+.hero-b :focus-visible,
+.hero-c :focus-visible {
+  outline-color: var(--hero-action);
+}

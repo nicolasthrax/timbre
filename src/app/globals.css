@@ -33,6 +33,25 @@
   --color-danger: var(--danger);
   --color-on-accent: var(--on-accent);
 
+  /* Hero redesign tokens: each direction sets --hero-* under its scope class (see DESIGN.md). */
+  --color-hero-bg: var(--hero-bg);
+  --color-hero-surface: var(--hero-surface);
+  --color-hero-ink: var(--hero-ink);
+  --color-hero-muted: var(--hero-muted);
+  --color-hero-line: var(--hero-line);
+  --color-hero-action: var(--hero-action);
+  --color-hero-on-action: var(--hero-on-action);
+  --font-hero: var(--hero-font);
+  --radius-hero-field: var(--hero-radius-field);
+  --radius-hero-card: var(--hero-radius-card);
+  --radius-hero-device: 36px;
+  --text-hero-display: var(--hero-display-size);
+  --text-hero-lead: 1.25rem;
+  --leading-display: 1.06;
+  --container-headline: 15ch;
+  --container-copy: 54ch;
+  --container-copy-narrow: 44ch;
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 

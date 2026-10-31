@@ -26,6 +26,9 @@ export interface WaveformProps {
   progress?: number;
   animated?: boolean;
   className?: string;
+  /** Bar colours; default to the v0 palette. */
+  litClassName?: string;
+  unlitClassName?: string;
   /** Accessible description. Without it the waveform is decorative. */
   label?: string;
 }
@@ -38,6 +41,8 @@ export function Waveform({
   progress,
   animated = false,
   className,
+  litClassName = "bg-accent",
+  unlitClassName = "bg-[#3a414c]",
   label,
 }: WaveformProps) {
   const heights = levels && levels.length > 0 ? levels : waveformHeights(bars, seed);
@@ -59,7 +64,7 @@ export function Waveform({
             key={i}
             className={cn(
               "min-w-[2px] flex-1 origin-center rounded-full transition-[height,background-color] duration-150",
-              lit ? "bg-accent" : "bg-[#3a414c]",
+              lit ? litClassName : unlitClassName,
               animated && "animate-wave",
             )}
             style={{

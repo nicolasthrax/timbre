@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) in progress. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) done; headline and CTA are proposals awaiting the founder (decision 15). Stage 4 next. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 

@@ -3,9 +3,9 @@ import { SOURCE_URL_PATTERN, mockMicrophone, seed } from "./helpers";
 
 test("landing renders and CTA navigates to sign-in", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "How much of your voice is out there?" })).toBeVisible();
-  await expect(page).toHaveTitle("Timbre AI — How much of your voice is out there?");
-  await page.getByRole("link", { name: /Scan my voice — free/ }).first().click();
+  await expect(page.getByRole("heading", { level: 1, name: "Hear an AI clone of your own voice" })).toBeVisible();
+  await expect(page).toHaveTitle("Hear an AI clone of your own voice | Timbre AI");
+  await page.getByRole("link", { name: "Hear my clone" }).first().click();
   await expect(page).toHaveURL(/\/signin$/);
   await expect(page.getByRole("heading", { name: "Sign in to Timbre" })).toBeVisible();
 });

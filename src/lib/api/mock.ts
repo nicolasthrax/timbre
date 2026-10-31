@@ -524,7 +524,7 @@ export class MockTimbreApi implements TimbreApi {
       id: "usr_demo",
       email: "kai.chan@example.com",
       plan,
-      consentVersion: "2026-10-v1",
+      consentVersion: "2026-10-v2",
       consentAt: new Date(now - 40 * 86_400_000).toISOString(),
       fullName: "Kai Chan",
       billingInterval: plan === "free" ? null : "month",

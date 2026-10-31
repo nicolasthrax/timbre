@@ -1,10 +1,9 @@
 export const hero = {
-  headline: "How much of your voice is out there?",
+  headline: "Hear an AI clone of your own voice",
   subline:
-    "AI can copy a voice from a few seconds of audio, and scammers use those copies to call families. Timbre shows where your voice is public on Instagram, TikTok and YouTube, and helps you take it down.",
-  // The brief fixes this wording, including the dash.
-  cta: "Scan my voice — free",
-  reassurance: "Free scan. No card needed. Raw audio is never stored.",
+    "Read a few sentences aloud and Timbre makes a short clone of your voice, so you can hear what a scammer could do with the videos you've posted. Then see what's public on your YouTube channel and what to change.",
+  cta: "Hear my clone",
+  reassurance: "Free. About two minutes. Your recording is deleted as soon as the clone is made.",
 };
 
 /** Example scan shown in the hero. Always labelled as an example. */
@@ -18,19 +17,19 @@ export const exampleScan = {
 };
 
 export const steps = {
-  heading: "How a scan works",
+  heading: "How it works",
   items: [
     {
-      title: "Record three phrases",
-      body: "Read three short phrases aloud in your browser. We turn them into a voiceprint, which is a list of numbers and not a recording.",
+      title: "Read a few random sentences",
+      body: "About 15 seconds, in your browser. The sentences change every time, which proves it's your live voice and stops anyone cloning someone else through Timbre.",
     },
     {
-      title: "We check public videos",
-      body: "We look at the Instagram, TikTok and YouTube accounts you give us, and search for reposts that mention your name or handles.",
+      title: "Hear your clone",
+      body: "We play a clone of your voice saying one sentence we chose, next to your real recording. It's watermarked and not offered as a download.",
     },
     {
-      title: "See where, then fix it",
-      body: "You see how many minutes of your voice are public and where. Pro gives step-by-step instructions to make each video private or ask for it to be taken down.",
+      title: "Check your YouTube and fix it",
+      body: "Connect your channel to see which public videos have your voice, then work through a short checklist that makes you harder to fake.",
     },
   ],
 };
@@ -41,21 +40,22 @@ export const founder = {
     "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying because they managed to reach me directly.",
   body: [
     "I still don't know which of my videos the scammers used. Most of us have no idea how much of our voice is public, or who could reuse it.",
-    "Timbre won't stop every scam call. It shows you where your voice is exposed, so you can shrink it and warn the people you love.",
+    "Timbre won't stop every scam call. It lets you hear how easily your voice can be copied, shows where it's public, and helps you warn the people you love.",
   ],
   name: "Nicolas Fostier",
   role: "founder of Timbre",
 };
 
+/** Founder's framing (.plans/pivot-review.md decision 7). Every risk line is paired with an action. */
 export const platformsSection = {
-  heading: "What we look for",
-  intro: "Public videos where your voice can be heard clearly. That audio is what a voice clone is built from.",
+  heading: "Your voice is the weapon. Your parents are the target.",
+  intro: "Scammers call parents and grandparents with a clone of their child's voice and a story about an emergency. Three things make that call fail.",
   platforms: [
-    { title: "Instagram", body: "Public Reels and videos on your account, plus reposts and tags by other accounts." },
-    { title: "TikTok", body: "Your public videos, and duets, stitches or reuploads by other people." },
-    { title: "YouTube", body: "Videos and Shorts on your channel, and appearances on other channels." },
+    { title: "Agree a code word", body: "Pick a word only your family knows. A clone can copy how you sound, but it can't know the word." },
+    { title: "Play them your clone", body: "Timbre has a step for this. Once they've heard how real a fake sounds, they know to be suspicious." },
+    { title: "Hang up and call back", body: "Tell them to end any urgent call and ring you back on the number they already have." },
   ],
-  note: "We only look at public content. We never access private accounts, messages or anything behind a login.",
+  note: "Timbre doesn't screen calls or detect clones. It helps you and your family get ready for one.",
 };
 
 export const privacyPromise = {
@@ -63,19 +63,19 @@ export const privacyPromise = {
   points: [
     {
       title: "Your recording is deleted",
-      body: "It's processed once to make your voiceprint, then deleted. We never keep the audio itself.",
+      body: "We use it once to check it's a live voice and to make your clone, then delete it. We only use clone providers that delete their copy too.",
     },
     {
-      title: "We keep a voiceprint",
-      body: "A list of numbers used only to match your voice in your own scans. It can't be played back.",
+      title: "No voiceprint",
+      body: "We don't keep a model, fingerprint or copy of your voice. The clone is deleted when you leave the page.",
+    },
+    {
+      title: "YouTube is read-only",
+      body: "We see your public videos' titles and lengths. We never download your videos or post anything, and you can disconnect at any time.",
     },
     {
       title: "Delete it all from Settings",
-      body: "One button removes your voiceprint, scans and account. There's no email to send and no waiting period.",
-    },
-    {
-      title: "Never used to train AI",
-      body: "Your voice data is only used for your own scans.",
+      body: "One button removes your account, results and YouTube connection. Your voice is never used to train AI.",
     },
   ],
 };
@@ -86,6 +86,6 @@ export const pricingSection = {
 };
 
 export const finalCta = {
-  heading: "See your result in about five minutes.",
-  body: "One free scan shows how many minutes of your voice are public and how exposed you are.",
+  heading: "Hear your clone in about two minutes.",
+  body: "Then check what's public on your YouTube channel and make it harder for anyone to fake a call from you.",
 };

@@ -1,31 +1,35 @@
-export const CONSENT_VERSION = "2026-10-v1";
+export const CONSENT_VERSION = "2026-10-v2";
 
 export const consentCopy = {
-  title: "Before we record your voice",
-  intro: "Here's exactly what Timbre stores and why. Plain English, no small print.",
+  title: "Before you record your voice",
+  intro: "Here's exactly what happens to your recording. Plain English, no small print.",
   stored: [
     {
-      title: "A voiceprint, not a recording",
-      body: "We convert your recording into a voiceprint: a list of numbers that describes how your voice sounds. It isn't a recording and can't be played back.",
+      title: "What we record",
+      body: "About 15 seconds of you reading random sentences aloud in this browser.",
     },
     {
-      title: "Raw audio is deleted",
-      body: "Your recording is used once to make the voiceprint, then deleted. In this preview it never even leaves your browser.",
+      title: "What it's used for",
+      body: "To check it's a live voice reading the right sentences, then to make one clone of your voice saying a sentence we chose.",
     },
     {
-      title: "Used only for your scans",
-      body: "Your voiceprint is only compared against public videos in your own scans. It is never used to train AI models or shared.",
+      title: "Who handles it, and for how long",
+      body: "Our servers and our clone provider. Your recording is deleted as soon as the clone is made, and the clone is deleted when you leave the page.",
     },
     {
-      title: "Stored in Singapore",
-      body: "Data is stored on servers in Singapore (the nearest region to Hong Kong), encrypted at rest and in transit.",
+      title: "No voiceprint",
+      body: "We don't keep a model, fingerprint or copy of your voice, and it's never used to train AI.",
+    },
+    {
+      title: "YouTube is optional",
+      body: "If you connect your channel later, we read your public videos' titles and lengths only. You can disconnect at any time.",
     },
     {
       title: "Delete anytime",
-      body: "You can export or delete everything from Settings. We also delete it after 12 months of inactivity.",
+      body: "Your account details are stored in Singapore, encrypted. You can export or delete everything from Settings.",
     },
   ],
   checkbox:
-    "I agree that Timbre may create and store a voiceprint from my recording to scan public videos for my voice, as described above.",
+    "I agree that Timbre may record my voice to make a clone as described above, and delete the recording and the clone afterwards.",
   cta: "Agree and continue",
 };

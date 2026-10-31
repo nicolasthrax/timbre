@@ -1,14 +1,14 @@
 export const cloneTestCopy = {
   title: "Clone test",
-  intro: "Hear how convincing a clone of your voice can be. The test only uses your own voice.",
+  intro: "Hear how convincing a clone of your voice is. It's made only from the sentences you read right now.",
   safeguards: [
     {
       title: "Only your own voice",
-      body: "We never clone voices found online. The test uses a fresh recording you make right now.",
+      body: "We never clone voices found online or from uploads. The test uses a recording you make right now.",
     },
     {
       title: "Re-verified live",
-      body: "You'll read one random phrase aloud. This confirms it's really you before anything is generated.",
+      body: "You'll read a few random sentences aloud. That confirms it's a live voice before anything is generated.",
     },
     {
       title: "No download, and watermarked",
@@ -16,12 +16,13 @@ export const cloneTestCopy = {
     },
     {
       title: "Deleted after this session",
-      body: "Both clips are deleted when you leave this page. Nothing is kept.",
+      body: "Your recording is deleted once the clone is made, and the clone is deleted when you leave this page.",
     },
   ],
   lockedTitle: "The clone test is part of Pro",
   lockedBody:
     "Hearing a clone of your own voice is the clearest way to understand the risk. It's limited to Pro accounts so every test is tied to a verified, paying person.",
   generating: "Generating a watermarked clone…",
-  cta: "Reduce your exposure",
+  // Links to the exposure view; becomes "Check your YouTube" when the connect flow lands (stage 8).
+  cta: "See your exposure",
 };

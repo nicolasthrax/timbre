@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): protocol and budget written in `06-clone-vendor-decision.md`; the spike itself is blocked on the founder's inputs listed there (§8). Stopped for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) in progress. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 
@@ -24,9 +24,10 @@ Revision 4 (31 Oct 2026, plan approved):
 10. The 5-place checklist is in the demo as static content.
 11. No domain is owned yet. The site URL is a config value (`NEXT_PUBLIC_SITE_URL`). Candidates, in order: timbre.ai, gettimbre.ai, timbreai.com, trytimbre.com. Needed only at stage 12.
 12. A cloud GPU is allowed for the CosyVoice spike only: hourly rental, shut down when done, expected cost reported to the founder before starting. The demo defaults to Google key-only unless CosyVoice is clearly better. CosyVoice stays noted for Cantonese in v1.
-13. ElevenLabs is a quality reference only, using the founder's or team's own voices. Never user audio.
+13. ElevenLabs is a quality reference only, using the founder's or team's own voices. Never user audio. (Superseded by 16.)
 14. "Audio never leaves your device" appears only next to the data-export upload feature, never in general marketing copy.
 15. Still open: age floor (default stays 18+), headline and CTA (proposed in stage 3).
+16. The spike is free: Google on free trial credit, CosyVoice 2 on free Google Colab, ElevenLabs dropped entirely. Decision 12's paid GPU is no longer needed.
 
 ## 1. v0 demo scope
 
@@ -82,7 +83,7 @@ Then English quality and cost. These come from editorial comparisons, not measur
 | Resemble | Sources disagree on whether it still focuses on TTS | Reported US$0.0005 per second |
 | CosyVoice 2 (self-hosted) | Open model; expect lower than the commercial leaders. Measure it | GPU time: a fixed cost while the server is up, near zero per test |
 
-Recommendation for the spike (stage 2): test **Google key-only mode** and **self-hosted CosyVoice 2**, the top two on retention, with ElevenLabs used only as a quality reference that real user audio is never sent to. If neither convinces listeners in a blind test, revisit Azure (needs Limited Access approval) before ElevenLabs.
+Recommendation for the spike (stage 2): test **Google key-only mode** and **self-hosted CosyVoice 2**, the top two on retention, judged against an absolute quality bar (ElevenLabs was dropped from the spike, decision 16). If neither convinces listeners in a blind test, revisit Azure (needs Limited Access approval).
 
 For any vendor: get written confirmation of whether the uploaded reference audio (not just the voice) is logged, for how long, and whether it's used for training.
 
@@ -201,7 +202,7 @@ Each stage is one small PR. Stages 1 to 9 use the mock backend; stages 10 to 12 
 
 0. **Done on this branch.** Clone-test download wording and the voiceprint consent claim.
 1. **Docs.** Rewrite `01` to `05`, `00-README.md` and `DESIGN.md` for the demo scope, with a post-demo section. Include the privacy and terms content needed for Google verification (§2.3 items 5 and 6). In parallel, outside the repo, you set up the domain, Search Console and Cloud project.
-2. **Vendor spike.** `.plans/06-clone-vendor-decision.md`: Google key-only and self-hosted CosyVoice 2 (hourly GPU, cost approved first, shut down after), blind listening test against an ElevenLabs reference made from the founder's or team's voices only, retention confirmed in writing, cost per test. Stop for founder review.
+2. **Vendor spike.** `.plans/06-clone-vendor-decision.md`: Google key-only (free trial credit) and CosyVoice 2 (free Colab), blind listening test with an absolute quality bar, retention confirmed in writing, production cost per test. Run by the founder in their own accounts.
 3. **Landing copy.** `landing.ts`, `faq.ts`, `site.ts` (site URL read from `NEXT_PUBLIC_SITE_URL`), `cloneTest.ts`, `consent.ts`. Headline and CTA options for the founder. Run `scripts/slop-check.sh`.
 4. **Landing structure.** New hero with a labelled example clip, sections re-ordered, pricing removed. Hero direction in `DESIGN.md` first. Screenshots at 320 px and desktop.
 5. **Remove plans and billing.** Everything in the "Pricing and paywall" row of §3.

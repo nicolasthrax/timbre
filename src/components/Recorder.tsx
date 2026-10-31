@@ -131,7 +131,11 @@ export function Recorder({
           </span>
         </div>
 
-        <Waveform levels={levels} className="mt-4 h-20" />
+        <Waveform
+          levels={levels}
+          highlight={rec.levels.length > 0 ? [[1 - rec.levels.length / BARS, 1]] : []}
+          className="mt-4 h-20"
+        />
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-2">

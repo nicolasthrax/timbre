@@ -47,7 +47,7 @@ export function RiskBadge({
           <span
             id={tipId}
             role="tooltip"
-            className="pointer-events-none absolute left-0 top-full z-20 mt-2 w-64 rounded-lg border border-border bg-surface-2 p-3 text-xs leading-relaxed text-muted opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+            className="pointer-events-none absolute right-0 top-full z-20 mt-2 hidden w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-surface-2 p-3 text-xs leading-relaxed text-muted shadow-lg group-hover:block group-focus-within:block sm:left-0 sm:right-auto"
           >
             <strong className="mb-1 block font-medium text-text">Exposure estimate</strong>
             {RISK_TOOLTIP}

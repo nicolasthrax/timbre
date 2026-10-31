@@ -49,12 +49,12 @@ export function PlatformCounts({ scan }: { scan: Scan }) {
     <ul className="grid grid-cols-3 gap-3" aria-label="Sources by platform">
       {PLATFORMS.map((p) => (
         <li key={p} className="rounded-xl border border-border bg-surface p-4">
-          <span className="flex items-center gap-2 text-xs text-muted">
-            <PlatformIcon platform={p} className="size-4 text-text" />
-            <span className="truncate">{platformLabel[p]}</span>
-          </span>
+          <PlatformIcon platform={p} className="size-4 text-text" />
           <p className="mt-2 font-mono text-2xl font-semibold tabular-nums">{scan.sourceCountByPlatform[p]}</p>
-          <p className="text-xs text-muted">source{scan.sourceCountByPlatform[p] === 1 ? "" : "s"}</p>
+          <p className="text-xs text-muted">
+            {platformLabel[p]}
+            <span className="sr-only"> source{scan.sourceCountByPlatform[p] === 1 ? "" : "s"}</span>
+          </p>
         </li>
       ))}
     </ul>

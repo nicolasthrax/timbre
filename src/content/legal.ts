@@ -119,7 +119,7 @@ export const termsSections: LegalSection[] = [
     id: "billing",
     title: "5. Subscriptions and billing",
     paragraphs: [
-      "Pro costs HK$68 per month or HK$588 per year and renews automatically until cancelled. You can cancel at any time from Settings; access continues until the end of the paid period. If a payment fails, Pro features pause and your data is kept for 30 days.",
+      "Pro costs US$9.99 per month or US$79.99 per year and renews automatically until cancelled. You can cancel at any time from Settings; access continues until the end of the paid period. If a payment fails, Pro features pause and your data is kept for 30 days.",
     ],
   },
   {

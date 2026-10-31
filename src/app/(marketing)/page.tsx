@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
 import { FixExample } from "@/components/FixExample";
+import { FounderStory } from "@/components/FounderStory";
 import { PlatformTour } from "@/components/PlatformTour";
 import { PricingCards } from "@/components/PricingCards";
 import { VoiceprintFigure } from "@/components/VoiceprintFigure";
@@ -12,7 +13,6 @@ import { faq } from "@/content/faq";
 import {
   exampleScan,
   finalCta,
-  founder,
   hero,
   platformsSection,
   pricingSection,
@@ -27,10 +27,22 @@ export const metadata: Metadata = {
   openGraph: { title: site.title, description: site.description },
 };
 
-function Section({ id, children, className }: { id?: string; children: React.ReactNode; className?: string }) {
+/**
+ * Sections are told apart by tone and space, not rules: the page alternates the
+ * pale page colour and white, and the founder story sits on the ink band.
+ */
+function Section({
+  id,
+  children,
+  tone = "page",
+}: {
+  id?: string;
+  children: React.ReactNode;
+  tone?: "page" | "surface";
+}) {
   return (
-    <section id={id} className={`scroll-mt-20 border-t border-border ${className ?? ""}`}>
-      <div className="mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6">{children}</div>
+    <section id={id} className={`scroll-mt-16 ${tone === "surface" ? "bg-surface" : ""}`}>
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-32">{children}</div>
     </section>
   );
 }
@@ -102,7 +114,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <Section id="how-it-works">
+      <Section id="how-it-works" tone="surface">
         <SectionHeading>{steps.heading}</SectionHeading>
         <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.items.map((step, i) => (
@@ -116,24 +128,7 @@ export default function LandingPage() {
         <FixExample />
       </Section>
 
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <SectionHeading>{founder.heading}</SectionHeading>
-          </div>
-          <figure className="max-w-copy lg:col-span-3">
-            <blockquote className="text-2xl leading-snug text-pretty">“{founder.quote}”</blockquote>
-            {founder.body.map((p) => (
-              <p key={p} className="mt-5 leading-relaxed text-muted">
-                {p}
-              </p>
-            ))}
-            <figcaption className="mt-6 text-sm">
-              <span className="font-bold">{founder.name}</span>, <span className="text-muted">{founder.role}</span>
-            </figcaption>
-          </figure>
-        </div>
-      </Section>
+      <FounderStory />
 
       <Section>
         <SectionHeading intro={platformsSection.intro}>{platformsSection.heading}</SectionHeading>
@@ -143,7 +138,7 @@ export default function LandingPage() {
         <p className="mt-10 max-w-copy text-muted">{platformsSection.note}</p>
       </Section>
 
-      <Section id="privacy">
+      <Section id="privacy" tone="surface">
         <SectionHeading>{privacyPromise.heading}</SectionHeading>
         <VoiceprintFigure />
         <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
@@ -163,7 +158,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      <Section id="faq">
+      <Section id="faq" tone="surface">
         <SectionHeading>Questions</SectionHeading>
         <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
           {faq.map((item) => (

@@ -14,7 +14,7 @@ export function VoiceprintFigure() {
         <Waveform bars={40} seed={19} className="wave-flatten h-16" />
         <ol aria-label="Example voiceprint values" className="voiceprint-values mt-3 flex justify-between tabular-nums text-sm">
           {values.map((v, i) => (
-            <li key={i} className="bg-bg px-1" style={{ "--i": i } as CSSProperties}>
+            <li key={i} className="bg-surface px-1" style={{ "--i": i } as CSSProperties}>
               {v}
             </li>
           ))}

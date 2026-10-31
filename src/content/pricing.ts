@@ -1,12 +1,13 @@
+// USD. $9.99 sits under the $10 mark; the yearly plan is a third off 12 monthly payments.
 export const PRICES = {
-  month: { amount: 68, label: "HK$68", per: "/month" },
-  year: { amount: 588, label: "HK$588", per: "/year", saving: "Save 28%" },
+  month: { amount: 9.99, label: "$9.99", per: "/month" },
+  year: { amount: 79.99, label: "$79.99", per: "/year", saving: "Save 33%", discount: "−33%", perMonth: "≈ $6.67/month" },
 } as const;
 
 export const plans = {
   free: {
     name: "Free",
-    price: "HK$0",
+    price: "$0",
     tagline: "See how exposed you are.",
     features: [
       "1 voice scan (up to 50 videos)",

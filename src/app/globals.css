@@ -25,6 +25,11 @@
   --success: #17663f;
   --warn: #8a5300;
   --danger: #b42318;
+  /* Ink band (founder story). Contrast on --ink: text 17:1, muted 8.5:1, accent 7.5:1. */
+  --ink: #0e1b26;
+  --on-ink: #ffffff;
+  --on-ink-muted: #a9b7c4;
+  --accent-on-ink: #8ea8f2;
 
   color-scheme: light;
 }
@@ -44,6 +49,10 @@
   --color-success: var(--success);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-on-ink-muted: var(--on-ink-muted);
+  --color-accent-on-ink: var(--accent-on-ink);
 
   --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
 

@@ -57,6 +57,12 @@ export const founder = {
   ],
   name: "Nicolas Fostier",
   role: "founder of Timbre",
+  /** Labels for the two waveforms beside the quote. */
+  voices: {
+    real: "Nicolas, in a public video",
+    copy: "The AI copy on the call",
+    caption: "AI can copy a voice from a few seconds of audio. The two are hard to tell apart.",
+  },
 };
 
 export const platformsSection = {

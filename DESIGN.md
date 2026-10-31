@@ -32,6 +32,10 @@ Scale: 64 px display (`text-display`), then Tailwind's 36 / 30 / 20 / 18 / 16 / 
 | `--success` | #17663F | Low risk, fixed items, "good" recording quality |
 | `--warn` | #8A5300 | Medium and high risk, open items, quality warnings |
 | `--danger` | #B42318 | Critical risk, destructive actions, errors |
+| `--ink` | #0E1B26 | The ink band behind the founder story |
+| `--on-ink` | #FFFFFF | Text on the ink band (17:1) |
+| `--on-ink-muted` | #A9B7C4 | Secondary text and the copied waveform on ink (8.5:1) |
+| `--accent-on-ink` | #8EA8F2 | Lit waveform bars and the monogram on ink (7.5:1) |
 
 The accent marks the one main action on a screen and the voice found in a waveform. Status colours always come with an icon and a label. There are no gradients, glows or blur.
 
@@ -44,9 +48,10 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 ## Layout
 
 - Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
-- Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are separated by a rule, not by cards or backgrounds.
+- Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are told apart by tone and space, not rules: they alternate the page colour and white, with generous padding, and the founder story sits on the full-bleed ink band. Panels inside a white section use the page colour instead of a border.
 - How a scan works ends with "What fixing looks like": a before and after pair labelled as an example.
 - What we look for: from `lg` up, the platform list scrolls past an example find that stays in place and changes with the platform in view. Below `lg` each platform has its own example card.
+- Why Timbre exists (ink band): the quote is the subject, set large; beside it, two waveforms with the founder's voice from a public video and the AI copy on the call, near-identical; the founder's two paragraphs run in two columns below.
 - What we keep opens with the recording-to-voiceprint figure: a waveform above its example numbers.
 - App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 

@@ -43,12 +43,12 @@ export function FixExample() {
     <figure className="mt-20">
       <h3 className="text-xl font-bold">{fixExample.heading}</h3>
       <div className="fix-example mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
+        <div className="rounded-card bg-bg p-5 sm:p-6">
           <p className="text-sm text-muted">{before.label}</p>
           <Figure minutes={before.minutes} videos={before.videos} />
           <Waveform bars={48} seed={13} highlight={BEFORE} className="mt-5 h-14" />
         </div>
-        <div className="rounded-card border border-border bg-surface p-5 sm:p-6">
+        <div className="rounded-card bg-bg p-5 sm:p-6">
           <p className="text-sm text-muted">{after.label}</p>
           <Figure
             minutes={after.minutes}

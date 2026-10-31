@@ -100,7 +100,7 @@ export function Paywall({
                   className="sr-only"
                 />
                 {value === "month" ? "Monthly" : "Yearly"}
-                {value === "year" && <span className="tabular-nums text-xs text-accent">−28%</span>}
+                {value === "year" && <span className="tabular-nums text-xs text-accent">{PRICES.year.discount}</span>}
               </label>
             ))}
           </div>
@@ -109,7 +109,7 @@ export function Paywall({
         <p className="mt-5 flex items-baseline gap-1 tabular-nums">
           <span className="text-3xl font-semibold">{PRICES[interval].label}</span>
           <span className="text-sm text-muted">{PRICES[interval].per}</span>
-          {interval === "year" && <span className="ml-2 text-xs text-muted">≈ HK$49/month</span>}
+          {interval === "year" && <span className="ml-2 text-xs text-muted">{PRICES.year.perMonth}</span>}
         </p>
 
         {error && (

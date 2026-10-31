@@ -1,9 +1,10 @@
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
-import { type CSSProperties, Suspense } from "react";
+import { type CSSProperties, Fragment, Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
 import { PageTransition } from "@/components/PageTransition";
+import { PlayOnView } from "@/components/PlayOnView";
 import { PointerLift } from "@/components/PointerLift";
 import { PricingCards } from "@/components/PricingCards";
 import { Waveform } from "@/components/Waveform";
@@ -42,6 +43,13 @@ function SectionHeading({ children, intro }: { children: React.ReactNode; intro?
     </div>
   );
 }
+
+/** Decorative stretches lit on each platform's waveform in "What we look for". */
+const PLATFORM_FINDS: [number, number][] = [
+  [0.15, 0.4],
+  [0.55, 0.7],
+  [0.3, 0.85],
+];
 
 const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
 
@@ -135,10 +143,11 @@ export default function LandingPage() {
 
       <Section id="how-it-works">
         <SectionHeading>{steps.heading}</SectionHeading>
-        <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+        <ol className="steps mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.items.map((step, i) => (
-            <li key={step.title} className="border-t-2 border-text pt-5">
-              <p className="text-sm font-bold text-muted">Step {i + 1}</p>
+            <li key={step.title}>
+              <span aria-hidden className="step-rule" />
+              <p className="mt-5 text-sm font-bold text-muted">Step {i + 1}</p>
               <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
               <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
             </li>
@@ -152,7 +161,15 @@ export default function LandingPage() {
             <SectionHeading>{founder.heading}</SectionHeading>
           </div>
           <figure className="max-w-copy lg:col-span-3">
-            <blockquote className="text-2xl leading-snug text-pretty">“{founder.quote}”</blockquote>
+            {/* Words brighten as they rise into reading position (globals.css, .word-reveal). */}
+            <blockquote className="text-2xl leading-snug text-pretty">
+              {`“${founder.quote}”`.split(" ").map((word, i) => (
+                <Fragment key={i}>
+                  {i > 0 && " "}
+                  <span className="word-reveal">{word}</span>
+                </Fragment>
+              ))}
+            </blockquote>
             {founder.body.map((p) => (
               <p key={p} className="mt-5 leading-relaxed text-muted">
                 {p}
@@ -168,8 +185,14 @@ export default function LandingPage() {
       <Section>
         <SectionHeading intro={platformsSection.intro}>{platformsSection.heading}</SectionHeading>
         <dl className="mt-12 grid gap-8 md:grid-cols-3">
-          {platformsSection.platforms.map((p) => (
+          {platformsSection.platforms.map((p, i) => (
             <div key={p.title}>
+              <Waveform
+                bars={28}
+                seed={11 + i * 6}
+                highlight={[PLATFORM_FINDS[i]]}
+                className="wave-onview mb-5 h-10 max-w-60"
+              />
               <dt className="text-xl font-bold">{p.title}</dt>
               <dd className="mt-2 leading-relaxed text-muted">{p.body}</dd>
             </div>
@@ -179,7 +202,11 @@ export default function LandingPage() {
       </Section>
 
       <Section id="privacy">
-        <SectionHeading>{privacyPromise.heading}</SectionHeading>
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-end">
+          <SectionHeading>{privacyPromise.heading}</SectionHeading>
+          {/* A recording flattening into a line: the audio is deleted, only a voiceprint stays. */}
+          <Waveform bars={40} seed={19} className="wave-flatten h-16 max-w-md" />
+        </div>
         <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
           {privacyPromise.points.map((p) => (
             <div key={p.title} className="max-w-copy">
@@ -215,6 +242,10 @@ export default function LandingPage() {
       <Section>
         <h2 className="max-w-copy text-3xl font-bold tracking-tight text-balance sm:text-4xl">{finalCta.heading}</h2>
         <p className="mt-4 max-w-copy text-lg text-muted">{finalCta.body}</p>
+        <PlayOnView className="relative mt-10 max-w-copy" style={{ "--sweep": "900ms" } as CSSProperties}>
+          <Waveform bars={44} seed={29} className="h-16" />
+          <Playhead />
+        </PlayOnView>
         <ButtonLink href="/signin" size="lg" className="mt-8">
           {hero.cta}
         </ButtonLink>

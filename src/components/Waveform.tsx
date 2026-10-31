@@ -76,6 +76,7 @@ export function Waveform({
               {
                 height: `${Math.max(6, h * 100)}%`,
                 "--at": at.toFixed(3),
+                "--h": Math.max(0.06, h).toFixed(3),
                 animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
               } as CSSProperties
             }

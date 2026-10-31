@@ -66,6 +66,12 @@ Tokens live in `globals.css`: `--ease-out` (fast start, long settle) for things 
 | Moment | What moves | Why |
 |---|---|---|
 | Landing load (the one orchestrated non-user moment) | Headline and subline rise in, a playhead sweeps the waveform left to right, each bar rises as it passes, the found stretches light up and their notes drop in when the playhead reaches them. About 1.8 s, CTA usable after 0.4 s. | It acts out a scan finding the voice, which is what the product does. |
+| Header links (landing only) | Links scroll smoothly to their section; an underline slides to the section in view. | Where you are on a long page. |
+| How a scan works | Each step's top rule fills left to right, 1, 2, 3, linked to scroll. | It is a real sequence, so it reads as progress. |
+| Founder quote | Words go from 20 % to full opacity as they rise; full by 70 % down the viewport. | Slows the reader on the reason the product exists. |
+| What we look for | A small waveform per platform; its found stretch lights left to right with scroll. | Ties each platform to "found here" using the signature visual. |
+| What we keep | A waveform flattens to a thin line, left to right, with scroll. | Acts out "your recording is deleted, a voiceprint stays". |
+| Closing CTA | A short waveform with the hero's scan line, played once when it is 60 % on screen. | Bookends the page right above the button. Accent stays on the button. |
 | Pointer over the hero waveform (fine pointers only) | Bars near the pointer lift slightly. | The example reads as audio you can scrub, not a picture. |
 | Results and dashboard load | The minutes figure counts up and the waveform sweeps in once. | The number is the answer to the scan, so it arrives as a result. |
 | Scan running, then done | Bars pulse while running; on completion the bars light up left to right and each step's check pops in. | Shows progress and the moment it finished. |
@@ -75,7 +81,7 @@ Tokens live in `globals.css`: `--ease-out` (fast start, long settle) for things 
 | Buttons, switches, billing toggle | Press scales to 98 %; switch thumb and billing indicator slide with `--ease-out`. | Confirms the press or the new choice. |
 | Banners, mobile menu, "Copied" | Short fade and 4 px drop on mount. | Marks new information that appeared after an action. |
 
-Sections do not fade in on scroll and cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
+Scroll-linked effects use CSS scroll timelines and run only where `animation-timeline: view()` is supported and motion is welcome; elsewhere each element shows its finished state. Pricing stays still because people compare numbers there. Sections never fade in as whole blocks and cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
 
 ## Icons
 

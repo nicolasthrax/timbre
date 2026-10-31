@@ -56,13 +56,14 @@ mkdirSync(join(root, "public/audio"), { recursive: true });
 writeFileSync(join(root, "public/audio/real.wav"), wav(voice({ f0: 132 })));
 writeFileSync(join(root, "public/audio/clone.wav"), wav(voice({ f0: 132, detune: 0.012, watermark: true })));
 
+// Light tints that sit on the site's blue-grey palette (DESIGN.md).
 const palettes = [
-  ["#1A2A2F", "#2EE6C5"],
-  ["#2A2219", "#FFB020"],
-  ["#1C2030", "#7C9CFF"],
-  ["#2A1C24", "#FF7AA8"],
-  ["#1E2A1E", "#8BE37A"],
-  ["#22202E", "#B79CFF"],
+  ["#DCE6F5", "#1F47B8"],
+  ["#E3EAF0", "#44535F"],
+  ["#D6E4EE", "#2C5E8A"],
+  ["#E6E2EE", "#4B3F8C"],
+  ["#DDEBE3", "#17663F"],
+  ["#EDE6DA", "#8A5300"],
 ];
 mkdirSync(join(root, "public/thumbnails"), { recursive: true });
 palettes.forEach(([bg, fg], i) => {
@@ -70,7 +71,7 @@ palettes.forEach(([bg, fg], i) => {
     const h = 10 + ((b * 37 + i * 53) % 40);
     return `<rect x="${14 + b * 8}" y="${50 - h / 2}" width="4" height="${h}" rx="2" fill="${fg}" opacity="0.85"/>`;
   }).join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="#0B0D10"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/>${bars}</svg>\n`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="#F3F6F9"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/>${bars}</svg>\n`;
   writeFileSync(join(root, `public/thumbnails/thumb-${i + 1}.svg`), svg);
 });
 console.log("Assets generated.");

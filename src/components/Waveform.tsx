@@ -20,13 +20,13 @@ export interface WaveformProps {
   seed?: number;
   /** Live levels 0–1; overrides the generated envelope. */
   levels?: number[];
-  /** Ranges (0–1 fractions) where the voice was "found" — drawn in accent. */
+  /** Ranges (0–1 fractions) where the voice was found, drawn in the lit colour. */
   highlight?: [number, number][];
   /** Playback progress 0–1; bars before it are drawn in accent. */
   progress?: number;
   animated?: boolean;
   className?: string;
-  /** Bar colours; default to the v0 palette. */
+  /** Bar colours; default to accent (found) and bar (other audio). */
   litClassName?: string;
   unlitClassName?: string;
   /** Accessible description. Without it the waveform is decorative. */
@@ -42,7 +42,7 @@ export function Waveform({
   animated = false,
   className,
   litClassName = "bg-accent",
-  unlitClassName = "bg-[#3a414c]",
+  unlitClassName = "bg-bar",
   label,
 }: WaveformProps) {
   const heights = levels && levels.length > 0 ? levels : waveformHeights(bars, seed);

@@ -54,7 +54,7 @@ test("free results and paywall", async ({ page }) => {
   await page.goto("/results");
   await expect(page.getByTestId("minutes-found")).toBeVisible();
   await shot(page, "11-results-free");
-  await page.getByRole("button", { name: "Unlock full report" }).click();
+  await page.getByRole("button", { name: "See all sources" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await shot(page, "12-paywall", false);
   await page.keyboard.press("Escape");

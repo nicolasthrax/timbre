@@ -17,7 +17,7 @@ export function MarketingFooter() {
           <Link href="/signin" className="text-muted hover:text-text">Sign in</Link>
         </nav>
       </div>
-      <p className="mx-auto max-w-6xl px-4 pb-8 font-mono text-xs text-muted sm:px-6">© 2026 Timbre AI</p>
+      <p className="mx-auto max-w-6xl px-4 pb-8 tabular-nums text-xs text-muted sm:px-6">© 2026 Timbre AI</p>
     </footer>
   );
 }

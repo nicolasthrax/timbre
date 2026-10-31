@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLines, FlaskConical, LogOut, Menu, Settings, Sparkles, X } from "lucide-react";
+import { AudioLines, FlaskConical, LogOut, Menu, Settings, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -54,7 +54,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                "flex items-center gap-3 rounded-field px-3 py-2.5 text-sm transition-colors",
                 active ? "bg-surface-2 text-text" : "text-muted hover:bg-surface-2/60 hover:text-text",
               )}
             >
@@ -71,11 +71,10 @@ export function AppShell({ user, children }: { user: User; children: React.React
     <div className="space-y-3">
       {user.plan !== "pro" && (
         <Button onClick={openPaywall} className="w-full" size="sm">
-          <Sparkles aria-hidden className="size-4" />
           {user.plan === "lapsed" ? "Renew Pro" : "Upgrade to Pro"}
         </Button>
       )}
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2.5">
+      <div className="flex items-center justify-between gap-2 rounded-field border border-border px-3 py-2.5">
         <div className="min-w-0">
           <p className="truncate text-sm" title={user.email}>
             {user.email}
@@ -87,7 +86,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
         <button
           type="button"
           onClick={signOut}
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-field text-muted hover:bg-surface-2 hover:text-text"
         >
           <LogOut aria-hidden className="size-4" />
           <span className="sr-only">Sign out</span>
@@ -112,7 +111,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 border-b border-border bg-bg/85 backdrop-blur-md lg:hidden">
+      <header className="sticky top-0 z-30 border-b border-border bg-bg lg:hidden">
         <div className="flex h-14 items-center justify-between px-4">
           <Logo href={items[0].href} />
           <div className="flex items-center gap-2">
@@ -122,7 +121,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
               onClick={() => setMenuOpen((v) => !v)}
-              className="inline-flex size-10 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+              className="inline-flex size-10 items-center justify-center rounded-field text-muted hover:bg-surface-2 hover:text-text"
             >
               {menuOpen ? <X aria-hidden className="size-5" /> : <Menu aria-hidden className="size-5" />}
               <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>

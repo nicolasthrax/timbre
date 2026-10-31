@@ -1,10 +1,9 @@
 "use client";
 
-import { AtSign, User as UserIcon } from "lucide-react";
+import { AtSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/Button";
-import { PlatformIcon } from "@/components/PlatformIcon";
 import { useSession } from "@/components/SessionProvider";
 import { api, type Platform } from "@/lib/api";
 import { PLATFORMS, handleHint, handlePattern, normaliseHandle, platformLabel } from "@/lib/platforms";
@@ -53,10 +52,9 @@ export function AccountsForm() {
     }
   }
 
-  const field = (key: keyof Values, label: string, icon: React.ReactNode, placeholder: string, hint: string) => (
+  const field = (key: keyof Values, label: string, placeholder: string, hint: string) => (
     <div>
       <label htmlFor={key} className="flex items-center gap-2 text-sm font-medium">
-        {icon}
         {label}
         <span className="font-normal text-muted">(optional)</span>
       </label>
@@ -75,33 +73,33 @@ export function AccountsForm() {
           placeholder={placeholder}
           aria-invalid={errors[key] ? true : undefined}
           aria-describedby={`${key}-hint`}
-          className={`h-12 w-full rounded-lg border bg-surface pr-4 text-text placeholder:text-muted/60 focus:border-accent focus:outline-none ${key === "fullName" ? "pl-4" : "pl-9"} ${errors[key] ? "border-danger/60" : "border-border"}`}
+          className={`h-12 w-full rounded-field border bg-surface pr-4 text-text placeholder:text-muted focus:border-accent focus:outline-none ${key === "fullName" ? "pl-4" : "pl-9"} ${errors[key] ? "border-danger/60" : "border-field"}`}
         />
       </div>
-      <p id={`${key}-hint`} className={`mt-1.5 text-xs ${errors[key] ? "text-[#ff8a8e]" : "text-muted"}`}>
+      <p id={`${key}-hint`} className={`mt-1.5 text-xs ${errors[key] ? "text-danger" : "text-muted"}`}>
         {errors[key] ?? hint}
       </p>
     </div>
   );
 
   return (
-    <form onSubmit={onSubmit} noValidate className="animate-fade-up">
+    <form onSubmit={onSubmit} noValidate>
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Where should we look?</h1>
       <p className="mt-2 text-muted">
         Add your public accounts. We also search for reposts and tags that mention your name. Fill in at least one.
       </p>
 
-      <div className="mt-8 space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-6">
-        {field("instagram", "Instagram", <PlatformIcon platform="instagram" className="size-4" />, "yourhandle", handleHint.instagram)}
-        {field("tiktok", "TikTok", <PlatformIcon platform="tiktok" className="size-4" />, "yourhandle", handleHint.tiktok)}
-        {field("youtube", "YouTube", <PlatformIcon platform="youtube" className="size-4" />, "yourchannel", handleHint.youtube)}
+      <div className="mt-8 space-y-5 rounded-card border border-border bg-surface p-5 sm:p-6">
+        {field("instagram", "Instagram", "yourhandle", handleHint.instagram)}
+        {field("tiktok", "TikTok", "yourhandle", handleHint.tiktok)}
+        {field("youtube", "YouTube", "yourchannel", handleHint.youtube)}
         <div className="border-t border-border pt-5">
-          {field("fullName", "Full name", <UserIcon aria-hidden className="size-4" />, "Kai Chan", "Used only to search for public reposts and tags of you.")}
+          {field("fullName", "Full name", "Kai Chan", "Used only to search for public reposts and tags of you.")}
         </div>
       </div>
 
       {errors.form && (
-        <p role="alert" className="mt-4 text-sm text-[#ff8a8e]">
+        <p role="alert" className="mt-4 text-sm text-danger">
           {errors.form}
         </p>
       )}

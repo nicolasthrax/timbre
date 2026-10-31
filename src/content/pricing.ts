@@ -18,7 +18,7 @@ export const plans = {
   },
   pro: {
     name: "Pro",
-    tagline: "See exactly where — and fix it.",
+    tagline: "See which videos, and fix them.",
     features: [
       "Full source details and links",
       "Clone test with your own voice",
@@ -30,9 +30,9 @@ export const plans = {
 };
 
 export const paywallCopy = {
-  title: "Unlock your full report",
+  title: "See your full report",
   body: "See every video where your voice was found, and get step-by-step help to remove it.",
   unlocks: plans.pro.features,
   cta: "Upgrade",
-  mockNote: "Demo checkout — no card is charged.",
+  mockNote: "Demo checkout. No card is charged.",
 };

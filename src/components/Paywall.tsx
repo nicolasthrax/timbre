@@ -54,13 +54,13 @@ export function Paywall({
       ref={ref}
       onClose={onClose}
       aria-labelledby="paywall-title"
-      className="m-0 mt-auto w-full max-w-none rounded-t-2xl border border-border bg-surface p-0 text-text sm:m-auto sm:max-w-md sm:rounded-xl"
+      className="m-0 mt-auto w-full max-w-none rounded-t-card border border-border bg-surface p-0 text-text sm:m-auto sm:max-w-md sm:rounded-card"
     >
       <div className="relative p-6 sm:p-7">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 inline-flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+          className="absolute right-4 top-4 inline-flex size-9 items-center justify-center rounded-field text-muted hover:bg-surface-2 hover:text-text"
         >
           <X aria-hidden className="size-5" />
           <span className="sr-only">Close</span>
@@ -82,13 +82,13 @@ export function Paywall({
 
         <fieldset className="mt-6">
           <legend className="sr-only">Billing period</legend>
-          <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-bg p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-field border border-border bg-bg p-1">
             {(["month", "year"] as const).map((value) => (
               <label
                 key={value}
                 className={cn(
-                  "flex cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 text-sm transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
-                  interval === value ? "bg-surface-2 text-text" : "text-muted hover:text-text",
+                  "flex cursor-pointer items-center justify-center gap-2 rounded-field px-3 py-2 text-sm transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+                  interval === value ? "bg-surface font-bold text-text ring-1 ring-field" : "text-muted hover:text-text",
                 )}
               >
                 <input
@@ -100,20 +100,20 @@ export function Paywall({
                   className="sr-only"
                 />
                 {value === "month" ? "Monthly" : "Yearly"}
-                {value === "year" && <span className="font-mono text-xs text-accent">−28%</span>}
+                {value === "year" && <span className="tabular-nums text-xs text-accent">−28%</span>}
               </label>
             ))}
           </div>
         </fieldset>
 
-        <p className="mt-5 flex items-baseline gap-1 font-mono">
+        <p className="mt-5 flex items-baseline gap-1 tabular-nums">
           <span className="text-3xl font-semibold">{PRICES[interval].label}</span>
           <span className="text-sm text-muted">{PRICES[interval].per}</span>
           {interval === "year" && <span className="ml-2 text-xs text-muted">≈ HK$49/month</span>}
         </p>
 
         {error && (
-          <p role="alert" className="mt-4 text-sm text-[#ff8a8e]">
+          <p role="alert" className="mt-4 text-sm text-danger">
             {error}
           </p>
         )}

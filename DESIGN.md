@@ -1,105 +1,68 @@
-# Hero redesigns: token plans
+# Design plan
 
-Three directions for the landing hero only. Each is built from its own plan below and can be previewed at `/hero-lab/a`, `/hero-lab/b` and `/hero-lab/c`. The rest of the site still uses the v0 tokens in `src/app/globals.css` until one direction is chosen.
+The site uses direction C, "Where it was found", chosen from three hero explorations. Directions A ("Start the scan") and B ("The call") are in the history of PR #2. Build new UI from this plan and the tokens in `src/app/globals.css`, and follow the rules in `AGENTS.md`.
 
 ## Subject
 
 - Product: Timbre AI, which shows people where their voice is public on Instagram, TikTok and YouTube and helps them remove it.
 - Audience: people aged 18 to 30 in Hong Kong who post videos and have parents or grandparents who could get a fake call in their voice.
-- The hero's one job: get a visitor to start a free scan. It has to say what the risk is without fear tactics, and the copy can't claim Timbre detects clones or stops scams.
+- The landing page's job: get a visitor to start a free scan. It says what the risk is without fear tactics, and nothing claims Timbre detects clones or stops scams.
 - Fixed by the brief: the headline "How much of your voice is out there?", the CTA "Scan my voice — free" (the em dash is the brief's own wording), the founder story, and the waveform with lit segments as the signature visual.
 
-## Shared copy
+## Type
 
-- Subline: "AI can copy a voice from a few seconds of audio, and scammers use those copies to call families. Timbre shows where your voice is public on Instagram, TikTok and YouTube, and helps you take it down."
-- Reassurance line: "Free scan. No card needed. Raw audio is never stored."
-- Founder line, from `.plans/01-prd.md`: "Scammers called my grandparents with an AI clone of my voice. They only avoided paying because they reached me directly." Nicolas Fostier, founder.
-- Example result, from the brief: "We found 47 minutes of your voice in 12 public videos." Always labelled as an example.
+Atkinson Hyperlegible Next, for everything. The Braille Institute designed it for readers with low vision. The people Timbre protects include elderly relatives, and plain, readable text matches the honest tone. Numbers use `tabular-nums` rather than a second, monospace face.
 
-## Shared rules
+Scale: 64 px display (`text-display`), then Tailwind's 36 / 30 / 20 / 18 / 16 / 14 / 12 px steps. Body text is 16 to 18 px with a line height near 1.5, and copy is capped at `max-w-copy` (54ch). Headings are bold and in sentence case, with more space above them than below. There are no eyebrow labels and no uppercase tracking.
 
-- Spacing base: 8 px.
-- Each direction sets the same token names (`--hero-*`) under its own scope class, mapped to Tailwind utilities in `globals.css` (`bg-hero-bg`, `text-hero-muted`, `rounded-hero-card`, ...).
-- Icons come from lucide-react only. Platforms are named in text, never shown as drawn logos.
-- No pill badge above the headline, no radial glow, no gradient wash, no monospace data labels, no arrows on buttons.
+## Color
 
-## A. Start the scan
+| Token | Hex | Role |
+|---|---|---|
+| `--bg` | #E8EEF3 | Page, a pale blue-grey |
+| `--surface` | #FFFFFF | Cards, fields, dialogs |
+| `--surface-2` | #F3F6F9 | Hover and raised areas |
+| `--border` | #C9D4DD | Card hairlines (decorative) |
+| `--field` | #7A8896 | Input, select and secondary-button borders (3.6:1 on white) |
+| `--bar` | #AFBCC8 | Unlit waveform bars, connectors |
+| `--text` | #0E1B26 | Text |
+| `--text-muted` | #44535F | Secondary text (7.9:1 on white, 6.8:1 on the page) |
+| `--accent` | #1F47B8 | Primary actions and lit waveform bars, with white text at 7.9:1 |
+| `--accent-hover` | #193A96 | Hover on primary actions |
+| `--success` | #17663F | Low risk, fixed items, "good" recording quality |
+| `--warn` | #8A5300 | Medium and high risk, open items, quality warnings |
+| `--danger` | #B42318 | Critical risk, destructive actions, errors |
 
-The hero is the first step of the product: a handle field you can fill in right away, next to an example of the report you get back.
+The accent marks the one main action on a screen and the voice found in a waveform. Status colours always come with an icon and a label. There are no gradients, glows or blur.
 
-- Type: Public Sans, for display and body. It was made for the US government's web design system, and its plain public-service tone fits a safety tool. Scale: 56 / 20 / 16 / 14 px.
-- Color:
-  - `--hero-bg` #F4F7F9: page, a cool off-white.
-  - `--hero-surface` #FFFFFF: the form and the report.
-  - `--hero-ink` #142231: text.
-  - `--hero-muted` #4B5B6B: secondary text, 6.5:1 on the page.
-  - `--hero-line` #D5DDE4: borders and unlit bars.
-  - `--hero-action` #0A6B52: the button and lit waveform bars, a deep "safe" green with white text at 6.5:1.
-- Shape: 8 px radius on fields, 12 px on cards, a 1 px border, no shadow.
-- Layout: two columns. The left one holds the headline, the subline and the form. The right one holds the example report: a waveform strip, then three source rows.
+## Shape and spacing
 
-```
-[Timbre]                                        [Sign in]
-How much of your voice        | Example report          |
-is out there?                 | |||||||||||||||||||||    |
-subline                       | Instagram Reel   2m 10s |
-[@handle_______][Scan ...]    | TikTok repost      48s  |
-reassurance                   | YouTube vlog     6m 02s |
-```
+- Spacing uses an 8 px base: tighter inside groups, looser between them.
+- Radii: `rounded-field` (6 px) on fields, buttons and small notes, and `rounded-card` (10 px) on cards and dialogs. Pills (`rounded-full`) appear only on badges, toggles and filter chips.
+- Surfaces get a 1 px border and no shadow. Cards are used only for items you act on (a source, a plan, a form) and are never nested.
 
-## B. The call
+## Layout
 
-The hero opens on what actually happened: a phone ringing with a familiar name, and a voice that isn't really them.
-
-- Type: Schibsted Grotesk, for display and body. It was drawn for a news publisher. The founder story reads like a scam report in the news, and scam news is one of Timbre's launch channels. Scale: 60 / 20 / 17 / 14 px.
-- Color:
-  - `--hero-bg` #0F1B2D: page, the blue of a phone screen at night (chosen on purpose, not a default near-black).
-  - `--hero-surface` #182A42: the phone body.
-  - `--hero-ink` #EEF2F7: text.
-  - `--hero-muted` #A9B6C7: secondary text, 8.4:1 on the page.
-  - `--hero-line` #2A3E5A: borders and unlit bars.
-  - `--hero-action` #F5C04A: the button and lit bars, a signal yellow with page-coloured text on it at 10.3:1.
-- Shape: 10 px radius on the button, 16 px on the founder quote, 36 px on the phone (a phone shape), no shadows.
-- Motion: one moment. The phone's waveform pulses like a live call, because the call is the subject. It's off under reduced motion.
-- Layout: two columns. The left one holds the headline, the subline, the founder quote and the CTA. The right one holds the phone, with a caption under it.
+- Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
+- Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are separated by a rule, not by cards or backgrounds.
+- App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 
 ```
-[Timbre]                                  [Sign in]
-How much of your voice          .-------------.
-is out there?                   |  Nicolas    |
-subline                         |  mobile     |
-| "Scammers called my ..."      |  |||||||||  |
-|  Nicolas Fostier              | Decline Acc.|
-[Scan my voice — free]          '-------------'
-reassurance                     caption
-```
-
-## C. Where it was found
-
-The waveform itself is the hero. It runs the full page width, and notes above the lit parts say where each piece of voice was found.
-
-- Type: Atkinson Hyperlegible Next, for display and body. The Braille Institute designed it for readers with low vision. The people Timbre protects include elderly relatives, and plain, readable text matches the honest tone. Scale: 64 / 20 / 17 / 15 px.
-- Color:
-  - `--hero-bg` #E8EEF3: page, a pale blue-grey.
-  - `--hero-surface` #FFFFFF: the note cards.
-  - `--hero-ink` #0E1B26: text.
-  - `--hero-muted` #44535F: secondary text, 6.8:1 on the page.
-  - `--hero-line` #AFBCC8: unlit bars and connectors.
-  - `--hero-action` #1F47B8: the button and lit bars, a cobalt blue with white text at 7.9:1.
-- Shape: 6 px radius on the note cards and the button. Each note has a 1 px border and no shadow.
-- Layout: the headline on the left, with the subline in a narrow right column on the same row. The waveform runs full width below, with the notes pinned above it, and the CTA row sits under the waveform.
-
-```
-[Timbre]                                        [Sign in]
-How much of your                    subline subline
-voice is out there?                 subline
+Timbre                                          Sign in  [Scan free]
+How much of your                    subline subline subline
+voice is out there?                 subline subline
       [Instagram Reel]   [TikTok repost]     [YouTube vlog]
  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-[Scan my voice — free]  reassurance           Example scan
+Example scan. We found 47 minutes ...
+[Scan my voice — free]  Free scan. No card needed. ...
 ```
 
-## Review against the brief
+## Motion
 
-- All three keep the brief's headline, CTA and waveform, and none claims to detect cloning.
-- A opens on a working tool, B on the event behind the product, C on the signature visual. None uses the centred hero with a pill badge, and each picks a face other than the v0 Geist.
-- B is the only dark one. Its blue comes from the night-time call it depicts and its accent is yellow, so it stays clear of the near-black-plus-neon look.
+- The waveform pulses only while something is happening (a scan running or a clone being generated).
+- Button and toggle state changes are short colour transitions.
+- Everything respects `prefers-reduced-motion`.
+
+## Icons
+
+lucide-react only, at its default stroke width. Platforms are named in text, never shown as drawn logos.

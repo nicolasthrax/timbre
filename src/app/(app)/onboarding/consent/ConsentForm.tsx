@@ -34,13 +34,13 @@ export function ConsentForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="animate-fade-up">
+    <form onSubmit={onSubmit}>
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{consentCopy.title}</h1>
       <p className="mt-2 text-muted">{consentCopy.intro}</p>
 
       <ul className="mt-8 space-y-3">
         {consentCopy.stored.map((item) => (
-          <li key={item.title} className="flex gap-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
+          <li key={item.title} className="flex gap-4 rounded-card border border-border bg-surface p-4 sm:p-5">
             <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
               <Check aria-hidden className="size-3.5" />
             </span>
@@ -52,7 +52,7 @@ export function ConsentForm() {
         ))}
       </ul>
 
-      <label className="mt-8 flex cursor-pointer gap-3 rounded-xl border border-border bg-surface-2 p-4 has-[:checked]:border-accent/50">
+      <label className="mt-8 flex cursor-pointer gap-3 rounded-card border border-border bg-surface-2 p-4 has-[:checked]:border-accent/50">
         <input
           type="checkbox"
           required
@@ -62,19 +62,19 @@ export function ConsentForm() {
             setError(null);
           }}
           aria-describedby={error ? "consent-error" : undefined}
-          className="mt-0.5 size-5 shrink-0 accent-[#2EE6C5]"
+          className="mt-0.5 size-5 shrink-0 accent-accent"
         />
         <span className="text-sm leading-relaxed">{consentCopy.checkbox}</span>
       </label>
       {error && (
-        <p id="consent-error" role="alert" className="mt-2 text-sm text-[#ff8a8e]">
+        <p id="consent-error" role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       )}
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-muted">
-          Consent version <span className="font-mono">{CONSENT_VERSION}</span> ·{" "}
+          Consent version <span className="tabular-nums">{CONSENT_VERSION}</span>.{" "}
           <Link href="/privacy" className="underline underline-offset-2 hover:text-text">
             Full privacy policy
           </Link>

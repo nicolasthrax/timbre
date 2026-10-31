@@ -49,7 +49,7 @@ test("upgrade → dashboard shows source URLs → open a source → mark as fixe
   await expect(page.getByTestId("minutes-found")).toBeVisible();
   expect(await page.content()).not.toMatch(SOURCE_URL_PATTERN);
 
-  await page.getByRole("button", { name: "Unlock full report" }).click();
+  await page.getByRole("button", { name: "See all sources" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await dialog.getByText("Monthly").click();

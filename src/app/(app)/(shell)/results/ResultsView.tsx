@@ -56,7 +56,7 @@ export function ResultsView() {
               <h2 id="sources-heading" className="font-semibold">
                 Sources
               </h2>
-              <span className="font-mono text-xs text-muted">{sources.length} found</span>
+              <span className="tabular-nums text-xs text-muted">{sources.length} found</span>
             </div>
             <div className="relative">
               <ul className="space-y-3" data-testid="source-list">

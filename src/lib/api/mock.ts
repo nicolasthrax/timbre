@@ -31,7 +31,7 @@ import {
 const STORAGE_KEY = "timbre:mock:v1";
 const SCAN_DURATION_MS = 10_000;
 const CLONE_SENTENCE =
-  "Every voice has a timbre — a colour that makes it unmistakably yours.";
+  "Every voice has a timbre, a colour that makes it yours and no one else's.";
 
 interface StoredScan {
   id: string;
@@ -229,7 +229,7 @@ export class MockTimbreApi implements TimbreApi {
 
   async signIn(method: SignInMethod): Promise<User> {
     await latency();
-    // TODO(real): Supabase Auth — magic link (signInWithOtp) or Google OAuth.
+    // TODO(real): Supabase Auth, magic link (signInWithOtp) or Google OAuth.
     const email = method.kind === "email" ? method.email.trim().toLowerCase() : "kai.chan@gmail.com";
     return this.mutate((store) => {
       if (store.user && store.user.email === email) {
@@ -451,7 +451,7 @@ export class MockTimbreApi implements TimbreApi {
   async requestCloneTest(liveSample: Blob): Promise<CloneTestResult> {
     await latency();
     await latency();
-    // TODO(real): POST /api/clone-test — paid only, liveness re-check,
+    // TODO(real): POST /api/clone-test: paid only, liveness re-check,
     // rate-limited (3/month), audit-logged, watermarked, streamed, not stored.
     const store = load();
     const user = requireUser(store);
@@ -487,7 +487,7 @@ export class MockTimbreApi implements TimbreApi {
 
   async deleteAllData(): Promise<void> {
     await latency();
-    // TODO(real): DELETE /api/me — cascades voiceprints, accounts, scans, sources; audit-logged.
+    // TODO(real): DELETE /api/me cascades voiceprints, accounts, scans, sources; audit-logged.
     const scenario = load().scenario;
     save(emptyStore(scenario));
   }

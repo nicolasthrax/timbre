@@ -1,7 +1,6 @@
 import { ChevronRight, CircleCheck, EyeOff, Lock, User, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/Badge";
-import { PlatformIcon } from "@/components/PlatformIcon";
 import { Waveform } from "@/components/Waveform";
 import type { PostedBy, Source, SourceStatus } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
@@ -18,7 +17,7 @@ export const postedByLabel: Record<PostedBy, string> = {
 export function SourceStatusBadge({ status }: { status: SourceStatus }) {
   if (status === "fixed")
     return (
-      <Badge tone="accent" icon={<CircleCheck aria-hidden className="size-3" />}>
+      <Badge tone="success" icon={<CircleCheck aria-hidden className="size-3" />}>
         Fixed
       </Badge>
     );
@@ -45,7 +44,7 @@ export function SourceCard({ source }: { source: Source }) {
 
   const body = (
     <div className="flex gap-4">
-      <div className="relative hidden size-20 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:block">
+      <div className="relative hidden size-20 shrink-0 overflow-hidden rounded-field border border-border bg-surface-2 sm:block">
         {source.thumbnail ? (
           // Local placeholder thumbnails; next/image adds nothing here.
           // eslint-disable-next-line @next/next/no-img-element
@@ -57,7 +56,6 @@ export function SourceCard({ source }: { source: Source }) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1.5 text-text">
-            <PlatformIcon platform={source.platform} className="size-4" />
             {platformLabel[source.platform]}
           </span>
           <span>{formatDate(source.postedAt)}</span>
@@ -77,14 +75,14 @@ export function SourceCard({ source }: { source: Source }) {
         ) : (
           <>
             <p className="mt-1.5 truncate font-medium text-text">{source.title}</p>
-            <p className="mt-0.5 truncate font-mono text-xs text-muted">{displayUrl(source.url ?? "")}</p>
+            <p className="mt-0.5 truncate tabular-nums text-xs text-muted">{displayUrl(source.url ?? "")}</p>
           </>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="font-mono text-sm tabular-nums text-text">
+          <span className="tabular-nums text-sm tabular-nums text-text">
             {formatDuration(source.matchedSeconds)} <span className="text-muted">matched</span>
           </span>
-          <span className="font-mono text-xs tabular-nums text-muted">{formatPercent(source.confidence)} confidence</span>
+          <span className="tabular-nums text-xs tabular-nums text-muted">{formatPercent(source.confidence)} confidence</span>
           {!redacted && <SourceStatusBadge status={source.status} />}
         </div>
       </div>
@@ -93,8 +91,8 @@ export function SourceCard({ source }: { source: Source }) {
   );
 
   const className = cn(
-    "block rounded-xl border border-border bg-surface p-4 transition-colors",
-    !redacted && "hover:border-[#363c46] hover:bg-surface-2",
+    "block rounded-card border border-border bg-surface p-4 transition-colors",
+    !redacted && "hover:border-field hover:bg-surface-2",
   );
 
   if (redacted) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, FlaskConical, Lock, ShieldCheck } from "lucide-react";
+import { FlaskConical, Lock, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Banner } from "@/components/Banner";
 import { Button, ButtonLink } from "@/components/Button";
@@ -20,7 +20,7 @@ function Safeguards() {
   return (
     <ul className="grid gap-3 sm:grid-cols-2">
       {cloneTestCopy.safeguards.map((s) => (
-        <li key={s.title} className="rounded-xl border border-border bg-surface p-4">
+        <li key={s.title} className="rounded-card border border-border bg-surface p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <ShieldCheck aria-hidden className="size-4 text-accent" />
             {s.title}
@@ -154,7 +154,6 @@ export function CloneTestView({ phrase }: { phrase: string }) {
               </Banner>
               <ButtonLink href="/dashboard" size="lg">
                 {cloneTestCopy.cta}
-                <ArrowRight aria-hidden className="size-4" />
               </ButtonLink>
             </>
           )}

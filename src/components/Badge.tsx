@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-type Tone = "neutral" | "accent" | "warn" | "danger";
+type Tone = "neutral" | "accent" | "success" | "warn" | "danger";
 
 const tones: Record<Tone, string> = {
   neutral: "border-border bg-surface-2 text-muted",
   accent: "border-accent/40 bg-accent/10 text-accent",
+  success: "border-success/40 bg-success/10 text-success",
   warn: "border-warn/40 bg-warn/10 text-warn",
-  danger: "border-danger/50 bg-danger/10 text-[#ff8a8e]",
+  danger: "border-danger/50 bg-danger/10 text-danger",
 };
 
 export function Badge({

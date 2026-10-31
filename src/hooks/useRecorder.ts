@@ -36,7 +36,7 @@ function isSupported(): boolean {
  * Records microphone audio entirely in the browser.
  * Exposes a live level, a rolling level history (for the waveform), a simple
  * quality hint and total recorded time. Audio never leaves the page unless the
- * caller passes the finished blob to the API — and callers must `discard()` it.
+ * caller passes the finished blob to the API, and callers must `discard()` it.
  */
 export function useRecorder() {
   const [status, setStatus] = useState<RecorderStatus>("idle");

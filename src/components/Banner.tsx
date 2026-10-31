@@ -6,14 +6,14 @@ type Tone = "info" | "success" | "warn" | "danger";
 
 const tones: Record<Tone, { className: string; Icon: typeof Info }> = {
   info: { className: "border-border bg-surface text-text", Icon: Info },
-  success: { className: "border-accent/40 bg-accent/5 text-text", Icon: CircleCheck },
+  success: { className: "border-success/40 bg-success/5 text-text", Icon: CircleCheck },
   warn: { className: "border-warn/40 bg-warn/5 text-text", Icon: TriangleAlert },
   danger: { className: "border-danger/40 bg-danger/5 text-text", Icon: OctagonAlert },
 };
 
 const iconColor: Record<Tone, string> = {
   info: "text-muted",
-  success: "text-accent",
+  success: "text-success",
   warn: "text-warn",
   danger: "text-danger",
 };
@@ -35,7 +35,7 @@ export function Banner({
   return (
     <div
       role={tone === "danger" || tone === "warn" ? "alert" : "status"}
-      className={cn("flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-start", toneClass, className)}
+      className={cn("flex flex-col gap-3 rounded-card border p-4 sm:flex-row sm:items-start", toneClass, className)}
     >
       <Icon aria-hidden className={cn("mt-0.5 size-5 shrink-0", iconColor[tone])} />
       <div className="min-w-0 flex-1">

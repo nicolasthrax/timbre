@@ -47,7 +47,7 @@ function planLabel(user: User): string {
   if (user.plan === "free") return "Free";
   const interval = user.billingInterval ?? "month";
   const price = `${PRICES[interval].label}${PRICES[interval].per}`;
-  return user.plan === "pro" ? `Pro · ${price}` : `Pro (lapsed) · ${price}`;
+  return user.plan === "pro" ? `Pro, ${price}` : `Pro (lapsed), ${price}`;
 }
 
 export function SettingsView() {
@@ -104,7 +104,7 @@ export function SettingsView() {
       <Card>
         <h2 className="mb-4 font-semibold">Account</h2>
         <div className="divide-y divide-border">
-          <Row title="Email" description={<span className="break-all font-mono text-xs">{user.email}</span>}>
+          <Row title="Email" description={<span className="break-all tabular-nums text-xs">{user.email}</span>}>
             <span className="text-xs text-muted">Member since {formatDate(user.createdAt)}</span>
           </Row>
           <Row
@@ -132,7 +132,7 @@ export function SettingsView() {
           </Row>
         </div>
         {billingNote && (
-          <p role="status" className="mt-4 rounded-lg border border-border bg-surface-2 p-3 text-sm text-muted">
+          <p role="status" className="mt-4 rounded-field border border-border bg-surface-2 p-3 text-sm text-muted">
             Preview build: the billing portal is simulated. {/* TODO(real): open Stripe Customer Portal. */}
             In the live app this opens Stripe&apos;s secure billing page.
           </p>
@@ -196,9 +196,9 @@ export function SettingsView() {
           </Row>
         </div>
         {showDelete && (
-          <form onSubmit={deleteAll} className="mt-4 rounded-lg border border-danger/40 bg-danger/5 p-4">
+          <form onSubmit={deleteAll} className="mt-4 rounded-field border border-danger/40 bg-danger/5 p-4">
             <label htmlFor="confirm-delete" className="text-sm">
-              Type <span className="font-mono font-semibold text-text">DELETE</span> to confirm.
+              Type <span className="tabular-nums font-semibold text-text">DELETE</span> to confirm.
             </label>
             <input
               id="confirm-delete"
@@ -207,7 +207,7 @@ export function SettingsView() {
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
-              className="mt-2 h-11 w-full rounded-lg border border-border bg-bg px-3 font-mono text-text focus:border-danger focus:outline-none"
+              className="mt-2 h-11 w-full rounded-field border border-field bg-surface px-3 tabular-nums text-text focus:border-danger focus:outline-none"
             />
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <Button type="submit" variant="danger" disabled={confirmText !== "DELETE" || deleting}>

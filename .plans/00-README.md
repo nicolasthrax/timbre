@@ -1,22 +1,24 @@
-# Timbre — Foundation Docs
+# Timbre foundation docs
 
-*Name: Timbre (searched as "Timbre AI") · Founder: Nicolas Fostier · v0.1, 31 Oct 2026*
+Founder: Nicolas Fostier. v0.2, 31 Oct 2026.
 
-A consumer web app that shows people where their voice is publicly online, how easily it can be cloned, and alerts them to new exposure — protection against AI voice-clone scams. Hong Kong first.
+Timbre lets people hear an AI clone of their own voice, shows how much of their voice is public on YouTube, and gives them concrete steps to protect themselves and their family from voice-clone scams. Hong Kong first. v0 is a demo for a YC application.
 
-## The standard doc set (what each is for)
+## The docs
 
-| # | Doc | Answers | Owner |
-|---|-----|---------|-------|
-| 01 | [PRD](01-prd.md) | *What* are we building, for whom, and why? | Founder |
-| 02 | [Design](02-design.md) | What does it look and feel like? Flows, screens, brand. | Founder / designer |
-| 03 | [Tech spec](03-tech-spec.md) | *How* is it built? Architecture, data, APIs, costs. | Tech co-founder |
-| 04 | [Privacy & legal](04-privacy-legal.md) | Is it allowed and safe? PDPO, ToS, entity, abuse. | Founder (+ lawyer before launch) |
-| 05 | [GTM & roadmap](05-gtm-roadmap.md) | How do we get users, and in what order do we build? | Founder |
+| # | Doc | Answers |
+|---|-----|---------|
+| 01 | [PRD](01-prd.md) | What we're building for the demo, for whom, and why |
+| 02 | [Design](02-design.md) | Flows, screens, states and copy rules |
+| 03 | [Tech spec](03-tech-spec.md) | How it's built: clone pipeline, YouTube scan, data model |
+| 04 | [Privacy and legal](04-privacy-legal.md) | PDPO, platform terms, clone-test safeguards |
+| 05 | [GTM and roadmap](05-gtm-roadmap.md) | How we get users, and in what order we build |
+| 06 | [Clone vendor decision](06-clone-vendor-decision.md) | Which voice-cloning provider the demo uses |
+| | [Pivot review](pivot-review.md) | Why the product changed, and the stage-by-stage build plan |
 
-Plus the earlier one-pager: `../voice-exposure-scanner-spec.md`.
+Visual tokens and layout rules are in [`DESIGN.md`](../DESIGN.md). An earlier one-pager, `voice-exposure-scanner-spec.md`, is referenced in older notes but is not in this repo.
 
 ## How to use these
-- These are **living docs** — v0.1 contains assumptions, not facts. Each has an "Open questions" section.
-- Update the PRD first whenever validation changes your mind; the others follow from it.
-- Standard practice is to validate (05 §Phase 0) before building heavily. The docs make building faster once you do; they don't replace talking to users.
+
+- They are living docs. Each has open questions.
+- Update the PRD first when validation changes your mind; the others follow from it.

@@ -1,80 +1,107 @@
-# 02 — Design Doc
+# 02 Design
 
-## 1. Brand direction: techy & premium
-- **Feel:** a premium security tool — think Linear/Arc/1Password, not antivirus pop-ups.
-- **Principles:** calm confidence (never cheap fear tactics), show real data, one clear action per screen.
-- **Palette (starting point):** near-black background `#0B0D10`, off-white text `#E8EAED`, one accent (electric teal `#2EE6C5`) for "safe/action", amber `#FFB020` for warnings, red reserved strictly for Critical.
-- **Type:** a geometric sans (e.g. Inter / Geist) + a monospace for numbers and data (e.g. Geist Mono / JetBrains Mono).
-- **Signature visual:** a live audio waveform that "lights up" segments where the voice was found.
-- **Tone of copy:** precise, honest, short. "We found 47 minutes of your voice in 12 public videos." Never "Your voice HAS BEEN CLONED!"
+v0.2, 31 Oct 2026. Flows and screens for the YC demo scope in [01](01-prd.md). Visual tokens, type and layout rules live in [`DESIGN.md`](../DESIGN.md), which wins over this file on anything visual.
 
-## 2. Information architecture
+## 1. Tone
+
+- A precise, calm security tool. Show real results, one clear action per screen.
+- The message is protecting family: your voice can be copied, and the people who'd believe it are your parents.
+- Rule for fear: every line about the risk is followed, on the same screen, by something the user can do. Never "Your voice HAS BEEN CLONED". Never claim Timbre stops scams or detects clones.
+- The clone test is the proof. Let the clip do the persuading; keep the copy around it short.
+
+## 2. Information architecture (v0)
+
 ```
-Landing → Sign up → Enrol voice → Add accounts → Scanning → Results
-                                                             ├── (free) blurred report → Upgrade
-                                                             └── (paid) full report
-                                                                   ├── Source detail → Fix steps / Takedown draft
-                                                                   ├── Clone test
-                                                                   └── Monitoring settings
-Settings: account, billing, delete my data
+Landing → Sign in (email link) → Consent → Clone test → Result
+                                                         ├── Play it to your family
+                                                         ├── Share card
+                                                         └── Check your YouTube → Connect → Pick your videos → Exposure result
+                                                                                                                  ├── Video detail → fix steps
+                                                                                                                  └── 5-place checklist
+Settings: email, connected YouTube, export, delete
 ```
 
-## 3. Key flows
+The app nav has three items: Clone test, Your exposure, Settings.
 
-### Flow A — First scan (free)
-1. **Landing:** headline "How much of your voice is out there?" + CTA "Scan my voice — free".
-2. **Sign up:** email magic link or Google. No password.
-3. **Consent screen:** plain-English explanation of what we store (voiceprint only, raw audio deleted), checkbox.
-4. **Enrol:** mic permission → read 3 random sentences → live waveform + quality meter ("too quiet", "background noise").
-5. **Add accounts:** enter IG / TikTok / YouTube handles (or connect where supported) + full name for web search. Skip allowed for any.
-6. **Scanning:** progress screen with honest steps ("Collecting public videos… 32/50", "Matching voice…"). Email when done if user leaves (scans may take minutes).
-7. **Results (free):** big number "47 min", risk badge, source count, blurred source list, upgrade card.
+## 3. Flows
 
-### Flow B — Upgrade
-- Paywall sheet: what unlocks, monthly/yearly toggle, Stripe Checkout, return to unblurred report.
+### Flow A. First visit to clone
 
-### Flow C — Clone test (paid)
-1. Explain what will happen + "this clip can't be downloaded and is deleted after".
-2. Generate (loading ~10–30s).
-3. Side-by-side player: **Real** vs **Clone**, same sentence, synced waveforms.
-4. Follow-up CTA: "Reduce your exposure →".
+1. Landing: the hero plays a labelled example (a real voice and its clone, recorded by the team with consent). CTA "Hear your own clone".
+2. Sign in: email, then "Check your email". The link lands on consent.
+3. Consent: what we record, what we send to the clone provider, that both are deleted after the session, that YouTube is read-only and optional. One checkbox, "Agree and continue".
+4. Clone test intro: what happens, the safeguards (only your live voice, a fixed sentence, a watermark, no download, deleted after).
+5. Record: 3 or 4 random phrases, live level meter and quality hint, about 15 seconds.
+6. Checking and generating: "Checking it's you" then "Making your clone", 10 to 30 seconds.
+7. Result: Real and Clone players with synced waveforms and the transcript. Then three actions: "Play it to your family", "Share", "Check your YouTube".
 
-### Flow D — Remediation
-- Source card: thumbnail, platform, date, minutes of voice, "posted by you / by someone else".
-- If by you → step-by-step platform instructions + "Mark as fixed".
-- If by others → "Copy takedown request" + link to the platform's report form.
-- Score recalculates when items are marked fixed (re-verified on next scan).
+### Flow B. Play it to your family
 
-### Flow E — Alert
-- Email: "New: 3 minutes of your voice found on TikTok" → deep link to the source card.
+- Full-screen, large type, one button: "Play the clone". After it plays: "That wasn't really me. If you ever get a call like this, hang up and call me back." Then the code-word suggestion with a text box to note it (stored only on the device).
+- Works without reading English for the parent if the user reads it out; a Cantonese version is v1.
 
-## 4. Screen list (MVP)
-1. Landing page
-2. Sign-in
+### Flow C. Share card
+
+- An image card: "I heard an AI clone of my own voice. It took 2 minutes." plus the Timbre name and a short link. No audio, no waveform of the user's real voice, no video titles, no numbers from the scan.
+- Share via the Web Share API on phones; on desktop, copy link and download image.
+
+### Flow D. YouTube exposure scan
+
+1. "Check your YouTube": explains read-only access and that we never download your videos.
+2. Google sign-in with the YouTube read-only scope.
+3. Scanning: "Reading your public videos" with a count.
+4. Pick your videos: list of public videos (thumbnail, title, length). "Tick the ones where you talk." Select all and none available.
+5. Exposure result: number of videos with your voice, total length, the band from [01](01-prd.md) §6, the note that this is an estimate from video length.
+6. Video detail: YouTube fix steps (private, unlisted, delete, remove audio), "Mark as fixed".
+7. Checklist: the 5 places, each with a short how-to and done / not yet / doesn't apply.
+8. "Run again" is available once a day; otherwise it shows when it's next available.
+
+## 4. Screens (v0)
+
+1. Landing
+2. Sign in, check your email
 3. Consent
-4. Voice enrolment
-5. Add accounts
-6. Scan progress
-7. Results — free (blurred)
-8. Paywall
-9. Results — paid (dashboard)
-10. Source detail + remediation
-11. Clone test
-12. Settings (account, billing, monitoring, delete data)
+4. Clone test: intro, record, generating, result
+5. Play it to your family
+6. Share card
+7. Connect YouTube
+8. Scan progress
+9. Pick your videos
+10. Exposure result
+11. Video detail
+12. Checklist
+13. Settings
+14. Privacy, terms, 404, error
 
-## 5. States to design (often forgotten)
-- Mic denied / no mic / poor audio quality
-- Scan found **nothing** (must still feel valuable: "Low exposure — here's how to keep it that way")
-- Private account / platform blocked fetch
-- Scan partially failed (some sources unreachable)
-- Payment failed / subscription lapsed (report re-blurs, data kept 30 days)
-- Data deletion confirmation
+## 5. States to design
 
-## 6. Accessibility & responsiveness
-- Mobile-first (most HK users will arrive from Instagram on phones).
-- WCAG AA contrast on dark theme; don't rely on colour alone for risk levels (icons + labels).
-- Captions/text for all audio (clone test shows transcript).
+- Mic denied, no mic, unsupported browser, in-app browser (Instagram's in-app browser often blocks the mic).
+- Recording too quiet or noisy; too short.
+- Verification failed: the words didn't match ("We couldn't hear all the phrases. Try again in a quieter spot.").
+- Verification failed: the voice sounded synthetic ("This recording sounded computer-generated, so we can't use it.").
+- Rate limited: "You've used your clone tests for this month. You can try again on DATE."
+- Clone service busy (daily spend cap reached): "The clone test is busy. Try again after TIME."
+- Clone generation failed.
+- Email not verified yet.
+- YouTube: no channel on this Google account; no public videos; access denied at consent; token expired (reconnect); API quota hit ("Try again tomorrow").
+- Scan re-run already used today.
+- Data deletion confirmation.
 
-## 7. Open questions
-- Should results be shareable (e.g. an Instagram-story-sized "My voice exposure: 47 min" card) for virality? Risk: tells scammers who's exposed — share only the number, never sources.
-- Final name and logo.
+## 6. Copy rules specific to Timbre
+
+- The clone clip: say "not offered as a download" and "watermarked". Never "can't be saved" or "can't be downloaded".
+- The trust line "audio never leaves your device" (or any variant) appears only next to the data-export upload feature (post-demo), where it is true. It never appears in general marketing copy, on the landing page or near the clone test, because the clone test does send the live recording to our server and the clone provider.
+- Say "public videos with your voice" for scan results. Don't say "we found your voice", because v0 doesn't match audio.
+- Exposure is an estimate. Say so next to the band.
+
+## 7. Accessibility and responsiveness
+
+- Mobile first: most visitors arrive from Instagram on a phone.
+- WCAG AA contrast; status never shown by colour alone.
+- Every clip has a transcript.
+- The family step uses large type and one action per screen.
+
+## 8. Open questions
+
+- Hero example clip: whose voice, and recorded where (needs written consent, see [04](04-privacy-legal.md) §7).
+- Share card wording and whether it shows the user's first name.

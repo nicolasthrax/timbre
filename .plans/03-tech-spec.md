@@ -1,123 +1,160 @@
-# 03 — Technical Spec
+# 03 Technical spec
 
-## 1. Recommended stack (optimised for a solo, vibe-coding founder + later co-founder)
+v0.2, 31 Oct 2026. For the YC demo scope in [01](01-prd.md). The post-demo pipeline (voice matching, reposts, monitoring) is in the appendix (§11).
+
+## 1. Stack
+
 | Layer | Choice | Why |
 |---|---|---|
-| Frontend + API routes | **Next.js (TypeScript)** on **Vercel** | Fast to build, great AI-codegen support, already connected |
-| Auth, DB, file storage | **Supabase** (Postgres + Auth + Storage) | One service, row-level security, already connected |
-| Audio/ML worker | **Python** on **Modal** (serverless GPU) | Pay per second of GPU; no servers to run; Python is where audio ML lives |
-| Job queue | Supabase table + Modal webhook (v1); upgrade to a real queue later | Simple enough for low volume |
-| Payments | **Stripe** Checkout + Customer Portal + webhooks | Standard subscriptions |
-| Email | **Resend** | Simple transactional email from Next.js |
-| Search | A web-search API (e.g. Brave/Bing/SerpAPI) | Finding reposts by name/handle |
-| Monitoring | Sentry (errors) + PostHog (product analytics) | Free tiers |
+| Frontend and API routes | Next.js (TypeScript) on Vercel | Already built; the mock API layer swaps to real per method |
+| Auth, database | Supabase (Postgres, Auth with email magic link) | One service, row-level security |
+| Clone generation | Google Cloud voice replication in key-only mode (default) | Ranked first on retention among hosted vendors; see the decision in [06](06-clone-vendor-decision.md) |
+| Speech-to-text for the challenge check | Google Cloud Speech-to-Text | Same vendor and data-processing terms as the clone step |
+| Synthetic-speech check | Open anti-spoofing model (for example AASIST, licence to check) on a small worker, or the vendor's own check if it has one | Needed because the test is free (§4.3) |
+| Worker (only if the anti-spoofing model needs one) | Modal, CPU or small GPU, pay per second | No servers to run |
+| YouTube | YouTube Data API v3 with OAuth (`youtube.readonly`) | Official, covers personal channels |
+| Analytics | PostHog | The YC metrics in [01](01-prd.md) §7 |
+| Errors | Sentry | Free tier |
+| Payments | Stripe, paused | Not built in v0 |
+
+Region: Supabase in Singapore (nearest to Hong Kong). Google processing region to confirm in the spike.
+
+The site URL is configuration, not code: `NEXT_PUBLIC_SITE_URL`, read by `src/content/site.ts`. No domain is owned yet; candidates are in [01](01-prd.md) §10.
 
 ## 2. Architecture
+
 ```
 Browser (Next.js)
-  │ record audio (MediaRecorder, WebM/Opus)
+  │ records audio (MediaRecorder), keeps its own copy in memory for playback
   ▼
-Next.js API ──► Supabase (users, scans, sources, voiceprints)
+Next.js API routes ──► Supabase (users, challenges, YouTube connection, scans, checklist, audit log)
   │
-  └─► enqueue job ──► Modal worker (Python, GPU)
-                         1. enrol: audio → voiceprint embedding
-                         2. discover: platform APIs + web search → candidate URLs
-                         3. fetch audio for candidates
-                         4. diarise + match segments vs voiceprint
-                         5. write results → Supabase
-                         6. delete all fetched/raw audio
-  ◄── webhook: scan complete ──► email via Resend
-Stripe ──webhook──► Next.js API ──► update subscription in Supabase
-Scheduler (Modal cron) ──► weekly monitoring scans for paid users
+  ├─ POST /api/clone/challenge ─► issue phrases, store challenge, check rate limits
+  ├─ POST /api/clone ───────────► STT check ─► synthetic-speech check ─► Google voice replication
+  │                                (key-only) ─► synthesise fixed sentence ─► add audible disclosure
+  │                                ─► stream audio back ─► discard sample, key and output
+  ├─ GET  /api/youtube/connect ─► Google OAuth (youtube.readonly)
+  └─ POST /api/scans ───────────► YouTube Data API: channel uploads + video details ─► scan rows
 ```
 
-## 3. ML pipeline
+Nothing in the clone path is written to disk or storage on our side. The recording lives in the request's memory, and the generated clip is streamed back and not kept.
 
-### 3.1 Enrolment
-- Input: 20–30s browser recording of random phrases.
-- Liveness: speech-to-text (e.g. Whisper small) → check transcript matches the random phrases (≥ 80%).
-- Quality check: SNR / loudness thresholds; reject and re-prompt if poor.
-- Embedding: open-source speaker-verification model (e.g. **SpeechBrain ECAPA-TDNN**, Apache-2.0) → 192-dim vector.
-- Store the embedding; **delete raw audio immediately**.
+## 3. Clone test pipeline
 
-### 3.2 Discovery (candidate videos)
-| Source | Method | Notes |
+### 3.1 Challenge
+
+- `POST /api/clone/challenge` (signed-in, email verified): checks rate limits (§4), picks 3 or 4 phrases from `src/content/phrases.ts` for the user's locale (`en` in v0), stores a challenge row with a 3-minute expiry, returns `{ challengeId, phrases, expiresAt }`.
+- If the vendor needs a consent statement read aloud, it is added as the last phrase.
+
+### 3.2 Verification
+
+`POST /api/clone` with `challengeId` and the audio (WebM/Opus from Chrome, MP4/AAC from Safari; accept both):
+
+1. Reject if the challenge is unknown, expired, already used or belongs to another user. Mark it used.
+2. Length between 8 and 60 seconds.
+3. Speech-to-text; normalised word match against the phrases of at least 80%.
+4. Synthetic-speech check above a threshold set in the spike.
+5. Any failure returns a specific error code (`phrase_mismatch`, `synthetic_suspected`, `too_short`, `expired`) and records the outcome; no clone is made.
+
+### 3.3 Generation
+
+1. Create a voice replication key from the verified sample (key-only: no voice profile kept by Google).
+2. Synthesise the fixed sentence ("Every voice has a timbre, a colour that makes it yours and no one else's.").
+3. Append an audible disclosure in a stock voice ("This was an AI clone made by Timbre."). Check whether Google adds its own inaudible watermark; if not, the audible disclosure is the watermark in v0.
+4. Stream the audio to the browser with `Cache-Control: no-store`. No file URL is created.
+5. Drop the sample, the key and the output from memory. Write an audit entry with the challenge ID and outcome only.
+
+If the spike picks self-hosted CosyVoice 2 instead, steps 1 and 2 run on the Modal worker and the same rules apply.
+
+## 4. Abuse controls
+
+### 4.1 Rate limits
+
+| Key | Limit (starting values) | Notes |
 |---|---|---|
-| YouTube own channel | YouTube Data API (public channel uploads) | Reliable, quota-limited |
-| TikTok own account | TikTok Display API via user login (own videos) | Requires app approval |
-| Instagram own account | Instagram Graph API (business/creator accounts only) | Personal accounts → fallback: user pastes Reel links |
-| Reposts / tags | Web-search API on name + handles, filtered to the 3 platforms | Cap 50 (free) / 300 (paid per month) |
+| Verified email | 3 clone tests per calendar month | The main limit |
+| IP | 10 challenges per 24 h, sliding | Loose on purpose: HK mobile carriers and campuses share IPs |
+| Device | 5 challenges per 24 h | Signed first-party cookie token; no browser fingerprinting |
+| Global | Daily vendor spend cap (set from the spike's cost per test) | Over the cap, the UI shows "busy, try after TIME" |
+| Scan | 1 manual run per user per 24 h | YouTube quota and cost control |
 
-⚠️ Fetching audio from public video URLs outside official APIs (e.g. yt-dlp) may breach platform ToS. See 04 §4. v1 should prefer official APIs + user-provided links; treat scraping as a legal decision, not a technical one.
+Disposable-email domains are rejected at sign-in. IPs and device tokens are stored hashed, for 30 days.
 
-### 3.3 Matching
-1. Extract audio track; resample 16 kHz mono.
-2. Voice activity detection → speech segments.
-3. Speaker diarisation (e.g. pyannote; check licence/terms) → per-speaker clusters.
-4. Embed each cluster; cosine similarity vs user voiceprint.
-5. Match if similarity ≥ threshold (calibrate on test set; start ~0.65 and tune for low false positives).
-6. Record: source URL, matched seconds, confidence, quality estimate.
-7. Delete audio.
+### 4.2 What the controls are for
 
-### 3.4 Clone test
-- Use the user's **enrolment audio only** — which means the enrolment recording must be kept temporarily for paid users who opt in, or re-recorded at clone-test time. **Decision: re-record a fresh live phrase at clone-test time** (consistent with "delete raw audio"; also re-verifies identity).
-- Model: a zero-shot TTS / voice-cloning model. **Check licence before choosing** — many open models (e.g. XTTS, F5-TTS weights) are non-commercial. Options: commercially-licensed model or a cloning API with consent/verification controls.
-- Output: one fixed sentence, audible watermark, streamed to browser, not stored; never exposed as a downloadable file URL.
+The clone is built only from audio captured live in the session, so someone recording themselves only clones themselves. The challenge stops replaying an existing recording of someone else. The synthetic-speech check targets live voice conversion. The fixed sentence means the output can't be used as a scam script.
 
-### 3.5 Accuracy targets (to measure before launch)
-- False positive rate (someone else's voice counted as yours): **< 2%** — false alarms destroy trust.
-- Recall on clear solo speech ≥ 85%.
-- Build a test set: ~50 consenting volunteers × own videos + negatives.
+### 4.3 What they don't stop
 
-## 4. Data model (Supabase / Postgres)
+A person who is tricked into reading the phrases. Screen recording of the result (the clip is "not offered as a download", never "can't be saved").
+
+## 5. YouTube exposure scan
+
+- OAuth: `https://www.googleapis.com/auth/youtube.readonly`, offline access for a refresh token. Until Google verifies the app, it runs in Testing status with named test users; refresh tokens then expire after 7 days, which is fine for the demo.
+- Calls per scan:
+  1. `channels.list?part=contentDetails,snippet&mine=true` → uploads playlist ID.
+  2. `playlistItems.list?part=contentDetails&playlistId=…&maxResults=50`, paged.
+  3. `videos.list?part=snippet,contentDetails,status&id=…` in batches of 50 → title, thumbnail, `duration`, `privacyStatus`.
+- Only `privacyStatus = public` videos are listed as exposure. Unlisted videos are noted separately ("unlisted, anyone with the link can watch").
+- Quota: each call costs 1 unit, so a channel with 200 videos costs about 10 units. The default daily quota is enough for the demo.
+- No audio is fetched. The YouTube Developer Policies forbid storing copies of audiovisual content, and the API has no media download.
+- Retention: check the YouTube API Services policies on how long API data may be stored without refreshing, and set the scan-row retention to match before stage 12. Placeholder: scan videos deleted 30 days after the last scan.
+- Disconnect and delete revoke the token at Google (`https://oauth2.googleapis.com/revoke`) and delete the stored token.
+
+## 6. Data model (Supabase, v0)
+
 ```
-users(id, email, created_at, plan, stripe_customer_id, consent_version, consent_at)
-voiceprints(id, user_id, embedding vector(192), model_version, created_at)
-linked_accounts(id, user_id, platform, handle, oauth_token_enc, created_at)
-scans(id, user_id, type[free|paid|monitor], status, candidates_count,
-      matched_seconds, risk_level, started_at, finished_at)
-sources(id, scan_id, user_id, platform, url, posted_by[self|other|unknown],
-        matched_seconds, confidence, first_seen_at, status[open|fixed|ignored])
-subscriptions(user_id, stripe_sub_id, status, current_period_end)
-audit_log(id, user_id, action, at)   -- consent, deletion, clone tests
+users(id, email, created_at, consent_version, consent_at, locale)
+clone_challenges(id, user_id, phrases, issued_at, expires_at, used_at,
+                 outcome[pending|ok|phrase_mismatch|synthetic_suspected|too_short|expired|failed],
+                 ip_hash, device_hash)
+youtube_connections(user_id, channel_id, channel_title, refresh_token_enc, scopes, connected_at)
+scans(id, user_id, started_at, finished_at, status, public_video_count,
+      speaking_video_count, speaking_seconds, band[none|some|a_lot])
+scan_videos(id, scan_id, user_id, youtube_video_id, title, thumbnail_url,
+            duration_seconds, published_at, privacy_status, user_speaks, status[open|fixed])
+checklist_items(user_id, item_key, state[done|not_yet|not_applicable], updated_at)
+audit_log(id, user_id, action, detail, at)
 ```
-- Use **pgvector** for embeddings.
-- Row-level security: users only read their own rows.
-- Free-tier blurring enforced **server-side** (API doesn't return URLs to free users) — never just CSS blur.
 
-## 5. Key API routes (Next.js)
-- `POST /api/enrol` — upload audio → job
-- `POST /api/accounts` — add handles / OAuth callbacks
-- `POST /api/scans` — start scan (checks plan + cap)
-- `GET /api/scans/:id` — status + results (redacted for free)
-- `POST /api/clone-test` — paid only, rate-limited (e.g. 3/month)
-- `POST /api/sources/:id/status` — mark fixed/ignored
-- `POST /api/stripe/webhook`
-- `DELETE /api/me` — full data deletion
+- No voiceprints, embeddings or audio anywhere in the schema.
+- Row-level security: users read and write only their own rows. Challenge outcome and audit rows are written by the server only.
+- `refresh_token_enc` is encrypted with a key held outside the database (Supabase Vault or a KMS key in Vercel env).
 
-## 6. Security
-- Encrypt OAuth tokens at rest; least-privilege API scopes.
-- Rate-limit enrolment, scans, clone tests per user and per IP.
-- Clone-test abuse controls: paid + live liveness check + rate limit + audit log.
-- Secrets in Vercel/Modal env vars only; never in client code.
+## 7. API routes
 
-## 7. Cost model (rough, verify)
-- Per scan of 50 videos × ~1 min: GPU minutes on Modal ≈ a few HK$ at most; search API ≈ HK$0.5–2; platform APIs mostly free within quota.
-- Target: free scan cost < HK$5; paid user cost < HK$20/month → healthy margin at HK$68.
-- Monitor cost per scan from day one (log GPU seconds + API calls per scan).
+- `POST /api/clone/challenge`, `POST /api/clone`
+- `GET /api/youtube/connect`, `GET /api/youtube/callback`, `DELETE /api/youtube`
+- `POST /api/scans` (once per 24 h), `GET /api/scans/:id`, `POST /api/scans/:id/videos` (save "I speak in this" ticks), `POST /api/videos/:id/status`
+- `PUT /api/checklist/:item`
+- `GET /api/me/export`, `DELETE /api/me`
 
-## 8. Build order (MVP)
-1. Enrolment + voiceprint (Python, local notebook first)
-2. Matching on a manual list of URLs (prove accuracy)
-3. Next.js shell + Supabase auth + DB
-4. Scan job end-to-end with user-pasted links
-5. Results page + free/paid redaction
-6. Stripe
-7. Official platform APIs + web search discovery
-8. Clone test
-9. Monitoring cron + email alerts
+The UI keeps calling `api` from `@/lib/api`; `src/lib/api/client.ts` changes shape to match these routes (stages 6 to 8), and `supabase.ts` implements it (stages 10 to 12).
 
-## 9. Open questions
-- Licence-safe choices for diarisation and cloning models.
-- Can we get TikTok/Instagram API approval as a tiny startup? If not, user-pasted links are the fallback.
-- Hosting region for data (Supabase region: Singapore is nearest to HK).
+## 8. Security
+
+- Secrets only in Vercel and Modal environment variables.
+- Server-side route protection (proxy plus RLS), not only the client-side guard in `RequireAuth.tsx`.
+- Least-privilege scopes: YouTube read-only, no other Google scopes.
+- The clone endpoint never accepts a file the user picked; only a recording tied to a live challenge.
+
+## 9. Cost (to confirm in the spike)
+
+- Clone test: speech-to-text for about 15 s, one voice-replication key, about 80 characters of synthesis. Expected well under US$0.05 per test on Google; the spike measures it.
+- Synthetic-speech check: CPU or small GPU seconds on Modal.
+- YouTube scan: API quota only.
+- Track cost per clone test from the first real request.
+
+## 10. Build order
+
+Stages 3 to 12 in [pivot-review.md](pivot-review.md) §5.
+
+## 11. Appendix: post-demo pipeline
+
+- Voice matching in the user's own exports or files, in the browser: a small speaker-embedding model in WebAssembly, embedding computed from the clone-test recording in the same session and discarded after the scan. Audio from the files never leaves the device. Check model size and speed on a mid-range phone.
+- If repeat matching is ever added: embeddings encrypted per user with a KMS key, so destroying the key also removes them from backups; RLS denies client reads; 12-month inactivity deletion.
+- TikTok Display API (`video.list`, `video.query`): metadata of own public videos; app review needed.
+- Instagram API with Instagram Login: professional accounts only.
+- Possible reposts: a web-search API on name and handles, filtered to the three platforms, listing URLs only. Fetching audio from other people's posts needs platform permission or a legal opinion.
+- Monitoring: scheduled tier A polling and weekly web search, alerts by email via Resend (alert list in [01](01-prd.md) §9).
+- Stripe Checkout and webhooks: paused.

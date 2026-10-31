@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: review only. Revision 3, 31 Oct 2026, against `main` at `5e04de6`. Waiting for founder approval before implementation. The only code changes on this branch are copy fixes: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done; stage 2 (vendor spike) next, then stop for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 
@@ -18,6 +18,15 @@ Revision 3 (31 Oct 2026):
 7. Manual scan re-run is allowed, at most once per day per user.
 8. Data-export upload (tier B) is processed in the browser only. Audio from uploads never leaves the user's device, and this becomes a trust line in marketing copy.
 9. v0 is a YC demo with four parts: the clone test, a tier A scan for YouTube only, the share card, and email sign-in. TikTok, Instagram, tier B, tier C and monitoring alerts move to the post-demo section (§6). Their designs stay; they aren't built yet.
+
+Revision 4 (31 Oct 2026, plan approved):
+
+10. The 5-place checklist is in the demo as static content.
+11. No domain is owned yet. The site URL is a config value (`NEXT_PUBLIC_SITE_URL`). Candidates, in order: timbre.ai, gettimbre.ai, timbreai.com, trytimbre.com. Needed only at stage 12.
+12. A cloud GPU is allowed for the CosyVoice spike only: hourly rental, shut down when done, expected cost reported to the founder before starting. The demo defaults to Google key-only unless CosyVoice is clearly better. CosyVoice stays noted for Cantonese in v1.
+13. ElevenLabs is a quality reference only, using the founder's or team's own voices. Never user audio.
+14. "Audio never leaves your device" appears only next to the data-export upload feature, never in general marketing copy.
+15. Still open: age floor (default stays 18+), headline and CTA (proposed in stage 3).
 
 ## 1. v0 demo scope
 
@@ -192,8 +201,8 @@ Each stage is one small PR. Stages 1 to 9 use the mock backend; stages 10 to 12 
 
 0. **Done on this branch.** Clone-test download wording and the voiceprint consent claim.
 1. **Docs.** Rewrite `01` to `05`, `00-README.md` and `DESIGN.md` for the demo scope, with a post-demo section. Include the privacy and terms content needed for Google verification (§2.3 items 5 and 6). In parallel, outside the repo, you set up the domain, Search Console and Cloud project.
-2. **Vendor spike, written up only.** `.plans/06-clone-vendor-decision.md`: Google key-only and self-hosted CosyVoice 2, blind listening test against an ElevenLabs reference, retention confirmed in writing, cost per test.
-3. **Landing copy.** `landing.ts`, `faq.ts`, `site.ts`, `cloneTest.ts`, `consent.ts`. Run `scripts/slop-check.sh`.
+2. **Vendor spike.** `.plans/06-clone-vendor-decision.md`: Google key-only and self-hosted CosyVoice 2 (hourly GPU, cost approved first, shut down after), blind listening test against an ElevenLabs reference made from the founder's or team's voices only, retention confirmed in writing, cost per test. Stop for founder review.
+3. **Landing copy.** `landing.ts`, `faq.ts`, `site.ts` (site URL read from `NEXT_PUBLIC_SITE_URL`), `cloneTest.ts`, `consent.ts`. Headline and CTA options for the founder. Run `scripts/slop-check.sh`.
 4. **Landing structure.** New hero with a labelled example clip, sections re-ordered, pricing removed. Hero direction in `DESIGN.md` first. Screenshots at 320 px and desktop.
 5. **Remove plans and billing.** Everything in the "Pricing and paywall" row of §3.
 6. **Clone test flow.** Challenge API shape, phrases, rate-limit and verification states, family replay step. Consent → clone test routing. Remove enrol.

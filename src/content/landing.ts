@@ -1,7 +1,5 @@
 export const hero = {
   headline: "How much of your voice is out there?",
-  subline:
-    "AI can copy a voice from a few seconds of audio, and scammers use those copies to call families. Timbre shows where your voice is public on Instagram, TikTok and YouTube, and helps you take it down.",
   // The brief fixes this wording, including the dash.
   cta: "Scan my voice — free",
   reassurance: "Free scan. No card needed. Raw audio is never stored.",
@@ -50,11 +48,7 @@ export const fixExample = {
 export const founder = {
   heading: "Why Timbre exists",
   quote:
-    "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying because they managed to reach me directly.",
-  body: [
-    "I still don't know which of my videos the scammers used. Most of us have no idea how much of our voice is public, or who could reuse it.",
-    "Timbre won't stop every scam call. It shows you where your voice is exposed, so you can shrink it and warn the people you love.",
-  ],
+    "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying them because they managed to reach me directly.",
   name: "Nicolas Fostier",
   role: "founder of Timbre",
   /** Labels for the two waveforms beside the quote. */

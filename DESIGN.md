@@ -47,7 +47,7 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 
 ## Layout
 
-- Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
+- Landing hero: the headline on its own. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
 - Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are told apart by tone and space, not rules: they alternate the page colour and white, with generous padding, and the founder story sits on the full-bleed ink band. Panels inside a white section use the page colour instead of a border.
 - How a scan works ends with "What fixing looks like": a before and after pair labelled as an example.
 - What we look for: from `lg` up, the platform list scrolls past an example find that stays in place and changes with the platform in view. Below `lg` each platform has its own example card.
@@ -57,8 +57,8 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 
 ```
 Timbre                                          Sign in  [Scan free]
-How much of your                    subline subline subline
-voice is out there?                 subline subline
+How much of your
+voice is out there?
       [Instagram Reel]   [TikTok repost]     [YouTube vlog]
  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 Example scan. We found 47 minutes ...
@@ -69,6 +69,7 @@ Example scan. We found 47 minutes ...
 
 - The waveform pulses only while something is happening (a scan running or a clone being generated).
 - Button and toggle state changes are short colour transitions.
+- The three "How a scan works" steps pop in (fade, rise 32 px, scale from 96 %) as each enters the viewport, staggered 120 ms when they enter together. They are only hidden when the list starts below the fold and motion is allowed.
 - Three landing figures are linked to scroll with CSS scroll timelines: the "after fixing" figure counts down from the "before" value while the fixed stretches go dark; the voiceprint waveform flattens left to right and its numbers appear on the line; the platform example card cross-fades (300 ms) when the platform in view changes. Without scroll timelines, or with reduced motion, each shows its finished state.
 - Everything respects `prefers-reduced-motion`.
 

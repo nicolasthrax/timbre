@@ -7,6 +7,7 @@ import { FixExample } from "@/components/FixExample";
 import { FounderStory } from "@/components/FounderStory";
 import { PlatformTour } from "@/components/PlatformTour";
 import { PricingCards } from "@/components/PricingCards";
+import { RevealList } from "@/components/RevealList";
 import { VoiceprintFigure } from "@/components/VoiceprintFigure";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
@@ -65,11 +66,10 @@ export default function LandingPage() {
 
       {/* Hero: the waveform is the subject (DESIGN.md, direction C). */}
       <section className="pb-20 pt-14 lg:pt-24">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-5 lg:items-end">
-          <h1 className="max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h1 className="max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display">
             {hero.headline}
           </h1>
-          <p className="max-w-copy-narrow text-lg leading-relaxed text-muted lg:col-span-2">{hero.subline}</p>
         </div>
 
         <figure className="mt-14" aria-labelledby="example-caption">
@@ -116,7 +116,7 @@ export default function LandingPage() {
 
       <Section id="how-it-works" tone="surface">
         <SectionHeading>{steps.heading}</SectionHeading>
-        <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+        <RevealList className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.items.map((step, i) => (
             <li key={step.title} className="border-t-2 border-text pt-5">
               <p className="text-sm font-bold text-muted">Step {i + 1}</p>
@@ -124,7 +124,7 @@ export default function LandingPage() {
               <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
             </li>
           ))}
-        </ol>
+        </RevealList>
         <FixExample />
       </Section>
 

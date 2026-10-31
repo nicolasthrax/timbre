@@ -62,14 +62,6 @@ export function FounderStory() {
             <figcaption className="mt-6 max-w-sm text-sm text-on-ink-muted">{founder.voices.caption}</figcaption>
           </figure>
         </div>
-
-        <div className="mt-16 grid gap-6 lg:grid-cols-2 lg:gap-12">
-          {founder.body.map((p) => (
-            <p key={p} className="max-w-copy text-lg leading-relaxed text-on-ink-muted">
-              {p}
-            </p>
-          ))}
-        </div>
       </div>
     </section>
   );

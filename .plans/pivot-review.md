@@ -1,6 +1,6 @@
 # Pivot review
 
-Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) done; headline and CTA are proposals awaiting the founder (decision 15). Stage 4 next. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
+Status: approved 31 Oct 2026 (revision 4). Implementation in progress: stage 1 (docs) done. Stage 2 (vendor spike): free protocol written in `06-clone-vendor-decision.md`; the founder runs it (§8 there). Stage 3 (landing copy) done and confirmed. Stage 4 (landing structure) done; stopped for founder review. Earlier copy fixes on this branch: the "can't be downloaded" wording (§4.2) and the voiceprint "can't be turned back into audio" claim (§4.4).
 
 ## 0. Decisions recorded
 
@@ -26,8 +26,9 @@ Revision 4 (31 Oct 2026, plan approved):
 12. A cloud GPU is allowed for the CosyVoice spike only: hourly rental, shut down when done, expected cost reported to the founder before starting. The demo defaults to Google key-only unless CosyVoice is clearly better. CosyVoice stays noted for Cantonese in v1.
 13. ElevenLabs is a quality reference only, using the founder's or team's own voices. Never user audio. (Superseded by 16.)
 14. "Audio never leaves your device" appears only next to the data-export upload feature, never in general marketing copy.
-15. Still open: age floor (default stays 18+), headline and CTA (proposed in stage 3).
+15. Still open: age floor (default stays 18+). Headline, CTA and family heading confirmed (decision 17).
 16. The spike is free: Google on free trial credit, CosyVoice 2 on free Google Colab, ElevenLabs dropped entirely. Decision 12's paid GPU is no longer needed.
+17. Confirmed copy: headline "Hear an AI clone of your own voice", subheading "Your voice can be copied in seconds. Hear it for yourself.", CTA "Hear my clone", family heading "Your voice is the weapon. Your parents are the target." with three static tips and no family features. Contact email is hello@ plus the configured domain.
 
 ## 1. v0 demo scope
 

@@ -1,8 +1,5 @@
 export const hero = {
   headline: "Hear an AI clone of your own voice",
-  subheading: "Your voice can be copied in seconds. Hear it for yourself.",
-  subline:
-    "Read a few sentences aloud and Timbre makes a short clone of your voice, so you can hear what a scammer could do with the videos you've posted. Then see what's public on your YouTube channel and what to change.",
   cta: "Hear my clone",
   reassurance: "Free. About two minutes. Your recording is deleted as soon as the clone is made.",
 };
@@ -12,12 +9,10 @@ export const hero = {
  * a consented example (.plans/02-design.md §8); the page then shows play buttons.
  */
 export const exampleClone = {
-  sentence: "Every voice has a timbre, a colour that makes it yours and no one else's.",
   realLabel: "Real",
   cloneLabel: "AI clone",
   realSrc: null as string | null,
   cloneSrc: null as string | null,
-  pendingNote: "The example recording from our founder is being added. Until then, the shapes show the idea: a clone follows the real voice closely.",
 };
 
 export const steps = {
@@ -55,10 +50,6 @@ export const founder = {
   heading: "Why Timbre exists",
   quote:
     "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying because they managed to reach me directly.",
-  body: [
-    "I still don't know which of my videos the scammers used. Most of us have no idea how much of our voice is public, or who could reuse it.",
-    "Timbre won't stop every scam call. It lets you hear how easily your voice can be copied, shows where it's public, and helps you warn the people you love.",
-  ],
   name: "Nicolas Fostier",
   role: "founder of Timbre",
   /** Labels for the two waveforms beside the quote. */

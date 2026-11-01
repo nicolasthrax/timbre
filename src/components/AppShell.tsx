@@ -71,7 +71,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-dvh flex-col justify-between border-r border-border bg-surface/40 p-4 lg:flex">
+      <aside className="chrome-sidebar sticky top-0 hidden h-dvh flex-col justify-between border-r border-border bg-surface/40 p-4 lg:flex">
         <div>
           <div className="px-2 py-2">
             <Logo href={items[0].href} />
@@ -84,7 +84,7 @@ export function AppShell({ user, children }: { user: User; children: React.React
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 border-b border-border bg-bg lg:hidden">
+      <header className="chrome-topbar sticky top-0 z-30 border-b border-border bg-bg lg:hidden">
         <div className="flex h-14 items-center justify-between px-4">
           <Logo href={items[0].href} />
           <div className="flex items-center gap-2">
@@ -95,13 +95,17 @@ export function AppShell({ user, children }: { user: User; children: React.React
               onClick={() => setMenuOpen((v) => !v)}
               className="inline-flex size-10 items-center justify-center rounded-field text-muted hover:bg-surface-2 hover:text-text"
             >
-              {menuOpen ? <X aria-hidden className="size-5" /> : <Menu aria-hidden className="size-5" />}
+              {menuOpen ? (
+                <X key="close" aria-hidden className="size-5 animate-pop" />
+              ) : (
+                <Menu key="open" aria-hidden className="size-5" />
+              )}
               <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
             </button>
           </div>
         </div>
         {menuOpen && (
-          <nav id="mobile-nav" aria-label="App" className="space-y-4 border-t border-border px-4 pb-4 pt-3">
+          <nav id="mobile-nav" aria-label="App" className="animate-enter space-y-4 border-t border-border px-4 pb-4 pt-3">
             {links(() => setMenuOpen(false))}
             {footer}
           </nav>

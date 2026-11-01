@@ -4,6 +4,9 @@ import { mockMicrophone, seed } from "./helpers";
 // Captures every main screen into screenshots/<project>/ for visual review.
 // Not part of the smoke suite's assertions; run with `npm run screenshots`.
 
+// Reduced motion makes every entrance land on its final frame, so shots don't catch mid-animation.
+test.use({ reducedMotion: "reduce" });
+
 async function shot(page: Page, name: string, fullPage = true) {
   const project = test.info().project.name;
   await page.waitForTimeout(400);

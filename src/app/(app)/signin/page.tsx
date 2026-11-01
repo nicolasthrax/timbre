@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Logo } from "@/components/Logo";
+import { PageTransition } from "@/components/PageTransition";
 import { SignInForm } from "./SignInForm";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -11,11 +12,13 @@ export default function SignInPage() {
         <Logo />
       </header>
       <main id="main" className="flex flex-1 items-start justify-center px-4 pb-16 pt-8 sm:items-center sm:pt-0">
-        <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in to Timbre</h1>
-          <p className="mt-2 text-sm text-muted">No password. We&apos;ll email you a secure sign-in link.</p>
-          <SignInForm />
-        </div>
+        <PageTransition>
+          <div className="w-full max-w-sm">
+            <h1 className="text-2xl font-semibold tracking-tight">Sign in to Timbre</h1>
+            <p className="mt-2 text-sm text-muted">No password. We&apos;ll email you a secure sign-in link.</p>
+            <SignInForm />
+          </div>
+        </PageTransition>
       </main>
     </div>
   );

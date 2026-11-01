@@ -35,7 +35,7 @@ export function Banner({
   return (
     <div
       role={tone === "danger" || tone === "warn" ? "alert" : "status"}
-      className={cn("flex flex-col gap-3 rounded-card border p-4 sm:flex-row sm:items-start", toneClass, className)}
+      className={cn("flex animate-enter flex-col gap-3 rounded-card border p-4 sm:flex-row sm:items-start", toneClass, className)}
     >
       <Icon aria-hidden className={cn("mt-0.5 size-5 shrink-0", iconColor[tone])} />
       <div className="min-w-0 flex-1">

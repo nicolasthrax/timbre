@@ -5,7 +5,7 @@ import { OnboardingSteps } from "./OnboardingSteps";
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-border">
+      <header className="chrome-onboarding border-b border-border">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
           <Logo href="/" />
           <OnboardingSteps />

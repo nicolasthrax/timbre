@@ -26,7 +26,7 @@ export function ConsentForm() {
     try {
       await api.recordConsent(CONSENT_VERSION);
       await refresh();
-      router.push("/onboarding/enrol");
+      router.push("/onboarding/enrol", { transitionTypes: ["nav-forward"] });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setBusy(false);

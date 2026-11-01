@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Waveform, waveformHeights } from "@/components/Waveform";
 import { founder } from "@/content/landing";
 import { createRng } from "@/lib/random";
@@ -33,7 +34,15 @@ export function FounderStory() {
 
         <div className="mt-8 grid gap-14 lg:grid-cols-12 lg:gap-12">
           <figure className="lg:col-span-7">
-            <blockquote className="text-3xl leading-tight text-pretty sm:text-4xl">“{founder.quote}”</blockquote>
+            {/* Words brighten as they rise into reading position (globals.css, .word-reveal). */}
+            <blockquote className="text-3xl leading-tight text-pretty sm:text-4xl">
+              {`“${founder.quote}”`.split(" ").map((word, i) => (
+                <Fragment key={i}>
+                  {i > 0 && " "}
+                  <span className="word-reveal">{word}</span>
+                </Fragment>
+              ))}
+            </blockquote>
             <figcaption className="mt-10 flex items-center gap-4">
               <span
                 aria-hidden
@@ -52,7 +61,7 @@ export function FounderStory() {
             <div className="space-y-6">
               <div>
                 <p className="text-sm text-on-ink-muted">{founder.voices.real}</p>
-                <Waveform bars={BARS} seed={SEED} highlight={[[0, 1]]} litClassName="bg-accent-on-ink" className="mt-2 h-14" />
+                <Waveform bars={BARS} seed={SEED} highlight={[[0, 1]]} litClassName="after:bg-accent-on-ink" className="mt-2 h-14" />
               </div>
               <div>
                 <p className="text-sm text-on-ink-muted">{founder.voices.copy}</p>

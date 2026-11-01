@@ -75,6 +75,7 @@ export function SourceCard({ source }: { source: Source }) {
   return (
     <Link
       href={`/sources/${source.id}`}
+      transitionTypes={["nav-forward"]}
       className="block rounded-card border border-border bg-surface p-4 transition-colors hover:border-field hover:bg-surface-2"
     >
       {body}

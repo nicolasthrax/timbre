@@ -79,30 +79,30 @@ export function ScanProgress({ scanId }: { scanId: string }) {
 
   return (
     <div className="mx-auto max-w-xl">
-      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+      <h1 key={done ? "done" : "running"} className="animate-enter text-2xl font-semibold tracking-tight sm:text-3xl">
         {done ? "Scan complete" : "Scanning for your voice…"}
       </h1>
-      <p className="mt-2 text-muted">
+      <p key={done ? "done-copy" : "running-copy"} className="mt-2 animate-enter text-muted">
         {done ? "Taking you to your results." : "We're checking public videos on Instagram, TikTok and YouTube."}
       </p>
 
       <Card className="mt-8">
         <div className="relative overflow-hidden">
-          <Waveform bars={48} seed={23} animated={!done} highlight={done ? [[0, 1]] : []} className="h-16" />
+          <Waveform bars={48} seed={23} animated={!done} highlight={done ? [[0, 1]] : []} sweepMs={700} className="h-16" />
         </div>
         <ol className="mt-6 space-y-4" aria-live="polite">
           {steps.map((step, i) => (
             <li key={step.label} className="flex items-center gap-3">
               <span
                 className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full",
+                  "flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-250",
                   states[i] === "done" && "bg-accent/15 text-accent",
                   states[i] === "active" && "text-accent",
                   states[i] === "pending" && "text-muted",
                 )}
               >
                 {states[i] === "done" ? (
-                  <Check aria-hidden className="size-4" />
+                  <Check aria-hidden className="size-4 animate-pop" />
                 ) : states[i] === "active" ? (
                   <LoaderCircle aria-hidden className="size-4 animate-spin" />
                 ) : (
@@ -127,7 +127,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
         </p>
       )}
       {done && (
-        <ButtonLink href={destination} size="lg" className="mt-6 w-full sm:w-auto">
+        <ButtonLink href={destination} size="lg" className="mt-6 w-full animate-enter sm:w-auto">
           See my results
         </ButtonLink>
       )}

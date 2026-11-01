@@ -1,14 +1,18 @@
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
 import { ExampleClonePair } from "@/components/ExampleClonePair";
 import { FixExample } from "@/components/FixExample";
 import { FounderStory } from "@/components/FounderStory";
+import { PageTransition } from "@/components/PageTransition";
+import { Playhead } from "@/components/Playhead";
+import { PlayOnView } from "@/components/PlayOnView";
 import { RecordingFigure } from "@/components/RecordingFigure";
 import { RevealList } from "@/components/RevealList";
 import { ScrollTour } from "@/components/ScrollTour";
+import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
 import { exampleClone, familySection, finalCta, hero, privacyPromise, steps } from "@/content/landing";
 import { site } from "@/content/site";
@@ -39,6 +43,8 @@ function Section({
   );
 }
 
+const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
+
 function SectionHeading({ children, intro }: { children: React.ReactNode; intro?: string }) {
   return (
     <div className="max-w-copy">
@@ -50,18 +56,18 @@ function SectionHeading({ children, intro }: { children: React.ReactNode; intro?
 
 export default function LandingPage() {
   return (
-    <>
+    <PageTransition>
       <Suspense fallback={null}>
         <DeletedNotice />
       </Suspense>
 
-      {/* Hero: the real/clone pair is the subject (DESIGN.md, direction D). */}
+      {/* Hero: the real/clone pair is the subject (DESIGN.md, direction D). The load sequence is in DESIGN.md, Motion. */}
       <section className="pb-20 pt-14 lg:pt-24">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-5 lg:items-end">
-          <h1 className="max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
+          <h1 className="rise max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
             {hero.headline}
           </h1>
-          <div className="max-w-copy-narrow lg:col-span-2">
+          <div className="rise max-w-copy-narrow lg:col-span-2" style={delay(120)}>
             <p className="text-xl font-bold leading-snug text-pretty">{hero.subheading}</p>
             <p className="mt-3 text-lg leading-relaxed text-muted">{hero.subline}</p>
           </div>
@@ -69,13 +75,16 @@ export default function LandingPage() {
 
         <figure className="mx-auto mt-14 max-w-6xl px-4 sm:px-6" aria-labelledby="example-caption">
           <ExampleClonePair />
-          <figcaption id="example-caption" className="mt-4 max-w-copy text-sm text-muted">
+          <figcaption id="example-caption" className="rise mt-4 max-w-copy text-sm text-muted" style={delay(1600)}>
             Example sentence: “{exampleClone.sentence}”
             {!(exampleClone.realSrc && exampleClone.cloneSrc) && <span className="mt-1 block">{exampleClone.pendingNote}</span>}
           </figcaption>
         </figure>
 
-        <div className="mx-auto mt-12 flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 sm:px-6">
+        <div
+          className="rise mx-auto mt-12 flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 sm:px-6"
+          style={delay(400)}
+        >
           <ButtonLink href="/signin" size="lg">
             {hero.cta}
           </ButtonLink>
@@ -122,10 +131,10 @@ export default function LandingPage() {
         <SectionHeading>Questions</SectionHeading>
         <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
           {faq.map((item) => (
-            <details key={item.q} className="group">
+            <details key={item.q} className="disclosure group">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold [&::-webkit-details-marker]:hidden">
                 {item.q}
-                <ChevronDown aria-hidden className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180" />
+                <ChevronDown aria-hidden className="size-5 shrink-0 text-muted transition-transform duration-250 ease-out group-open:rotate-180" />
               </summary>
               <p className="max-w-copy pb-6 leading-relaxed text-muted">{item.a}</p>
             </details>
@@ -136,10 +145,14 @@ export default function LandingPage() {
       <Section>
         <h2 className="max-w-copy text-3xl font-bold tracking-tight text-balance sm:text-4xl">{finalCta.heading}</h2>
         <p className="mt-4 max-w-copy text-lg text-muted">{finalCta.body}</p>
+        <PlayOnView className="relative mt-10 max-w-copy" style={{ "--sweep": "900ms" } as CSSProperties}>
+          <Waveform bars={44} seed={29} className="h-16" />
+          <Playhead />
+        </PlayOnView>
         <ButtonLink href="/signin" size="lg" className="mt-8">
           {hero.cta}
         </ButtonLink>
       </Section>
-    </>
+    </PageTransition>
   );
 }

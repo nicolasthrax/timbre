@@ -7,10 +7,22 @@ import { EmptyState } from "@/components/EmptyState";
 import { RiskBadge } from "@/components/RiskBadge";
 import { Skeleton } from "@/components/Spinner";
 import { Waveform } from "@/components/Waveform";
+import { useCountUp } from "@/hooks/useCountUp";
 import type { Scan } from "@/lib/api/types";
 import { formatDate, minutesNumber } from "@/lib/format";
 import { PLATFORMS, platformLabel } from "@/lib/platforms";
 import { riskCopy } from "@/lib/risk";
+
+/** The headline figure counts up once; screen readers get the final number only. */
+function MinutesFigure({ minutes }: { minutes: string }) {
+  const shown = useCountUp(Number(minutes), { decimals: minutes.includes(".") ? 1 : 0 });
+  return (
+    <span className="text-7xl font-semibold tracking-tight sm:text-8xl">
+      <span aria-hidden>{shown}</span>
+      <span className="sr-only">{minutes}</span>
+    </span>
+  );
+}
 
 export function ExposureHero({ scan }: { scan: Scan }) {
   const risk = scan.riskLevel ?? "low";
@@ -21,7 +33,7 @@ export function ExposureHero({ scan }: { scan: Scan }) {
         <div>
           <p className="text-sm text-muted">Your voice found in public videos</p>
           <p className="mt-2 flex items-baseline gap-3 tabular-nums" data-testid="minutes-found">
-            <span className="text-7xl font-semibold tracking-tight sm:text-8xl">{minutesNumber(scan.matchedSeconds)}</span>
+            <MinutesFigure minutes={minutesNumber(scan.matchedSeconds)} />
             <span className="text-2xl text-muted">min</span>
           </p>
           <p className="mt-3 max-w-md text-pretty text-text">
@@ -35,7 +47,7 @@ export function ExposureHero({ scan }: { scan: Scan }) {
           <p className="mt-2 max-w-xs text-sm text-muted">{riskCopy[risk].summary}</p>
         </div>
       </div>
-      <Waveform bars={48} seed={5} highlight={highlight} className="mt-6 h-14" />
+      <Waveform bars={48} seed={5} intro highlight={highlight} className="mt-6 h-14" />
       <p className="mt-3 tabular-nums text-xs text-muted">
         We checked {scan.candidatesCount} videos{scan.finishedAt ? ` on ${formatDate(scan.finishedAt)}` : ""}. The risk level is an exposure estimate.
       </p>

@@ -18,7 +18,7 @@ export function EnrolClient({ phrases }: { phrases: string[] }) {
 
   async function enrol(audio: Blob) {
     await api.enrolVoice(audio);
-    router.push("/onboarding/accounts");
+    router.push("/onboarding/accounts", { transitionTypes: ["nav-forward"] });
   }
 
   return (

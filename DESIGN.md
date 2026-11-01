@@ -69,11 +69,29 @@ Caption: example sentence, and where the example audio comes from
 
 ## Motion
 
-- The waveform pulses only while something is happening (a scan running or a clone being generated).
-- Button and toggle state changes are short colour transitions.
-- The three "How it works" steps rise into place with scroll (fade, rise 48 px, scale from 96 %): each on its own when stacked, staggered across the row from `md`. Browsers without scroll timelines get a timed pop-in instead, and only when the list starts below the fold.
-- Two landing figures are linked to scroll with CSS scroll timelines: the "after fixing" figure counts down from the "before" value while the fixed stretches go dark, and the recording waveform in "What we keep" flattens left to right. The family example card cross-fades (300 ms) when the tip in view changes. Without scroll timelines, or with reduced motion, each shows its finished state.
-- Everything respects `prefers-reduced-motion`.
+Motion shows what changed after someone acts, and the waveform is the one place it gets expressive. All of it is CSS (transitions, keyframes, view transitions, scroll timelines) plus one small `requestAnimationFrame` counter. There is no animation library. Animations use `transform`, `scale`, `translate` and `opacity`; the one exception is the disclosure height, which is the only way to show an answer opening without a jump.
+
+Tokens live in `globals.css`: `--ease-out` (fast start, long settle) for things arriving, `--ease-in-out` for things moving between two places, and durations of 150 ms (state changes), 250 ms (enter, exit) and 600 ms (the waveform sweep per bar).
+
+| Moment | What moves | Why |
+|---|---|---|
+| Landing load (the one orchestrated non-user moment) | Headline and subheading rise in. A scan line crosses the real-voice waveform and its bars rise as it passes; 0.4 s later the same happens on the clone row. CTA usable after 0.4 s. | The clone visibly follows the real voice, which is the point of the hero. |
+| Pointer over the hero waveforms (fine pointers only) | Bars near the pointer lift slightly. | The pair reads as audio, not a picture. |
+| Header links (landing only) | Links scroll smoothly to their section; an underline slides to the section in view. | Where you are on a long page. |
+| How it works | The three steps rise into place with scroll (fade, rise 48 px, scale from 96 %): each on its own when stacked, staggered across the row from `md`. Without scroll timelines, a timed pop-in, only when the list starts below the fold. | It is a real sequence, so it arrives in order. |
+| What fixing looks like | The "after" figure counts down from the "before" value while the fixed stretches go dark, linked to scroll. | Shows the change fixing makes. |
+| Your family | The example card cross-fades (300 ms) when the tip in view changes. | Keeps the example next to the tip being read. |
+| Founder quote | Words go from 20 % to full opacity as they rise; full by 70 % down the viewport. | Slows the reader on the reason the product exists. |
+| What we keep | The recording waveform flattens left to right with scroll. | Acts out "your recording is deleted". |
+| Closing CTA | A short waveform with the hero's scan line, played once when it is 60 % on screen. | Bookends the page right above the button. Accent stays on the button. |
+| Scan running, then done | Bars pulse while running; on completion the bars light up left to right and each step's check pops in. | Shows progress and the moment it finished. |
+| Results load | The minutes figure counts up and the waveform sweeps in once. | The number is the answer to the scan, so it arrives as a result. |
+| Route change | Old page fades out fast, new page rises 8 px and fades in. The header and sidebar stay still. Moving forward (into a source, to the next onboarding step) slides left; "All sources" slides right. | Tells the person the content changed and in which direction they moved. |
+| Disclosure (FAQ, fix steps) | The answer opens to its height and fades in; the chevron turns. | Keeps the reader's place instead of jumping the page. |
+| Buttons and switches | Press scales to 98 %; the switch thumb slides with `--ease-out`. | Confirms the press or the new choice. |
+| Banners, mobile menu, "Copied" | Short fade and 4 px drop on mount. | Marks new information that appeared after an action. |
+
+Scroll-linked effects run only where `animation-timeline: view()` is supported and motion is welcome; elsewhere each element shows its finished state. Cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
 
 ## Icons
 

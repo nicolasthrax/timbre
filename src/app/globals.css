@@ -114,7 +114,7 @@ dialog::backdrop {
   background: rgb(14 27 38 / 0.45);
 }
 
-/* "How a scan works" steps: timed pop-in fallback for browsers without scroll timelines (RevealList.tsx). */
+/* "How it works" steps: timed pop-in fallback for browsers without scroll timelines (RevealList.tsx). */
 .reveal-list[data-armed] > li {
   transition:
     opacity 500ms var(--ease-out),
@@ -192,28 +192,15 @@ dialog::backdrop {
       animation-range: cover 30% cover 55%;
     }
 
-    /* Voiceprint: the waveform flattens left to right, then the numbers appear on the line. */
-    .voiceprint {
-      view-timeline-name: --voiceprint;
+    /* "What we keep": the recording flattens to a line, left to right (RecordingFigure.tsx). */
+    .recording-figure {
+      view-timeline-name: --recording;
     }
 
-    .voiceprint .wave-flatten > span {
+    .recording-figure .wave-flatten > span {
       animation: flatten linear both;
-      animation-timeline: --voiceprint;
+      animation-timeline: --recording;
       animation-range: cover calc(25% + var(--at) * 12%) cover calc(33% + var(--at) * 12%);
-    }
-
-    .voiceprint-values {
-      position: absolute;
-      inset: 0;
-      margin: 0;
-      align-items: center;
-    }
-
-    .voiceprint-values > li {
-      animation: fade-in linear both;
-      animation-timeline: --voiceprint;
-      animation-range: cover calc(45% + var(--i) * 1.5%) cover calc(49% + var(--i) * 1.5%);
     }
   }
 }
@@ -240,12 +227,6 @@ dialog::backdrop {
     opacity: 1;
   }
   to {
-    opacity: 0;
-  }
-}
-
-@keyframes fade-in {
-  from {
     opacity: 0;
   }
 }

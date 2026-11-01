@@ -5,14 +5,14 @@ import { Badge } from "@/components/Badge";
 import { Waveform } from "@/components/Waveform";
 import { cn } from "@/lib/cn";
 
-export interface PlatformStop {
+export interface TourStop {
   title: string;
   body: string;
-  /** Example find shown on the card for this platform. */
+  /** Example shown on the card for this stop. */
   example: { where: string; detail: string; range: [number, number] };
 }
 
-function ExampleFind({ stop, seed }: { stop: PlatformStop; seed: number }) {
+function ExampleCard({ stop, seed }: { stop: TourStop; seed: number }) {
   return (
     <div className="rounded-card border border-border bg-surface p-5">
       <div className="flex items-center justify-between gap-3">
@@ -27,11 +27,11 @@ function ExampleFind({ stop, seed }: { stop: PlatformStop; seed: number }) {
 }
 
 /**
- * "What we look for": from lg up, the card stays put while the list scrolls and
- * shows an example find for the platform in the reading band. Below lg each
- * platform carries its own card, so nothing depends on scroll position.
+ * From lg up, the card stays put while the list scrolls and shows the example
+ * for the stop in the reading band (used for the family tips). Below lg each
+ * stop carries its own card, so nothing depends on scroll position.
  */
-export function PlatformTour({ stops }: { stops: PlatformStop[] }) {
+export function ScrollTour({ stops }: { stops: TourStop[] }) {
   const [active, setActive] = useState(0);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
@@ -76,7 +76,7 @@ export function PlatformTour({ stops }: { stops: PlatformStop[] }) {
               </h3>
               <p className="mt-2 max-w-copy leading-relaxed text-muted">{stop.body}</p>
               <div className="mt-5 lg:hidden">
-                <ExampleFind stop={stop} seed={11 + i * 6} />
+                <ExampleCard stop={stop} seed={11 + i * 6} />
               </div>
             </div>
           </li>
@@ -85,7 +85,7 @@ export function PlatformTour({ stops }: { stops: PlatformStop[] }) {
       <div aria-hidden className="hidden lg:block">
         <div className="sticky top-1/3">
           <div key={active} className="animate-swap">
-            <ExampleFind stop={stops[active]} seed={11 + active * 6} />
+            <ExampleCard stop={stops[active]} seed={11 + active * 6} />
           </div>
         </div>
       </div>

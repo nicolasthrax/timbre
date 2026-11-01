@@ -1,11 +1,9 @@
 "use client";
 
-import { Lock, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Banner } from "@/components/Banner";
-import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import type { ScanIssue } from "@/lib/api/types";
-import { formatDate } from "@/lib/format";
 import { platformLabel } from "@/lib/platforms";
 
 function issueText(issue: ScanIssue): { title: string; body: string } {
@@ -49,26 +47,6 @@ export function ScanIssuesNotice({ issues }: { issues: ScanIssue[] }) {
   );
 }
 
-export function LapsedBanner({ lapsedAt, onRenew }: { lapsedAt: string | null; onRenew?: () => void }) {
-  const until = lapsedAt ? formatDate(new Date(new Date(lapsedAt).getTime() + 30 * 86_400_000).toISOString()) : null;
-  return (
-    <Banner
-      tone="warn"
-      title="Your Pro subscription has lapsed"
-      action={
-        onRenew && (
-          <Button size="sm" onClick={onRenew}>
-            Renew Pro
-          </Button>
-        )
-      }
-    >
-      Your last payment didn&apos;t go through, so source details are hidden again. We&apos;re keeping your data for 30 days
-      {until ? `, until ${until}` : ""}. Renew to pick up where you left off.
-    </Banner>
-  );
-}
-
 export function LowExposureState() {
   const tips = [
     "Keep accounts that show your face and voice private, or limit who can see stories.",
@@ -95,28 +73,6 @@ export function LowExposureState() {
           </li>
         ))}
       </ul>
-    </Card>
-  );
-}
-
-export function UpgradeCard({ count, onUpgrade, lapsed }: { count: number; onUpgrade: () => void; lapsed?: boolean }) {
-  return (
-    <Card className="border-accent/40">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="inline-flex items-center gap-2 text-sm font-medium text-accent">
-            <Lock aria-hidden className="size-4" />
-            {count} source{count === 1 ? "" : "s"} hidden
-          </p>
-          <h2 className="mt-2 text-lg font-semibold">See where your voice is and remove it</h2>
-          <p className="mt-1 text-sm text-muted">
-            Pro unlocks every link, guided fixes, takedown drafts, the clone test and weekly monitoring.
-          </p>
-        </div>
-        <Button onClick={onUpgrade} size="lg" className="shrink-0">
-          {lapsed ? "Renew Pro" : "See all sources"}
-        </Button>
-      </div>
     </Card>
   );
 }

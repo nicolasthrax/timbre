@@ -1,54 +1,64 @@
 export const hero = {
-  headline: "How much of your voice is out there?",
-  // The brief fixes this wording, including the dash.
-  cta: "Scan my voice — free",
-  reassurance: "Free scan. No card needed. Raw audio is never stored.",
+  headline: "Hear an AI clone of your own voice",
+  subheading: "Your voice can be copied in seconds. Hear it for yourself.",
+  subline:
+    "Read a few sentences aloud and Timbre makes a short clone of your voice, so you can hear what a scammer could do with the videos you've posted. Then see what's public on your YouTube channel and what to change.",
+  cta: "Hear my clone",
+  reassurance: "Free. About two minutes. Your recording is deleted as soon as the clone is made.",
 };
 
-/** Example scan shown in the hero. Always labelled as an example. */
-export const exampleScan = {
-  line: "We found 47 minutes of your voice in 12 public videos.",
-  found: [
-    { range: [0.08, 0.2] as [number, number], where: "Instagram Reel", detail: "Posted by you, 2 min 10 sec" },
-    { range: [0.44, 0.5] as [number, number], where: "TikTok repost", detail: "Posted by a friend, 48 sec" },
-    { range: [0.7, 0.9] as [number, number], where: "YouTube vlog", detail: "Posted by you, 6 min 2 sec" },
-  ],
+/**
+ * Example pair in the hero. Audio paths stay null until the founder records
+ * a consented example (.plans/02-design.md §8); the page then shows play buttons.
+ */
+export const exampleClone = {
+  sentence: "Every voice has a timbre, a colour that makes it yours and no one else's.",
+  realLabel: "Real",
+  cloneLabel: "AI clone",
+  realSrc: null as string | null,
+  cloneSrc: null as string | null,
+  pendingNote: "The example recording from our founder is being added. Until then, the shapes show the idea: a clone follows the real voice closely.",
 };
 
 export const steps = {
-  heading: "How a scan works",
+  heading: "How it works",
   items: [
     {
-      title: "Record three phrases",
-      body: "Read three short phrases aloud in your browser. We turn them into a voiceprint, which is a list of numbers and not a recording.",
+      title: "Read a few random sentences",
+      body: "About 15 seconds, in your browser. The sentences change every time, which proves it's your live voice and stops anyone cloning someone else through Timbre.",
     },
     {
-      title: "We check public videos",
-      body: "We look at the Instagram, TikTok and YouTube accounts you give us, and search for reposts that mention your name or handles.",
+      title: "Hear your clone",
+      body: "We play a clone of your voice saying one sentence we chose, next to your real recording. It's watermarked and not offered as a download.",
     },
     {
-      title: "See where, then fix it",
-      body: "You see how many minutes of your voice are public and where. Pro gives step-by-step instructions to make each video private or ask for it to be taken down.",
+      title: "Check your YouTube and fix it",
+      body: "Connect your channel to see which public videos have your voice, then work through a short checklist that makes you harder to fake.",
     },
   ],
 };
 
 /**
- * Before-and-after example under "How a scan works". Illustrative numbers, not
- * a customer result: the UI labels it as an example, like the hero scan.
+ * Before-and-after example under "How it works". Illustrative numbers, labelled
+ * as an example in the UI. Counts public videos with the user's voice and their
+ * total length, the measure the v0 YouTube scan uses (.plans/01-prd.md F4).
  */
 export const fixExample = {
   heading: "What fixing looks like",
   before: { label: "Before", minutes: 47, videos: 12 },
   after: { label: "After fixing", minutes: 9, videos: 3 },
   caption:
-    "Example. Making your own videos private and asking for reposts to come down took this account from 47 minutes of public voice to 9.",
+    "Example. Making old videos private took this channel from 12 public videos with the owner's voice, 47 minutes in total, to 3 videos and 9 minutes.",
 };
 
 export const founder = {
   heading: "Why Timbre exists",
   quote:
-    "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying them because they managed to reach me directly.",
+    "My grandparents got a call from a voice that sounded exactly like me, saying I'd been kidnapped and needed ransom. It was an AI clone. They only avoided paying because they managed to reach me directly.",
+  body: [
+    "I still don't know which of my videos the scammers used. Most of us have no idea how much of our voice is public, or who could reuse it.",
+    "Timbre won't stop every scam call. It lets you hear how easily your voice can be copied, shows where it's public, and helps you warn the people you love.",
+  ],
   name: "Nicolas Fostier",
   role: "founder of Timbre",
   /** Labels for the two waveforms beside the quote. */
@@ -59,50 +69,57 @@ export const founder = {
   },
 };
 
-export const platformsSection = {
-  heading: "What we look for",
-  intro: "Public videos where your voice can be heard clearly. That audio is what a voice clone is built from.",
-  platforms: [
-    { title: "Instagram", body: "Public Reels and videos on your account, plus reposts and tags by other accounts." },
-    { title: "TikTok", body: "Your public videos, and duets, stitches or reuploads by other people." },
-    { title: "YouTube", body: "Videos and Shorts on your channel, and appearances on other channels." },
+/** Founder's framing (.plans/pivot-review.md decision 7). Static tips only: no family features in v0. */
+export const familySection = {
+  heading: "Your voice is the weapon. Your parents are the target.",
+  intro: "Scammers call parents and grandparents with a clone of their child's voice and a story about an emergency. Three things make that call fail.",
+  tips: [
+    {
+      title: "Agree a code word",
+      body: "Pick a word only your family knows. A clone can copy how you sound, but it can't know the word.",
+      example: { where: "“What's our word?”", detail: "What your parents ask before doing anything an urgent caller wants.", range: [0.1, 0.32] as [number, number] },
+    },
+    {
+      title: "Let them hear a clone",
+      body: "Play them yours after you try the test. Once they've heard how real a fake sounds, they know to be suspicious.",
+      example: { where: "Your clone, played once", detail: "On your phone, straight after your clone test.", range: [0.4, 0.62] as [number, number] },
+    },
+    {
+      title: "Hang up and call back",
+      body: "Tell them to end any urgent call and ring you back on the number they already have.",
+      example: { where: "“I'll call you back.”", detail: "Then they ring the number they already have for you.", range: [0.68, 0.9] as [number, number] },
+    },
   ],
-  note: "We only look at public content. We never access private accounts, messages or anything behind a login.",
+  note: "Timbre doesn't screen calls or detect clones. It helps you and your family get ready for one.",
 };
 
 export const privacyPromise = {
   heading: "What we keep, and what we delete",
-  /** Shown with the waveform that turns into numbers. The values are illustrative. */
-  voiceprint: {
-    values: ["0.12", "−0.48", "0.91", "0.07", "−0.33", "0.64", "−0.15", "0.28"],
-    caption: "Example. Your recording becomes a voiceprint: a list of numbers that can't be played back.",
+  /** Shown with the waveform that flattens to a line as it scrolls. */
+  figure: {
+    caption: "Example. Your recording is used once to check it's you and make the clone, then deleted.",
   },
   points: [
     {
       title: "Your recording is deleted",
-      body: "It's processed once to make your voiceprint, then deleted. We never keep the audio itself.",
+      body: "We use it once to check it's a live voice and to make your clone, then delete it. We only use clone providers that delete their copy too.",
     },
     {
-      title: "We keep a voiceprint",
-      body: "A list of numbers used only to match your voice in your own scans. It can't be played back.",
+      title: "No voiceprint",
+      body: "We don't keep a model, fingerprint or copy of your voice. The clone is deleted when you leave the page.",
+    },
+    {
+      title: "YouTube is read-only",
+      body: "We see your public videos' titles and lengths. We never download your videos or post anything, and you can disconnect at any time.",
     },
     {
       title: "Delete it all from Settings",
-      body: "One button removes your voiceprint, scans and account. There's no email to send and no waiting period.",
-    },
-    {
-      title: "Never used to train AI",
-      body: "Your voice data is only used for your own scans.",
+      body: "One button removes your account, results and YouTube connection. Your voice is never used to train AI.",
     },
   ],
 };
 
-export const pricingSection = {
-  heading: "Pricing",
-  intro: "The first scan is free. Pro shows which videos we found and helps you remove them.",
-};
-
 export const finalCta = {
-  heading: "See your result in about five minutes.",
-  body: "One free scan shows how many minutes of your voice are public and how exposed you are.",
+  heading: "Hear your clone in about two minutes.",
+  body: "Then check what's public on your YouTube channel and make it harder for anyone to fake a call from you.",
 };

@@ -26,7 +26,7 @@ function Figure({ minutes, videos, counter }: { minutes: number; videos: number;
         <span className="text-5xl font-bold tracking-tight">{minutes}</span>
       )}
       <span className="text-muted">
-        min in {videos} public videos
+        min across {videos} public videos with your voice
       </span>
     </p>
   );

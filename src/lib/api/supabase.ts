@@ -9,8 +9,7 @@ const notImplemented = (method: string): never => {
  * Next.js API routes that enqueue jobs for the Python worker on Modal.
  * See BUILD_REPORT.md → "Swap guide" for the method-by-method mapping.
  *
- * Every method must keep the TimbreApi contract. Most importantly, source
- * details are redacted on the server for non-Pro users.
+ * Every method must keep the TimbreApi contract.
  */
 export class SupabaseTimbreApi implements TimbreApi {
   signIn(): never { return notImplemented("signIn"); }
@@ -27,7 +26,6 @@ export class SupabaseTimbreApi implements TimbreApi {
   listSources(): never { return notImplemented("listSources"); }
   getSource(): never { return notImplemented("getSource"); }
   updateSourceStatus(): never { return notImplemented("updateSourceStatus"); }
-  upgrade(): never { return notImplemented("upgrade"); }
   setMonitoring(): never { return notImplemented("setMonitoring"); }
   setEmailAlerts(): never { return notImplemented("setEmailAlerts"); }
   requestCloneTest(): never { return notImplemented("requestCloneTest"); }

@@ -1,7 +1,7 @@
 /**
  * Domain types. These mirror the future Supabase schema:
  *
- *   users(id, email, plan, consent_version, consent_at)
+ *   users(id, email, consent_version, consent_at)
  *   voiceprints(id, user_id, model_version, created_at)
  *   linked_accounts(id, user_id, platform, handle)
  *   scans(id, user_id, type, status, candidates_count, matched_seconds,
@@ -14,14 +14,9 @@
 
 export type Platform = "instagram" | "tiktok" | "youtube";
 
-/** `lapsed` = was Pro, payment failed. Data is kept 30 days, details re-redacted. */
-export type Plan = "free" | "pro" | "lapsed";
-
-export type BillingInterval = "month" | "year";
-
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 
-export type ScanType = "free" | "paid" | "monitor";
+export type ScanType = "manual" | "monitor";
 
 export type ScanStatus =
   | "collecting"
@@ -38,14 +33,10 @@ export type SourceStatus = "open" | "fixed" | "ignored";
 export interface User {
   id: string;
   email: string;
-  plan: Plan;
   consentVersion: string | null;
   consentAt: string | null;
   /** Full name used for web search of reposts/tags. */
   fullName: string | null;
-  billingInterval: BillingInterval | null;
-  /** Set when plan becomes `lapsed`; data is kept for 30 days after this. */
-  lapsedAt: string | null;
   monitoring: boolean;
   emailAlerts: boolean;
   createdAt: string;
@@ -97,21 +88,16 @@ export interface Scan {
   finishedAt: string | null;
 }
 
-/**
- * A public video containing the user's voice.
- * `url`, `title`, `thumbnail` and `author` are `null` when the caller's plan
- * does not include source details. This redaction happens in the API layer,
- * never in UI components.
- */
+/** A public video containing the user's voice. */
 export interface Source {
   id: string;
   scanId: string;
   userId: string;
   platform: Platform;
-  url: string | null;
-  title: string | null;
+  url: string;
+  title: string;
   thumbnail: string | null;
-  /** Handle of the account that posted it. Redacted like `url`. */
+  /** Handle of the account that posted it, when it isn't the user. */
   author: string | null;
   postedBy: PostedBy;
   postedAt: string;
@@ -161,7 +147,7 @@ export class ApiError extends Error {
       | "forbidden"
       | "not_found"
       | "invalid"
-      | "payment_failed",
+      | "rate_limited",
     message: string,
   ) {
     super(message);

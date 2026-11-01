@@ -1,3 +1,5 @@
+import { site } from "./site";
+
 export interface LegalSection {
   id: string;
   title: string;
@@ -30,7 +32,6 @@ export const privacySections: LegalSection[] = [
       "Linked accounts: the Instagram, TikTok and YouTube handles and the name you give us for web searches.",
       "Scan results: links to public videos where your voice was found, how many seconds matched and the confidence of each match.",
       "Consent records: the version of the consent you agreed to and when.",
-      "Billing status (Pro): handled by our payment provider; we do not store card numbers.",
     ],
   },
   {
@@ -48,7 +49,6 @@ export const privacySections: LegalSection[] = [
     bullets: [
       "Raw audio: deleted immediately after processing.",
       "Voiceprint, linked accounts and scan results: until you delete them, or after 12 months of inactivity.",
-      "If a Pro subscription lapses: data is kept for 30 days so you can resume, then deleted unless you renew.",
       "Consent and deletion records: kept as an audit log for as long as required by law.",
     ],
   },
@@ -70,14 +70,14 @@ export const privacySections: LegalSection[] = [
     id: "rights",
     title: "7. Access, correction and deletion (DPP6)",
     paragraphs: [
-      "You can export a copy of your data or delete all of it at any time from Settings. Deletion is immediate and covers your voiceprint, linked accounts, scans and account. You can also make a data access or correction request by emailing privacy@timbre.ai; we will respond within 40 days as required by the PDPO.",
+      `You can export a copy of your data or delete all of it at any time from Settings. Deletion is immediate and covers your voiceprint, linked accounts, scans and account. You can also make a data access or correction request by emailing ${site.contactEmail}; we will respond within 40 days as required by the PDPO.`,
     ],
   },
   {
     id: "openness",
     title: "8. Openness and contact (DPP5)",
     paragraphs: [
-      "We will keep this policy public and written in plain English, and tell you about material changes before they take effect. Questions or complaints: privacy@timbre.ai. You may also contact the Office of the Privacy Commissioner for Personal Data, Hong Kong.",
+      `We will keep this policy public and written in plain English, and tell you about material changes before they take effect. Questions or complaints: ${site.contactEmail}. You may also contact the Office of the Privacy Commissioner for Personal Data, Hong Kong.`,
     ],
   },
 ];
@@ -112,33 +112,26 @@ export const termsSections: LegalSection[] = [
     id: "clone-test",
     title: "4. Clone test",
     paragraphs: [
-      "The clone test is available to Pro users only. It uses a fresh live recording of your own voice and a fixed sentence chosen by us. Generated audio is watermarked, streamed, cannot be downloaded and is deleted at the end of your session. Misuse leads to immediate account termination.",
-    ],
-  },
-  {
-    id: "billing",
-    title: "5. Subscriptions and billing",
-    paragraphs: [
-      "Pro costs US$9.99 per month or US$79.99 per year and renews automatically until cancelled. You can cancel at any time from Settings; access continues until the end of the paid period. If a payment fails, Pro features pause and your data is kept for 30 days.",
+      "The clone test is available to every signed-in user, within usage limits. It uses a fresh live recording of your own voice and a fixed sentence chosen by us. Generated audio is watermarked and streamed, is not offered as a download, and is deleted at the end of your session. Recording or redistributing it is not allowed (see section 3). Misuse leads to immediate account termination.",
     ],
   },
   {
     id: "estimates",
-    title: "6. Estimates, not guarantees",
+    title: "5. Estimates, not guarantees",
     paragraphs: [
       "Risk scores and matched minutes are estimates produced by automated voice matching and may contain errors. We do not guarantee that we will find every public recording of your voice.",
     ],
   },
   {
     id: "liability",
-    title: "7. Liability",
+    title: "6. Liability",
     paragraphs: [
       "To the extent permitted by Hong Kong law, Timbre is not liable for losses arising from scams, impersonation or third-party platforms' decisions on takedown requests.",
     ],
   },
   {
     id: "law",
-    title: "8. Governing law",
+    title: "7. Governing law",
     paragraphs: ["These terms are governed by the laws of the Hong Kong Special Administrative Region."],
   },
 ];

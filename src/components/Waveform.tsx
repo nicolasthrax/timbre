@@ -32,6 +32,10 @@ export interface WaveformProps {
   /** When the lit set changes, light bars left to right over this many ms instead of all at once. */
   sweepMs?: number;
   className?: string;
+  /** Lit colour, applied to the bar's ::after layer, so it takes an `after:` class. */
+  litClassName?: string;
+  /** Colour of bars that are not lit. */
+  unlitClassName?: string;
   /** Accessible description. Without it the waveform is decorative. */
   label?: string;
 }
@@ -46,6 +50,8 @@ export function Waveform({
   intro = false,
   sweepMs,
   className,
+  litClassName = "after:bg-accent",
+  unlitClassName = "bg-bar",
   label,
 }: WaveformProps) {
   const heights = levels && levels.length > 0 ? levels : waveformHeights(bars, seed);
@@ -68,16 +74,19 @@ export function Waveform({
             key={i}
             data-lit={lit || undefined}
             className={cn(
-              "wave-bar relative min-w-[2px] flex-1 origin-center rounded-full bg-bar after:bg-accent",
+              "wave-bar relative min-w-[2px] flex-1 origin-center rounded-full",
+              unlitClassName,
+              litClassName,
               levels && "transition-[height] duration-150",
               animated && "animate-wave",
             )}
             style={
               {
                 height: `${Math.max(6, h * 100)}%`,
+                animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
+                // Position and height for scroll-linked effects in globals.css (.wave-flatten).
                 "--at": at.toFixed(3),
                 "--h": Math.max(0.06, h).toFixed(3),
-                animationDelay: animated ? `${(i % 16) * -0.1}s` : undefined,
               } as CSSProperties
             }
           />

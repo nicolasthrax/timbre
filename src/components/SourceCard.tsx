@@ -1,9 +1,8 @@
-import { ChevronRight, CircleCheck, EyeOff, Lock, User, Users } from "lucide-react";
+import { ChevronRight, CircleCheck, EyeOff, User, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/Badge";
 import { Waveform } from "@/components/Waveform";
 import type { PostedBy, Source, SourceStatus } from "@/lib/api/types";
-import { cn } from "@/lib/cn";
 import { formatDate, formatDuration, formatPercent } from "@/lib/format";
 import { platformLabel } from "@/lib/platforms";
 import { hashString } from "@/lib/random";
@@ -34,12 +33,7 @@ function displayUrl(url: string): string {
   return url.replace(/^https?:\/\/(www\.)?/, "");
 }
 
-/**
- * Renders exactly what the API returned. When details are redacted
- * (`url`/`title` are null) it shows a decorative blurred placeholder.
- */
 export function SourceCard({ source }: { source: Source }) {
-  const redacted = source.url === null;
   const PostedIcon = source.postedBy === "self" ? User : Users;
 
   const body = (
@@ -64,42 +58,26 @@ export function SourceCard({ source }: { source: Source }) {
             {postedByLabel[source.postedBy]}
           </span>
         </div>
-        {redacted ? (
-          <div className="mt-2" aria-label="Video details hidden on the free plan">
-            <div aria-hidden className="h-4 w-4/5 rounded bg-surface-2 blur-[3px]" />
-            <div aria-hidden className="mt-2 h-3 w-1/2 rounded bg-surface-2 blur-[3px]" />
-            <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted">
-              <Lock aria-hidden className="size-3" /> Details hidden
-            </p>
-          </div>
-        ) : (
-          <>
-            <p className="mt-1.5 truncate font-medium text-text">{source.title}</p>
-            <p className="mt-0.5 truncate tabular-nums text-xs text-muted">{displayUrl(source.url ?? "")}</p>
-          </>
-        )}
+        <p className="mt-1.5 truncate font-medium text-text">{source.title}</p>
+        <p className="mt-0.5 truncate tabular-nums text-xs text-muted">{displayUrl(source.url)}</p>
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="tabular-nums text-sm tabular-nums text-text">
             {formatDuration(source.matchedSeconds)} <span className="text-muted">matched</span>
           </span>
           <span className="tabular-nums text-xs tabular-nums text-muted">{formatPercent(source.confidence)} confidence</span>
-          {!redacted && <SourceStatusBadge status={source.status} />}
+          <SourceStatusBadge status={source.status} />
         </div>
       </div>
-      {!redacted && <ChevronRight aria-hidden className="mt-1 size-5 shrink-0 self-center text-muted" />}
+      <ChevronRight aria-hidden className="mt-1 size-5 shrink-0 self-center text-muted" />
     </div>
   );
 
-  const className = cn(
-    "block rounded-card border border-border bg-surface p-4 transition-colors",
-    !redacted && "hover:border-field hover:bg-surface-2",
-  );
-
-  if (redacted) {
-    return <div className={className}>{body}</div>;
-  }
   return (
-    <Link href={`/sources/${source.id}`} transitionTypes={["nav-forward"]} className={className}>
+    <Link
+      href={`/sources/${source.id}`}
+      transitionTypes={["nav-forward"]}
+      className="block rounded-card border border-border bg-surface p-4 transition-colors hover:border-field hover:bg-surface-2"
+    >
       {body}
     </Link>
   );

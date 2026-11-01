@@ -3,14 +3,14 @@ import { SOURCE_URL_PATTERN, mockMicrophone, seed } from "./helpers";
 
 test("landing renders and CTA navigates to sign-in", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "How much of your voice is out there?" })).toBeVisible();
-  await expect(page).toHaveTitle("Timbre AI — How much of your voice is out there?");
-  await page.getByRole("link", { name: /Scan my voice — free/ }).first().click();
+  await expect(page.getByRole("heading", { level: 1, name: "Hear an AI clone of your own voice" })).toBeVisible();
+  await expect(page).toHaveTitle("Hear an AI clone of your own voice | Timbre AI");
+  await page.getByRole("link", { name: "Hear my clone" }).first().click();
   await expect(page).toHaveURL(/\/signin$/);
   await expect(page.getByRole("heading", { name: "Sign in to Timbre" })).toBeVisible();
 });
 
-test("happy path: sign in → consent → enrol → accounts → scan → redacted free results", async ({ page }) => {
+test("happy path: sign in → consent → enrol → accounts → scan → results with sources", async ({ page }) => {
   await mockMicrophone(page);
   await page.goto("/signin");
   await page.getByLabel("Email").fill("kai@example.com");
@@ -35,27 +35,18 @@ test("happy path: sign in → consent → enrol → accounts → scan → redact
 
   await expect(page).toHaveURL(/\/scan\//);
   await expect(page.getByText(/Collecting public videos|Matching your voice|Calculating exposure/).first()).toBeVisible();
-  await expect(page).toHaveURL(/\/results$/, { timeout: 40_000 });
+  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 40_000 });
 
   await expect(page.getByTestId("minutes-found")).toContainText("47");
   await expect(page.getByTestId("source-list").getByRole("listitem")).toHaveCount(12);
-  const html = await page.content();
-  expect(html).not.toMatch(SOURCE_URL_PATTERN);
+  await expect(page.getByTestId("source-list")).toContainText(SOURCE_URL_PATTERN);
 });
 
-test("upgrade → dashboard shows source URLs → open a source → mark as fixed", async ({ page }) => {
-  await seed(page, "free");
+test("dashboard shows source URLs → open a source → mark as fixed; /results redirects", async ({ page }) => {
+  await seed(page);
   await page.goto("/results");
-  await expect(page.getByTestId("minutes-found")).toBeVisible();
-  expect(await page.content()).not.toMatch(SOURCE_URL_PATTERN);
-
-  await page.getByRole("button", { name: "See all sources" }).click();
-  const dialog = page.getByRole("dialog");
-  await expect(dialog).toBeVisible();
-  await dialog.getByText("Monthly").click();
-  await dialog.getByRole("button", { name: "Upgrade" }).click();
-
   await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page.getByRole("button", { name: /upgrade/i })).toHaveCount(0);
   const list = page.getByTestId("source-list");
   await expect(list).toContainText(SOURCE_URL_PATTERN);
 
@@ -66,16 +57,10 @@ test("upgrade → dashboard shows source URLs → open a source → mark as fixe
   await expect(page.getByText("Marked as fixed")).toBeVisible();
 });
 
-test("clone test is locked for free users and unlocked for Pro", async ({ page }) => {
+test("clone test runs for any signed-in user", async ({ page }) => {
   await mockMicrophone(page);
-  await seed(page, "free");
+  await seed(page);
   await page.goto("/clone-test");
-  await expect(page.getByTestId("clone-test-locked")).toBeVisible();
-  await expect(page.getByTestId("clone-test-unlocked")).toHaveCount(0);
-
-  await seed(page, "pro");
-  await page.goto("/clone-test");
-  await expect(page.getByTestId("clone-test-unlocked")).toBeVisible();
   await page.getByRole("button", { name: "Start clone test" }).click();
   await page.getByRole("button", { name: "Start recording" }).click();
   const generate = page.getByRole("button", { name: "Generate clone" });
@@ -94,7 +79,7 @@ test("clone test is locked for free users and unlocked for Pro", async ({ page }
 });
 
 test("delete my data returns to the landing page and clears state", async ({ page }) => {
-  await seed(page, "pro");
+  await seed(page);
   await page.goto("/settings");
   await page.getByRole("button", { name: "Delete…" }).click();
   const confirm = page.getByRole("button", { name: "Permanently delete everything" });

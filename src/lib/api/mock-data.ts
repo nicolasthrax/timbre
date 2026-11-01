@@ -2,8 +2,8 @@ import { createRng, hashString } from "@/lib/random";
 import type { Platform, PostedBy, Scan, ScanIssue, Source } from "./types";
 
 /** Mock scenarios, switchable via `?scenario=` or /dev/states. */
-export type Scenario = "high" | "none" | "partial" | "lapsed";
-export const SCENARIOS: Scenario[] = ["high", "none", "partial", "lapsed"];
+export type Scenario = "high" | "none" | "partial";
+export const SCENARIOS: Scenario[] = ["high", "none", "partial"];
 
 export function isScenario(value: unknown): value is Scenario {
   return typeof value === "string" && (SCENARIOS as string[]).includes(value);
@@ -66,20 +66,6 @@ interface ScenarioShape {
 
 const SHAPES: Record<Scenario, ScenarioShape> = {
   high: {
-    totalSeconds: 47 * 60,
-    platforms: [
-      "instagram", "youtube", "tiktok", "instagram", "youtube", "tiktok",
-      "instagram", "tiktok", "instagram", "youtube", "instagram", "tiktok",
-    ],
-    postedBy: [
-      "self", "self", "self", "other", "self", "self",
-      "self", "other", "unknown", "self", "other", "self",
-    ],
-    cleanIndexes: [1],
-    candidates: 50,
-    issues: () => [],
-  },
-  lapsed: {
     totalSeconds: 47 * 60,
     platforms: [
       "instagram", "youtube", "tiktok", "instagram", "youtube", "tiktok",

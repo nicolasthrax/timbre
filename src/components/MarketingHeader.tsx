@@ -14,7 +14,7 @@ export function MarketingHeader() {
             Sign in
           </Link>
           <ButtonLink href="/signin" size="sm" className="hidden sm:inline-flex">
-            Scan free
+            Hear my clone
           </ButtonLink>
         </div>
       </div>

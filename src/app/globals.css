@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 /*
+ * Timbre design tokens. Dark theme only for v0.
+ * Tailwind v4 reads its theme from CSS: the @theme block below is the
+ * "Tailwind config" that maps these tokens to utilities (bg-surface,
+ * text-muted, border-border, text-accent, ...).
+ */
+/*
  * Timbre design tokens (direction C in DESIGN.md). Light theme.
  * The @theme block below maps them to Tailwind utilities.
  */
@@ -19,6 +25,11 @@
   --success: #17663f;
   --warn: #8a5300;
   --danger: #b42318;
+  /* Ink band (founder story). Contrast on --ink: text 17:1, muted 8.5:1, accent 7.5:1. */
+  --ink: #0e1b26;
+  --on-ink: #ffffff;
+  --on-ink-muted: #a9b7c4;
+  --accent-on-ink: #8ea8f2;
 
   /* Motion tokens (DESIGN.md, Motion). */
   --duration-state: 150ms;
@@ -45,6 +56,10 @@
   --color-success: var(--success);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-on-ink-muted: var(--on-ink-muted);
+  --color-accent-on-ink: var(--accent-on-ink);
 
   --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
 
@@ -61,18 +76,9 @@
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
   --animate-wave: wave 1.6s ease-in-out infinite;
+  --animate-swap: swap 300ms var(--ease-out) both;
   --animate-enter: enter var(--duration-enter) var(--ease-out) both;
   --animate-pop: pop 300ms var(--ease-out) both;
-
-  @keyframes wave {
-    0%,
-    100% {
-      transform: scaleY(0.55);
-    }
-    50% {
-      transform: scaleY(1);
-    }
-  }
 
   @keyframes enter {
     from {
@@ -87,11 +93,29 @@
       scale: 0.6;
     }
   }
+
+  @keyframes swap {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      transform: scaleY(0.55);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+
+
 }
 
 html {
   background: var(--bg);
-  scroll-behavior: smooth;
 }
 
 body {
@@ -232,54 +256,64 @@ dialog::backdrop {
   transition: scale 350ms var(--ease-out);
 }
 
-/* "How a scan works" rules. The fill is a pseudo-element so it can scale without the track. */
-.step-rule {
-  position: relative;
-  display: block;
-  height: 2px;
-  background: var(--bar);
+/* "How it works" steps: timed pop-in fallback for browsers without scroll timelines (RevealList.tsx). */
+.reveal-list[data-armed] > li {
+  transition:
+    opacity 500ms var(--ease-out),
+    translate 600ms var(--ease-out),
+    scale 600ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
-.step-rule::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--text);
-  transform-origin: left;
+.reveal-list[data-armed] > li:not([data-shown]) {
+  opacity: 0;
+  translate: 0 32px;
+  scale: 0.96;
 }
 
-/*
- * Scroll-linked landing sections. Only where scroll timelines exist and motion is
- * welcome; everywhere else each element simply shows its finished state.
- */
+/* Scroll-linked landing figures. Elsewhere each shows its finished state. */
+@property --fix-min {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.fix-count {
+  counter-reset: fix-min var(--fix-min);
+}
+
+.fix-count::after {
+  content: counter(fix-min);
+}
+
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    /* Steps fill 1, 2, 3 like a progress bar. Stacked on phones, each fills as it reaches it. */
-    .step-rule::after {
-      animation: fill-x linear both;
+    /* Steps rise into place with scroll: each on its own when stacked, staggered across one row from md. */
+    .reveal-list > li {
+      animation: step-in linear both;
       animation-timeline: view();
-      animation-range: cover 15% cover 40%;
+      animation-range: entry 0% entry 100%;
     }
 
     @media (min-width: 48rem) {
-      .steps {
+      .reveal-list {
         view-timeline-name: --steps;
       }
 
-      .steps > li .step-rule::after {
+      .reveal-list > li {
         animation-timeline: --steps;
       }
 
-      .steps > li:nth-child(1) .step-rule::after {
-        animation-range: cover 15% cover 27%;
+      .reveal-list > li:nth-child(1) {
+        animation-range: cover 0% cover 20%;
       }
 
-      .steps > li:nth-child(2) .step-rule::after {
-        animation-range: cover 27% cover 39%;
+      .reveal-list > li:nth-child(2) {
+        animation-range: cover 8% cover 28%;
       }
 
-      .steps > li:nth-child(3) .step-rule::after {
-        animation-range: cover 39% cover 51%;
+      .reveal-list > li:nth-child(3) {
+        animation-range: cover 16% cover 36%;
       }
     }
 
@@ -291,33 +325,59 @@ dialog::backdrop {
       animation-range: cover 5% cover 30%;
     }
 
-    /* Platform waveforms: the found stretch lights left to right as the row scrolls up. */
-    .wave-onview {
-      view-timeline-name: --found;
+    /* "What fixing looks like": the after figure counts down and fixed stretches go dark. */
+    .fix-example {
+      view-timeline-name: --fix;
     }
 
-    .wave-onview .wave-bar[data-lit]::after {
-      animation: lit-on linear both;
-      animation-timeline: --found;
-      animation-range: cover calc(20% + var(--at) * 25%) cover calc(26% + var(--at) * 25%);
+    .fix-count {
+      animation: fix-count linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
     }
 
-    /* Privacy waveform flattens to a thin line, left to right, as it reaches mid-screen. */
-    .wave-flatten {
-      view-timeline-name: --flatten;
+    .fix-fade {
+      animation: fade-out linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
     }
 
-    .wave-flatten .wave-bar {
+    /* "What we keep": the recording flattens to a line, left to right (RecordingFigure.tsx). */
+    .recording-figure {
+      view-timeline-name: --recording;
+    }
+
+    .recording-figure .wave-flatten > span {
       animation: flatten linear both;
-      animation-timeline: --flatten;
-      animation-range: cover calc(30% + var(--at) * 15%) cover calc(40% + var(--at) * 15%);
+      animation-timeline: --recording;
+      animation-range: cover calc(25% + var(--at) * 12%) cover calc(33% + var(--at) * 12%);
     }
   }
 }
 
-@keyframes fill-x {
+@keyframes step-in {
   from {
-    transform: scaleX(0);
+    opacity: 0;
+    translate: 0 48px;
+    scale: 0.96;
+  }
+}
+
+@keyframes fix-count {
+  from {
+    --fix-min: var(--fix-from);
+  }
+  to {
+    --fix-min: var(--fix-to);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -347,60 +407,6 @@ dialog::backdrop {
 .disclosure[open]::details-content {
   block-size: auto;
   opacity: 1;
-}
-
-/* Sheet dialog: slides up on phones, scales in from sm up. */
-dialog.sheet,
-dialog.sheet::backdrop {
-  transition:
-    opacity var(--duration-enter) var(--ease-out),
-    translate 350ms var(--ease-out),
-    scale var(--duration-enter) var(--ease-out),
-    overlay var(--duration-enter) allow-discrete,
-    display var(--duration-enter) allow-discrete;
-  opacity: 0;
-}
-
-dialog.sheet {
-  translate: 0 100%;
-}
-
-dialog.sheet[open],
-dialog.sheet[open]::backdrop {
-  opacity: 1;
-}
-
-dialog.sheet[open] {
-  translate: 0 0;
-}
-
-@starting-style {
-  dialog.sheet[open],
-  dialog.sheet[open]::backdrop {
-    opacity: 0;
-  }
-
-  dialog.sheet[open] {
-    translate: 0 100%;
-  }
-}
-
-@media (min-width: 40rem) {
-  dialog.sheet {
-    translate: 0 0;
-    scale: 0.98;
-  }
-
-  dialog.sheet[open] {
-    scale: 1;
-  }
-
-  @starting-style {
-    dialog.sheet[open] {
-      translate: 0 0;
-      scale: 0.98;
-    }
-  }
 }
 
 /* Route changes (React <ViewTransition>, see PageTransition.tsx). */
@@ -509,7 +515,6 @@ dialog.sheet[open] {
   .wave-react .wave-bar {
     scale: none;
   }
-
 
   *,
   *::before,

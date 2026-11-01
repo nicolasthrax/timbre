@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check, ChevronDown, CircleCheck, Copy, ExternalLink, EyeOff, Lock, RotateCcw } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, CircleCheck, Copy, ExternalLink, EyeOff, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Banner } from "@/components/Banner";
@@ -71,7 +71,7 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
   const [copied, setCopied] = useState(false);
   const draft = takedownDraft({
     platformLabel: platformLabel[source.platform],
-    url: source.url ?? "",
+    url: source.url,
     author: source.author,
     fullName,
     matchedSeconds: source.matchedSeconds,
@@ -129,11 +129,11 @@ function Takedown({ source, fullName }: { source: Source; fullName: string | nul
 }
 
 export function SourceDetail({ sourceId }: { sourceId: string }) {
-  const { me, openPaywall } = useSession();
-  const { data: source, error, setData } = useAsync(() => api.getSource(sourceId), `${sourceId}:${me?.plan ?? ""}`);
+  const { me } = useSession();
+  const { data: source, error, setData } = useAsync(() => api.getSource(sourceId), `${sourceId}:${me?.id ?? ""}`);
   const [busy, setBusy] = useState<SourceStatus | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const backHref = me?.plan === "pro" ? "/dashboard" : "/results";
+  const backHref = "/dashboard";
 
   async function setStatus(status: SourceStatus) {
     setBusy(status);
@@ -176,7 +176,6 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
     );
   }
 
-  const redacted = source.url === null;
   const isSelf = source.postedBy === "self";
 
   return (
@@ -187,23 +186,21 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
           <span className="inline-flex items-center gap-2 text-sm">
             {platformLabel[source.platform]}
           </span>
-          {!redacted && <SourceStatusBadge status={source.status} />}
+          <SourceStatusBadge status={source.status} />
         </div>
         <h1 className="mt-3 text-xl font-semibold tracking-tight text-balance sm:text-2xl">
-          {source.title ?? "Video details hidden"}
+          {source.title}
         </h1>
-        {source.url && (
-          <a
-            href={source.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-flex max-w-full items-center gap-1.5 tabular-nums text-xs text-muted hover:text-text"
-          >
-            <span className="truncate" data-testid="source-url">{source.url}</span>
-            <ExternalLink aria-hidden className="size-3.5 shrink-0" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </a>
-        )}
+        <a
+          href={source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex max-w-full items-center gap-1.5 tabular-nums text-xs text-muted hover:text-text"
+        >
+          <span className="truncate" data-testid="source-url">{source.url}</span>
+          <ExternalLink aria-hidden className="size-3.5 shrink-0" />
+          <span className="sr-only">(opens in a new tab)</span>
+        </a>
         <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-border pt-5 sm:grid-cols-3">
           <Fact label="Posted">{formatDate(source.postedAt)}</Fact>
           <Fact label="Posted by">
@@ -222,55 +219,40 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
         </dl>
       </Card>
 
-      {redacted ? (
-        <Card className="flex flex-col items-start gap-4 border-accent/30 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-3">
-            <Lock aria-hidden className="mt-0.5 size-5 shrink-0 text-accent" />
-            <div>
-              <p className="font-medium">The link, title and fixes are part of Pro</p>
-              <p className="mt-1 text-sm text-muted">Upgrade to see where this video is and get step-by-step help removing it.</p>
-            </div>
-          </div>
-          <Button onClick={openPaywall}>Upgrade to Pro</Button>
-        </Card>
-      ) : (
-        <>
-          {source.status !== "open" && (
-            <Banner
-              tone={source.status === "fixed" ? "success" : "info"}
-              title={source.status === "fixed" ? "Marked as fixed" : "Ignored"}
-              action={
-                <Button variant="ghost" size="sm" onClick={() => setStatus("open")} disabled={busy !== null}>
-                  <RotateCcw aria-hidden className="size-4" />
-                  Reopen
-                </Button>
-              }
-            >
-              {source.status === "fixed"
-                ? "It no longer counts toward your exposure. We'll re-check it on your next scan."
-                : "It's hidden from your open list but still counts toward your exposure."}
-            </Banner>
+      {source.status !== "open" && (
+        <Banner
+          tone={source.status === "fixed" ? "success" : "info"}
+          title={source.status === "fixed" ? "Marked as fixed" : "Ignored"}
+          action={
+            <Button variant="ghost" size="sm" onClick={() => setStatus("open")} disabled={busy !== null}>
+              <RotateCcw aria-hidden className="size-4" />
+              Reopen
+            </Button>
+          }
+        >
+          {source.status === "fixed"
+            ? "It no longer counts toward your exposure. We'll re-check it on your next scan."
+            : "It's hidden from your open list but still counts toward your exposure."}
+        </Banner>
+      )}
+
+      {isSelf ? <SelfFixes source={source} /> : <Takedown source={source} fullName={me.fullName} />}
+
+      {actionError && <Banner tone="warn" title="Couldn't update">{actionError}</Banner>}
+
+      {source.status === "open" && (
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button onClick={() => setStatus("fixed")} disabled={busy !== null} size="lg">
+            <CircleCheck aria-hidden className="size-4" />
+            {busy === "fixed" ? "Saving…" : "Mark as fixed"}
+          </Button>
+          {!isSelf && (
+            <Button variant="secondary" onClick={() => setStatus("ignored")} disabled={busy !== null} size="lg">
+              <EyeOff aria-hidden className="size-4" />
+              {busy === "ignored" ? "Saving…" : "Ignore"}
+            </Button>
           )}
-
-          {isSelf ? <SelfFixes source={source} /> : <Takedown source={source} fullName={me.fullName} />}
-
-          {actionError && <Banner tone="warn" title="Couldn't update">{actionError}</Banner>}
-
-          {source.status === "open" && (
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={() => setStatus("fixed")} disabled={busy !== null} size="lg">
-                <CircleCheck aria-hidden className="size-4" />
-                {busy === "fixed" ? "Saving…" : "Mark as fixed"}
-              </Button>
-              {!isSelf && (
-                <Button variant="secondary" onClick={() => setStatus("ignored")} disabled={busy !== null} size="lg">
-                  <EyeOff aria-hidden className="size-4" />
-                  {busy === "ignored" ? "Saving…" : "Ignore"}
-                </Button>
-              )}
-            </div>
-          )}
-        </>
+        </div>
       )}
     </div>
   );

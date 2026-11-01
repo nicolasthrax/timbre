@@ -1,6 +1,5 @@
 import type {
   AccountsInput,
-  BillingInterval,
   CloneTestResult,
   ConsentRecord,
   DataExport,
@@ -21,8 +20,6 @@ import type {
  *   - supabase.ts  (TODO(real): Supabase + Python worker)
  *
  * Rules every implementation must follow:
- *   - Redaction of source details for non-Pro users happens HERE,
- *     never in UI components.
  *   - Raw audio blobs passed in are never persisted.
  */
 export interface TimbreApi {
@@ -39,6 +36,7 @@ export interface TimbreApi {
   setAccounts(input: AccountsInput): Promise<LinkedAccount[]>;
   getAccounts(): Promise<LinkedAccount[]>;
 
+  /** At most one manual scan per user per 24 hours (`rate_limited` otherwise). */
   startScan(type?: ScanType): Promise<Scan>;
   getScan(id: string): Promise<Scan>;
   /** All scans for the user, newest first. */
@@ -48,11 +46,10 @@ export interface TimbreApi {
   getSource(id: string): Promise<Source>;
   updateSourceStatus(id: string, status: SourceStatus): Promise<Source>;
 
-  upgrade(interval: BillingInterval): Promise<User>;
   setMonitoring(enabled: boolean): Promise<User>;
   setEmailAlerts(enabled: boolean): Promise<User>;
 
-  /** Pro only. `liveSample` re-verifies identity and is discarded after use. */
+  /** `liveSample` re-verifies identity and is discarded after use. */
   requestCloneTest(liveSample: Blob): Promise<CloneTestResult>;
 
   exportData(): Promise<DataExport>;

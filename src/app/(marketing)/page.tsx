@@ -1,24 +1,20 @@
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
-import { type CSSProperties, Fragment, Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
+import { ExampleClonePair } from "@/components/ExampleClonePair";
+import { FixExample } from "@/components/FixExample";
+import { FounderStory } from "@/components/FounderStory";
 import { PageTransition } from "@/components/PageTransition";
+import { Playhead } from "@/components/Playhead";
 import { PlayOnView } from "@/components/PlayOnView";
-import { PointerLift } from "@/components/PointerLift";
-import { PricingCards } from "@/components/PricingCards";
+import { RecordingFigure } from "@/components/RecordingFigure";
+import { RevealList } from "@/components/RevealList";
+import { ScrollTour } from "@/components/ScrollTour";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
-import {
-  exampleScan,
-  finalCta,
-  founder,
-  hero,
-  platformsSection,
-  pricingSection,
-  privacyPromise,
-  steps,
-} from "@/content/landing";
+import { exampleClone, familySection, finalCta, hero, privacyPromise, steps } from "@/content/landing";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -27,37 +23,33 @@ export const metadata: Metadata = {
   openGraph: { title: site.title, description: site.description },
 };
 
-function Section({ id, children, className }: { id?: string; children: React.ReactNode; className?: string }) {
+/**
+ * Sections are told apart by tone and space, not rules: the page alternates the
+ * pale page colour and white, and the founder story sits on the ink band.
+ */
+function Section({
+  id,
+  children,
+  tone = "page",
+}: {
+  id?: string;
+  children: React.ReactNode;
+  tone?: "page" | "surface";
+}) {
   return (
-    <section id={id} className={`scroll-mt-20 border-t border-border ${className ?? ""}`}>
-      <div className="mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6">{children}</div>
+    <section id={id} className={`scroll-mt-16 ${tone === "surface" ? "bg-surface" : ""}`}>
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-32">{children}</div>
     </section>
   );
 }
+
+const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
 
 function SectionHeading({ children, intro }: { children: React.ReactNode; intro?: string }) {
   return (
     <div className="max-w-copy">
       <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">{children}</h2>
       {intro && <p className="mt-4 text-lg leading-relaxed text-muted">{intro}</p>}
-    </div>
-  );
-}
-
-/** Decorative stretches lit on each platform's waveform in "What we look for". */
-const PLATFORM_FINDS: [number, number][] = [
-  [0.15, 0.4],
-  [0.55, 0.7],
-  [0.3, 0.85],
-];
-
-const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
-
-/** The scan line that crosses the hero waveform once on load. */
-function Playhead() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <span className="wave-playhead" />
     </div>
   );
 }
@@ -69,64 +61,23 @@ export default function LandingPage() {
         <DeletedNotice />
       </Suspense>
 
-      {/* Hero: the waveform is the subject (DESIGN.md, direction C). The load sequence is in DESIGN.md, Motion. */}
+      {/* Hero: the real/clone pair is the subject (DESIGN.md, direction D). The load sequence is in DESIGN.md, Motion. */}
       <section className="pb-20 pt-14 lg:pt-24">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-5 lg:items-end">
           <h1 className="rise max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
             {hero.headline}
           </h1>
-          <p className="rise max-w-copy-narrow text-lg leading-relaxed text-muted lg:col-span-2"
-            style={delay(120)}>
-            {hero.subline}
-          </p>
+          <div className="rise max-w-copy-narrow lg:col-span-2" style={delay(120)}>
+            <p className="text-xl font-bold leading-snug text-pretty">{hero.subheading}</p>
+            <p className="mt-3 text-lg leading-relaxed text-muted">{hero.subline}</p>
+          </div>
         </div>
 
-        <figure className="mt-14" style={{ "--wave-start": "300ms" } as CSSProperties} aria-labelledby="example-caption">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <ol className="relative hidden h-28 md:block" aria-label="Where the voice in this example was found">
-              {exampleScan.found.map((f) => (
-                <li
-                  key={f.where}
-                  className="note-drop absolute top-0 flex flex-col"
-                  style={{ left: `${f.range[0] * 100}%`, "--at": f.range[0] } as CSSProperties}
-                >
-                  <span className="rounded-field border border-border bg-surface px-3 py-2 text-sm">
-                    <span className="block font-bold">{f.where}</span>
-                    <span className="block text-muted">{f.detail}</span>
-                  </span>
-                  <span aria-hidden data-connector className="ml-4 h-10 w-px bg-bar" />
-                </li>
-              ))}
-            </ol>
-            <div className="relative md:hidden">
-              <Waveform bars={48} seed={7} intro className="h-28" highlight={exampleScan.found.map((f) => f.range)} />
-              <Playhead />
-            </div>
-            <PointerLift className="relative hidden md:block">
-              <Waveform
-                bars={96}
-                seed={7}
-                intro
-                className="h-40"
-                highlight={exampleScan.found.map((f) => f.range)}
-                label="A voice waveform with three highlighted stretches where the voice was found online"
-              />
-              <Playhead />
-            </PointerLift>
-            <ul className="mt-6 space-y-2 md:hidden">
-              {exampleScan.found.map((f) => (
-                <li key={f.where} className="note-drop text-sm" style={{ "--at": f.range[0] } as CSSProperties}>
-                  <span className="font-bold">{f.where}</span> <span className="text-muted">{f.detail}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <figcaption
-            id="example-caption"
-            className="rise mx-auto mt-4 max-w-6xl px-4 text-sm text-muted sm:px-6"
-            style={delay(1600)}
-          >
-            Example scan. {exampleScan.line}
+        <figure className="mx-auto mt-14 max-w-6xl px-4 sm:px-6" aria-labelledby="example-caption">
+          <ExampleClonePair />
+          <figcaption id="example-caption" className="rise mt-4 max-w-copy text-sm text-muted" style={delay(1600)}>
+            Example sentence: “{exampleClone.sentence}”
+            {!(exampleClone.realSrc && exampleClone.cloneSrc) && <span className="mt-1 block">{exampleClone.pendingNote}</span>}
           </figcaption>
         </figure>
 
@@ -141,72 +92,31 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <Section id="how-it-works">
+      <Section id="how-it-works" tone="surface">
         <SectionHeading>{steps.heading}</SectionHeading>
-        <ol className="steps mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+        <RevealList className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.items.map((step, i) => (
-            <li key={step.title}>
-              <span aria-hidden className="step-rule" />
-              <p className="mt-5 text-sm font-bold text-muted">Step {i + 1}</p>
+            <li key={step.title} className="border-t-2 border-text pt-5">
+              <p className="text-sm font-bold text-muted">Step {i + 1}</p>
               <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
               <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
             </li>
           ))}
-        </ol>
+        </RevealList>
+        <FixExample />
       </Section>
 
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <SectionHeading>{founder.heading}</SectionHeading>
-          </div>
-          <figure className="max-w-copy lg:col-span-3">
-            {/* Words brighten as they rise into reading position (globals.css, .word-reveal). */}
-            <blockquote className="text-2xl leading-snug text-pretty">
-              {`“${founder.quote}”`.split(" ").map((word, i) => (
-                <Fragment key={i}>
-                  {i > 0 && " "}
-                  <span className="word-reveal">{word}</span>
-                </Fragment>
-              ))}
-            </blockquote>
-            {founder.body.map((p) => (
-              <p key={p} className="mt-5 leading-relaxed text-muted">
-                {p}
-              </p>
-            ))}
-            <figcaption className="mt-6 text-sm">
-              <span className="font-bold">{founder.name}</span>, <span className="text-muted">{founder.role}</span>
-            </figcaption>
-          </figure>
-        </div>
+      <Section id="family">
+        <SectionHeading intro={familySection.intro}>{familySection.heading}</SectionHeading>
+        <ScrollTour stops={familySection.tips} />
+        <p className="mt-10 max-w-copy text-muted">{familySection.note}</p>
       </Section>
 
-      <Section>
-        <SectionHeading intro={platformsSection.intro}>{platformsSection.heading}</SectionHeading>
-        <dl className="mt-12 grid gap-8 md:grid-cols-3">
-          {platformsSection.platforms.map((p, i) => (
-            <div key={p.title}>
-              <Waveform
-                bars={28}
-                seed={11 + i * 6}
-                highlight={[PLATFORM_FINDS[i]]}
-                className="wave-onview mb-5 h-10 max-w-60"
-              />
-              <dt className="text-xl font-bold">{p.title}</dt>
-              <dd className="mt-2 leading-relaxed text-muted">{p.body}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-10 max-w-copy text-muted">{platformsSection.note}</p>
-      </Section>
+      <FounderStory />
 
       <Section id="privacy">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-end">
-          <SectionHeading>{privacyPromise.heading}</SectionHeading>
-          {/* A recording flattening into a line: the audio is deleted, only a voiceprint stays. */}
-          <Waveform bars={40} seed={19} className="wave-flatten h-16 max-w-md" />
-        </div>
+        <SectionHeading>{privacyPromise.heading}</SectionHeading>
+        <RecordingFigure />
         <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
           {privacyPromise.points.map((p) => (
             <div key={p.title} className="max-w-copy">
@@ -217,14 +127,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      <Section id="pricing">
-        <SectionHeading intro={pricingSection.intro}>{pricingSection.heading}</SectionHeading>
-        <div className="mt-12 max-w-4xl">
-          <PricingCards />
-        </div>
-      </Section>
-
-      <Section id="faq">
+      <Section id="faq" tone="surface">
         <SectionHeading>Questions</SectionHeading>
         <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
           {faq.map((item) => (

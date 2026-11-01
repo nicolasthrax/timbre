@@ -4,10 +4,11 @@ The site uses direction C, "Where it was found", chosen from three hero explorat
 
 ## Subject
 
-- Product: Timbre AI, which shows people where their voice is public on Instagram, TikTok and YouTube and helps them remove it.
+- Product: Timbre AI, which lets people hear an AI clone of their own voice, shows how much of their voice is public on YouTube, and gives them steps to protect themselves and their family. See `.plans/01-prd.md` (v0.2).
 - Audience: people aged 18 to 30 in Hong Kong who post videos and have parents or grandparents who could get a fake call in their voice.
-- The landing page's job: get a visitor to start a free scan. It says what the risk is without fear tactics, and nothing claims Timbre detects clones or stops scams.
-- Fixed by the brief: the headline "How much of your voice is out there?", the CTA "Scan my voice — free" (the em dash is the brief's own wording), the founder story, and the waveform with lit segments as the signature visual.
+- The landing page's job: get a visitor to hear their own clone. It says what the risk is without fear tactics (every risk line is followed by an action), and nothing claims Timbre detects clones or stops scams.
+- Fixed by the brief: the founder story. The old headline ("How much of your voice is out there?") and CTA ("Scan my voice, free" with a dash) belong to the scan-first product and are replaced in stage 3 of `.plans/pivot-review.md`. The hero direction below (direction C) is revised in stage 4, before the landing page is rebuilt.
+- Copy rule: "audio never leaves your device" appears only next to the data-export upload feature (post-demo), never in general marketing copy.
 
 ## Type
 
@@ -32,6 +33,10 @@ Scale: 64 px display (`text-display`), then Tailwind's 36 / 30 / 20 / 18 / 16 / 
 | `--success` | #17663F | Low risk, fixed items, "good" recording quality |
 | `--warn` | #8A5300 | Medium and high risk, open items, quality warnings |
 | `--danger` | #B42318 | Critical risk, destructive actions, errors |
+| `--ink` | #0E1B26 | The ink band behind the founder story |
+| `--on-ink` | #FFFFFF | Text on the ink band (17:1) |
+| `--on-ink-muted` | #A9B7C4 | Secondary text and the copied waveform on ink (8.5:1) |
+| `--accent-on-ink` | #8EA8F2 | Lit waveform bars and the monogram on ink (7.5:1) |
 
 The accent marks the one main action on a screen and the voice found in a waveform. Status colours always come with an icon and a label. There are no gradients, glows or blur.
 
@@ -43,45 +48,50 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 
 ## Layout
 
-- Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
-- Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are separated by a rule, not by cards or backgrounds.
+- Landing hero (direction D, "Hear the difference", from stage 4 of `.plans/pivot-review.md`): the headline on the left; the subheading and a short explanation on the right of the same row. Below, full width, the example pair: a "Real" waveform and an "AI clone" waveform stacked with the same shape, because the point is that they look and sound alike. The real waveform uses unlit bars, the clone uses the accent. Then the CTA row. When the founder's example recording exists, each waveform gets a play button (the existing `ClonePlayer` controls); until then the caption marks the gap and there are no dead controls.
+- Landing sections: how it works (a real three-step sequence), the family section (three static tips), the founder story, what we keep and delete, questions, and a closing CTA. No pricing. Sections are told apart by tone and space, not rules: they alternate the page colour and white, with generous padding, and the founder story sits on the full-bleed ink band. Panels inside a white section use the page colour instead of a border.
+- How it works ends with "What fixing looks like": a before and after pair, labelled as an example, counting public videos with the user's voice and their total length (the v0 scan's measure).
+- Family section: from `lg` up, the three tips scroll past an example card that stays in place and changes with the tip in view. Below `lg` each tip has its own card.
+- Why Timbre exists (ink band): the quote is the subject, set large; beside it, two waveforms with the founder's voice from a public video and the AI copy on the call, near-identical; the founder's two paragraphs run in two columns below.
+- What we keep opens with a recording waveform that flattens to a line: the recording is used once, then deleted.
 - App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 
 ```
-Timbre                                          Sign in  [Scan free]
-How much of your                    subline subline subline
-voice is out there?                 subline subline
-      [Instagram Reel]   [TikTok repost]     [YouTube vlog]
- |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-Example scan. We found 47 minutes ...
-[Scan my voice — free]  Free scan. No card needed. ...
+Timbre                                   How it works  FAQ  Sign in  [Hear my clone]
+Hear an AI clone of               Your voice can be copied in seconds.
+your own voice                    Hear it for yourself.
+                                  explanation explanation explanation
+Real      |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+AI clone  |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Caption: example sentence, and where the example audio comes from
+[Hear my clone]  Free. About two minutes. Recording deleted once the clone is made.
 ```
 
 ## Motion
 
-Motion shows what changed after someone acts, and the waveform is the one place it gets expressive. All of it is CSS (transitions, keyframes, `@starting-style`, view transitions) plus one small `requestAnimationFrame` counter. There is no animation library. Animations use `transform`, `scale`, `translate` and `opacity`; the one exception is the disclosure height, which is the only way to show an answer opening without a jump.
+Motion shows what changed after someone acts, and the waveform is the one place it gets expressive. All of it is CSS (transitions, keyframes, view transitions, scroll timelines) plus one small `requestAnimationFrame` counter. There is no animation library. Animations use `transform`, `scale`, `translate` and `opacity`; the one exception is the disclosure height, which is the only way to show an answer opening without a jump.
 
 Tokens live in `globals.css`: `--ease-out` (fast start, long settle) for things arriving, `--ease-in-out` for things moving between two places, and durations of 150 ms (state changes), 250 ms (enter, exit) and 600 ms (the waveform sweep per bar).
 
 | Moment | What moves | Why |
 |---|---|---|
-| Landing load (the one orchestrated non-user moment) | Headline and subline rise in, a playhead sweeps the waveform left to right, each bar rises as it passes, the found stretches light up and their notes drop in when the playhead reaches them. About 1.8 s, CTA usable after 0.4 s. | It acts out a scan finding the voice, which is what the product does. |
+| Landing load (the one orchestrated non-user moment) | Headline and subheading rise in. A scan line crosses the real-voice waveform and its bars rise as it passes; 0.4 s later the same happens on the clone row. CTA usable after 0.4 s. | The clone visibly follows the real voice, which is the point of the hero. |
+| Pointer over the hero waveforms (fine pointers only) | Bars near the pointer lift slightly. | The pair reads as audio, not a picture. |
 | Header links (landing only) | Links scroll smoothly to their section; an underline slides to the section in view. | Where you are on a long page. |
-| How a scan works | Each step's top rule fills left to right, 1, 2, 3, linked to scroll. | It is a real sequence, so it reads as progress. |
+| How it works | The three steps rise into place with scroll (fade, rise 48 px, scale from 96 %): each on its own when stacked, staggered across the row from `md`. Without scroll timelines, a timed pop-in, only when the list starts below the fold. | It is a real sequence, so it arrives in order. |
+| What fixing looks like | The "after" figure counts down from the "before" value while the fixed stretches go dark, linked to scroll. | Shows the change fixing makes. |
+| Your family | The example card cross-fades (300 ms) when the tip in view changes. | Keeps the example next to the tip being read. |
 | Founder quote | Words go from 20 % to full opacity as they rise; full by 70 % down the viewport. | Slows the reader on the reason the product exists. |
-| What we look for | A small waveform per platform; its found stretch lights left to right with scroll. | Ties each platform to "found here" using the signature visual. |
-| What we keep | A waveform flattens to a thin line, left to right, with scroll. | Acts out "your recording is deleted, a voiceprint stays". |
+| What we keep | The recording waveform flattens left to right with scroll. | Acts out "your recording is deleted". |
 | Closing CTA | A short waveform with the hero's scan line, played once when it is 60 % on screen. | Bookends the page right above the button. Accent stays on the button. |
-| Pointer over the hero waveform (fine pointers only) | Bars near the pointer lift slightly. | The example reads as audio you can scrub, not a picture. |
-| Results and dashboard load | The minutes figure counts up and the waveform sweeps in once. | The number is the answer to the scan, so it arrives as a result. |
 | Scan running, then done | Bars pulse while running; on completion the bars light up left to right and each step's check pops in. | Shows progress and the moment it finished. |
+| Results load | The minutes figure counts up and the waveform sweeps in once. | The number is the answer to the scan, so it arrives as a result. |
 | Route change | Old page fades out fast, new page rises 8 px and fades in. The header and sidebar stay still. Moving forward (into a source, to the next onboarding step) slides left; "All sources" slides right. | Tells the person the content changed and in which direction they moved. |
-| Paywall dialog | Sheet slides up on phones; on wider screens it scales from 98 % and fades. The backdrop fades. Closing reverses it. | Shows where the dialog came from and where it went. |
 | Disclosure (FAQ, fix steps) | The answer opens to its height and fades in; the chevron turns. | Keeps the reader's place instead of jumping the page. |
-| Buttons, switches, billing toggle | Press scales to 98 %; switch thumb and billing indicator slide with `--ease-out`. | Confirms the press or the new choice. |
+| Buttons and switches | Press scales to 98 %; the switch thumb slides with `--ease-out`. | Confirms the press or the new choice. |
 | Banners, mobile menu, "Copied" | Short fade and 4 px drop on mount. | Marks new information that appeared after an action. |
 
-Scroll-linked effects use CSS scroll timelines and run only where `animation-timeline: view()` is supported and motion is welcome; elsewhere each element shows its finished state. Pricing stays still because people compare numbers there. Sections never fade in as whole blocks and cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
+Scroll-linked effects run only where `animation-timeline: view()` is supported and motion is welcome; elsewhere each element shows its finished state. Cards have no hover motion. Under `prefers-reduced-motion` every animation and view transition finishes instantly, the counter shows the final number and the pointer effect is off. Content never depends on an animation finishing to be visible.
 
 ## Icons
 

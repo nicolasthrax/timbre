@@ -12,8 +12,8 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { SCENARIO_EVENT } from "@/components/ScenarioSync";
 import { useSession } from "@/components/SessionProvider";
 import { SourceCard } from "@/components/SourceCard";
-import { LapsedBanner, LowExposureState, ScanIssuesNotice, UpgradeCard } from "@/components/StateNotices";
-import { mockControls, type Plan, type Source } from "@/lib/api";
+import { LowExposureState, ScanIssuesNotice } from "@/components/StateNotices";
+import { mockControls, type Source } from "@/lib/api";
 import { SCENARIOS, type Scenario } from "@/lib/api/mock-data";
 import { cn } from "@/lib/cn";
 
@@ -33,15 +33,11 @@ const sampleSource: Source = {
   firstSeenAt: "2026-10-28T08:00:00.000Z",
   status: "open",
 };
-const redactedSource: Source = { ...sampleSource, id: "src_preview_r", url: null, title: null, thumbnail: null, author: null };
-
-const PREVIEW_LAPSED_AT = "2026-10-29T00:00:00.000Z";
 
 const scenarioCopy: Record<Scenario, string> = {
   high: "12 sources, 47 min, High risk",
   none: "Nothing found, low exposure",
   partial: "Some sources unreachable / private",
-  lapsed: "Pro subscription lapsed",
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -58,9 +54,9 @@ function Boom(): never {
 }
 
 export function StatesGallery() {
-  const { refresh, openPaywall } = useSession();
+  const { refresh } = useSession();
   const [scenario, setScenario] = useState<Scenario | null>(() => mockControls?.getScenario() ?? null);
-  const [seeded, setSeeded] = useState<string | null>(null);
+  const [seeded, setSeeded] = useState<"demo" | "reset" | null>(null);
   const [crash, setCrash] = useState(false);
 
   function chooseScenario(next: Scenario) {
@@ -69,11 +65,10 @@ export function StatesGallery() {
     window.dispatchEvent(new Event(SCENARIO_EVENT));
   }
 
-  async function seed(plan: Plan) {
-    mockControls?.seedDemo(plan);
-    setScenario(mockControls?.getScenario() ?? null);
+  async function seed() {
+    mockControls?.seedDemo();
     await refresh();
-    setSeeded(plan);
+    setSeeded("demo");
   }
 
   async function reset() {
@@ -122,16 +117,14 @@ export function StatesGallery() {
             <div>
               <p className="text-sm font-medium">Seed a signed-in demo account (skips onboarding)</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm" onClick={() => seed("free")}>Seed free user</Button>
-                <Button variant="secondary" size="sm" onClick={() => seed("pro")}>Seed Pro user</Button>
-                <Button variant="secondary" size="sm" onClick={() => seed("lapsed")}>Seed lapsed user</Button>
+                <Button variant="secondary" size="sm" onClick={seed}>Seed demo account</Button>
                 <Button variant="ghost" size="sm" onClick={reset}>Reset everything</Button>
               </div>
               {seeded && (
                 <p role="status" className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted">
-                  {seeded === "reset" ? "Mock store cleared." : `Seeded ${seeded} account.`}
+                  {seeded === "reset" ? "Mock store cleared." : "Seeded demo account."}
                   {seeded !== "reset" && (
-                    <ButtonLink href={seeded === "pro" ? "/dashboard" : "/results"} size="sm">
+                    <ButtonLink href="/dashboard" size="sm">
                       Open app
                     </ButtonLink>
                   )}
@@ -166,14 +159,7 @@ export function StatesGallery() {
         />
       </Section>
 
-      <Section title="Payment failed / subscription lapsed">
-        <LapsedBanner lapsedAt={PREVIEW_LAPSED_AT} onRenew={openPaywall} />
-        <UpgradeCard count={12} onUpgrade={openPaywall} lapsed />
-        <SourceCard source={redactedSource} />
-      </Section>
-
-      <Section title="Source card, redacted (free) and full (Pro)">
-        <SourceCard source={redactedSource} />
+      <Section title="Source card">
         <SourceCard source={sampleSource} />
       </Section>
 
@@ -190,9 +176,8 @@ export function StatesGallery() {
         <DeletedBanner />
       </Section>
 
-      <Section title="Paywall, 404 and error pages">
+      <Section title="404 and error pages">
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" onClick={openPaywall}>Open paywall</Button>
           <ButtonLink href="/this-page-does-not-exist" variant="secondary">Open 404</ButtonLink>
           <Button variant="danger" onClick={() => setCrash(true)}>Trigger error page</Button>
         </div>

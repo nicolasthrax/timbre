@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 
 const links = [
   { id: "how-it-works", label: "How it works" },
-  { id: "pricing", label: "Pricing" },
+  { id: "family", label: "Your family" },
   { id: "faq", label: "FAQ" },
 ];
 

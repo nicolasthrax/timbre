@@ -1,58 +1,70 @@
-# 05 — Go-to-Market & Roadmap
+# 05 Go-to-market and roadmap
 
-**North-star milestone:** YC-application-ready — a live product, paying users, growth numbers, and a founder story.
+v0.2, 31 Oct 2026.
+
+North star: a YC application with a live demo, real users and week-over-week growth. Revenue is not a v0 goal.
 
 ## 1. Positioning
-- **One-liner:** "See how much of your voice is out there — before a scammer does."
-- **Category:** personal voice security (consumer).
-- **Why us / why now:** founder's family was targeted by an AI voice-clone scam; cloning became trivial in the last 2 years; tools so far protect celebrities and enterprises, not regular people.
 
-## 2. Channels (HK, ranked by expected ROI)
-1. **Founder story content** — short videos on IG/TikTok telling the grandparents story + live demo of the scan (and side-by-side clone of your own voice). Most powerful, free.
-2. **Campus** — HKU SPACE and other HK universities: talks, student societies, class group chats.
-3. **"Protect your parents" angle** — content in Cantonese/English aimed at young adults worried about family; seasonal pushes around Chinese New Year / Mid-Autumn (family gatherings).
-4. **Scam-news hooks** — publish quick takes whenever HK police/media report a deepfake/voice scam.
-5. **Partnerships (later)** — anti-scam NGOs, banks' customer-education teams, Cyberport community.
-6. **Shareable score card** — the "47 minutes" number (never sources) as a story template.
+- One-liner (draft): "Hear an AI clone of your own voice, then make it harder for scammers to fool your family."
+- Category: personal voice security.
+- Why us, why now: the founder's grandparents got a ransom call in an AI clone of his voice. Cloning became trivial in the last two years. Existing tools protect celebrities and enterprises, not regular people and their parents.
 
-## 3. Funnel targets (hypotheses)
-Landing visit → signup 15% → completed scan 60% → paid 6% → month-2 retained 70%.
+## 2. Channels (Hong Kong, by expected return)
 
-## 4. Roadmap
+1. Founder story content on Instagram and TikTok: the grandparents' story and a live clone of the founder's own voice.
+2. The clone test itself: every result leads to "play it to your family" and a share card.
+3. Campus: HKU SPACE and other universities, student societies, class group chats. Rate limits are loose per IP so a lecture hall can all try it at once.
+4. "Protect your parents" pushes around family holidays (Chinese New Year, Mid-Autumn).
+5. Scam-news hooks: quick posts whenever HK police or media report a voice or deepfake scam.
 
-### Phase 0 — Validate (Weeks 0–3)
-- 15–20 interviews with HK young adults (script: worries, past scam exposure, what they'd pay).
-- Fake-door landing page + waitlist; A/B test pricing (HK$48 vs HK$88).
-- Concierge test: manually build exposure reports for 5 people.
-- Competitor teardown (consumer likeness/voice protection, security-suite deepfake features).
-- **Go/no-go:** ≥ 100 waitlist signups and ≥ 30% of interviewees say they'd pay.
+## 3. Funnel (hypotheses)
 
-### Phase 1 — Prototype (Weeks 3–8)
-- Python notebook: enrolment + matching on pasted links; build accuracy test set.
-- **Gate:** false positives < 2% on test set.
+Landing visit → signup 20% → clone test completed 70% → family replay or share 40% → YouTube connected 30% → checklist item done 50%.
 
-### Phase 2 — MVP (Weeks 8–14)
-- Web app: enrol, user-pasted links + own YouTube, results, free/paid redaction, Stripe.
-- Private beta with waitlist; charge from day one.
-- Register HK limited company before first payment.
+## 4. Revenue later: B2B2C
 
-### Phase 3 — v1 (Weeks 14–22)
-- TikTok/Instagram official APIs, web-search discovery, clone test, remediation, weekly monitoring + email alerts.
-- Lawyer review → public launch in HK.
+- Banks, telcos and insurers bundle Timbre for their customers. Users never pay.
+- The pitch: banks lose money when parents are scammed; Timbre reaches their customers' children and gets them to act.
+- Partners get aggregate numbers only ([04](04-privacy-legal.md) §9).
+- Watch the checklist wording on voice verification ("add a second factor"), since some banks use voice ID.
+- Not built in v0. Partner conversations start once the demo has numbers.
 
-### Phase 4 — YC-ready (Weeks 22–30)
-- Metrics to show: paying users, week-over-week growth, retention, cost per scan.
-- Find technical co-founder (ideally by end of Phase 1).
-- Apply to YC (and HK options like Cyberport Incubation Programme as backup).
+## 5. Roadmap
 
-## 5. Metrics dashboard (track from day 1)
-Waitlist signups · signup→scan completion · median voice minutes found · % scans with ≥ 1 min found · free→paid · MRR · churn · cost per scan · false-positive reports.
+### Phase 1: YC demo (now)
 
-## 6. Team
-- Now: Nicolas (product, design, GTM, vibe-coding).
-- Needed: technical co-founder with audio/ML + backend experience.
-- Advisors to seek: a privacy lawyer, someone from HK anti-fraud/cybersecurity.
+Stages 1 to 12 in [pivot-review.md](pivot-review.md) §5: docs, clone vendor spike, landing, clone test, share card, YouTube scan, checklist, then the real backend. Google OAuth verification is prepared in parallel and submitted from the stage 12 build.
 
-## 7. Open questions
-- Is monitoring sticky enough, or is this a one-off report business?
-- Future expansion: family plan, Mainland China (separate legal setup), B2B later if consumer traction proves the tech.
+### Phase 2: after the demo
+
+- TikTok scan (apply for Display API review when the demo ships)
+- Matching voice in the user's own data export, in the browser
+- Possible reposts by other people (listing only)
+- Monitoring alerts
+- Cantonese clone test
+- First partner pilot
+- Lawyer review, then public launch in Hong Kong
+
+### Phase 3: YC application
+
+Metrics to show: clone tests completed, share-to-signup rate, week-over-week growth, cost per clone test, partner conversations.
+
+## 6. Metrics to track from day one
+
+Signups, clone tests completed, verification failures by reason, family replays, shares, signups from shares, YouTube connections, scans, checklist items done, cost per clone test, rate-limit hits.
+
+## 7. Team
+
+- Now: Nicolas (product, design, GTM, building).
+- Needed: a technical co-founder with audio or ML and backend experience.
+- Advisors: a privacy lawyer; someone from HK anti-fraud or a bank's fraud team.
+
+## 8. Not on this roadmap
+
+Mainland China is a separate future product with its own legal setup ([04](04-privacy-legal.md) §11).
+
+## 9. Open questions
+
+- Does the clone moment drive sharing on its own, or does it need the family step to spread?
+- Which partner type (bank, telco or insurer) is most likely to pilot first?

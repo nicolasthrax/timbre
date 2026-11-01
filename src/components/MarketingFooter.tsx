@@ -3,12 +3,12 @@ import { Logo } from "@/components/Logo";
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-border">
+    <footer className="bg-surface">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
           <Logo />
           <p className="mt-2 max-w-sm text-sm text-muted">
-            We show where your voice is publicly exposed and help you reduce it. Made in Hong Kong.
+            Hear how easily your voice can be copied, and make it harder to fake. Made in Hong Kong.
           </p>
         </div>
         <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">

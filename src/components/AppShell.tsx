@@ -4,39 +4,20 @@ import { AudioLines, FlaskConical, LogOut, Menu, Settings, X } from "lucide-reac
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Badge } from "@/components/Badge";
-import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
-import { useSession } from "@/components/SessionProvider";
 import { api, type User } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
-function navItems(user: User) {
-  const exposureHref = user.plan === "pro" ? "/dashboard" : "/results";
-  return [
-    {
-      href: exposureHref,
-      label: "Exposure",
-      Icon: AudioLines,
-      match: ["/dashboard", "/results", "/sources", "/scan"],
-    },
-    { href: "/clone-test", label: "Clone test", Icon: FlaskConical, match: ["/clone-test"] },
-    { href: "/settings", label: "Settings", Icon: Settings, match: ["/settings"] },
-  ];
-}
-
-function PlanBadge({ user }: { user: User }) {
-  if (user.plan === "pro") return <Badge tone="accent">Pro</Badge>;
-  if (user.plan === "lapsed") return <Badge tone="warn">Pro lapsed</Badge>;
-  return <Badge>Free</Badge>;
-}
+const items = [
+  { href: "/dashboard", label: "Exposure", Icon: AudioLines, match: ["/dashboard", "/results", "/sources", "/scan"] },
+  { href: "/clone-test", label: "Clone test", Icon: FlaskConical, match: ["/clone-test"] },
+  { href: "/settings", label: "Settings", Icon: Settings, match: ["/settings"] },
+];
 
 export function AppShell({ user, children }: { user: User; children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { openPaywall } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
-  const items = navItems(user);
 
   async function signOut() {
     await api.signOut();
@@ -69,19 +50,11 @@ export function AppShell({ user, children }: { user: User; children: React.React
 
   const footer = (
     <div className="space-y-3">
-      {user.plan !== "pro" && (
-        <Button onClick={openPaywall} className="w-full" size="sm">
-          {user.plan === "lapsed" ? "Renew Pro" : "Upgrade to Pro"}
-        </Button>
-      )}
       <div className="flex items-center justify-between gap-2 rounded-field border border-border px-3 py-2.5">
         <div className="min-w-0">
           <p className="truncate text-sm" title={user.email}>
             {user.email}
           </p>
-          <div className="mt-1">
-            <PlanBadge user={user} />
-          </div>
         </div>
         <button
           type="button"
@@ -115,7 +88,6 @@ export function AppShell({ user, children }: { user: User; children: React.React
         <div className="flex h-14 items-center justify-between px-4">
           <Logo href={items[0].href} />
           <div className="flex items-center gap-2">
-            <PlanBadge user={user} />
             <button
               type="button"
               aria-expanded={menuOpen}

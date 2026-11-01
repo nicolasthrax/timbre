@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Banner } from "@/components/Banner";
 import { ButtonLink } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { useSession } from "@/components/SessionProvider";
 import { Waveform } from "@/components/Waveform";
 import { api, type Scan } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -23,11 +22,10 @@ function stepStates(scan: Scan | null): StepState[] {
 
 export function ScanProgress({ scanId }: { scanId: string }) {
   const router = useRouter();
-  const { me } = useSession();
   const [scan, setScan] = useState<Scan | null>(null);
   const [error, setError] = useState<string | null>(null);
   const done = !!scan?.finishedAt;
-  const destination = me?.plan === "pro" ? "/dashboard" : "/results";
+  const destination = "/dashboard";
 
   useEffect(() => {
     let active = true;
@@ -59,7 +57,7 @@ export function ScanProgress({ scanId }: { scanId: string }) {
 
   if (error) {
     return (
-      <Banner tone="warn" title="We couldn't load this scan" action={<ButtonLink href="/results" size="sm" variant="secondary">Go to results</ButtonLink>}>
+      <Banner tone="warn" title="We couldn't load this scan" action={<ButtonLink href="/dashboard" size="sm" variant="secondary">Go to your exposure</ButtonLink>}>
         {error}
       </Banner>
     );

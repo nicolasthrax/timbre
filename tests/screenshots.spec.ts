@@ -52,22 +52,9 @@ test("onboarding", async ({ page }) => {
   await shot(page, "10-scan-progress", false);
 });
 
-test("free results and paywall", async ({ page }) => {
-  await seed(page, "free");
-  await page.goto("/results");
-  await expect(page.getByTestId("minutes-found")).toBeVisible();
-  await shot(page, "11-results-free");
-  await page.getByRole("button", { name: "See all sources" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await shot(page, "12-paywall", false);
-  await page.keyboard.press("Escape");
-  await page.goto("/clone-test");
-  await shot(page, "13-clone-test-locked");
-});
-
-test("pro screens", async ({ page }) => {
+test("app screens", async ({ page }) => {
   await mockMicrophone(page);
-  await seed(page, "pro");
+  await seed(page);
   await page.goto("/dashboard");
   await expect(page.getByTestId("source-list")).toBeVisible();
   await shot(page, "14-dashboard");
@@ -92,20 +79,15 @@ test("pro screens", async ({ page }) => {
 });
 
 test("states", async ({ page }) => {
-  await seed(page, "lapsed");
-  await page.goto("/results");
-  await expect(page.getByTestId("minutes-found")).toBeVisible();
-  await shot(page, "20-results-lapsed");
-
   await page.goto("/dev/states?scenario=none");
-  await page.getByRole("button", { name: "Seed free user" }).click();
-  await page.goto("/results");
+  await page.getByRole("button", { name: "Seed demo account" }).click();
+  await page.goto("/dashboard");
   await expect(page.getByTestId("minutes-found")).toBeVisible();
   await shot(page, "21-results-none");
 
   await page.goto("/dev/states?scenario=partial");
-  await page.getByRole("button", { name: "Seed free user" }).click();
-  await page.goto("/results");
+  await page.getByRole("button", { name: "Seed demo account" }).click();
+  await page.goto("/dashboard");
   await expect(page.getByTestId("minutes-found")).toBeVisible();
   await shot(page, "22-results-partial");
 

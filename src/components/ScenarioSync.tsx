@@ -6,7 +6,7 @@ import { isScenario } from "@/lib/api/mock-data";
 
 export const SCENARIO_EVENT = "timbre:scenario-change";
 
-/** Applies `?scenario=high|none|partial|lapsed` to the mock backend (dev only). */
+/** Applies `?scenario=high|none|partial` to the mock backend (dev only). */
 export function ScenarioSync() {
   useEffect(() => {
     if (!mockControls) return;

@@ -33,6 +33,10 @@ Scale: 64 px display (`text-display`), then Tailwind's 36 / 30 / 20 / 18 / 16 / 
 | `--success` | #17663F | Low risk, fixed items, "good" recording quality |
 | `--warn` | #8A5300 | Medium and high risk, open items, quality warnings |
 | `--danger` | #B42318 | Critical risk, destructive actions, errors |
+| `--ink` | #0E1B26 | The ink band behind the founder story |
+| `--on-ink` | #FFFFFF | Text on the ink band (17:1) |
+| `--on-ink-muted` | #A9B7C4 | Secondary text and the copied waveform on ink (8.5:1) |
+| `--accent-on-ink` | #8EA8F2 | Lit waveform bars and the monogram on ink (7.5:1) |
 
 The accent marks the one main action on a screen and the voice found in a waveform. Status colours always come with an icon and a label. There are no gradients, glows or blur.
 
@@ -45,7 +49,11 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 ## Layout
 
 - Landing hero (direction D, "Hear the difference", from stage 4 of `.plans/pivot-review.md`): the headline on the left; the subheading and a short explanation on the right of the same row. Below, full width, the example pair: a "Real" waveform and an "AI clone" waveform stacked with the same shape, because the point is that they look and sound alike. The real waveform uses unlit bars, the clone uses the accent. Then the CTA row. When the founder's example recording exists, each waveform gets a play button (the existing `ClonePlayer` controls); until then the caption marks the gap and there are no dead controls.
-- Landing sections: how it works (a real three-step sequence), the family section (three static tips), the founder story, what we keep and delete, questions, and a closing CTA. No pricing. Sections are separated by a rule, not by cards or backgrounds.
+- Landing sections: how it works (a real three-step sequence), the family section (three static tips), the founder story, what we keep and delete, questions, and a closing CTA. No pricing. Sections are told apart by tone and space, not rules: they alternate the page colour and white, with generous padding, and the founder story sits on the full-bleed ink band. Panels inside a white section use the page colour instead of a border.
+- How it works ends with "What fixing looks like": a before and after pair, labelled as an example, counting public videos with the user's voice and their total length (the v0 scan's measure).
+- Family section: from `lg` up, the three tips scroll past an example card that stays in place and changes with the tip in view. Below `lg` each tip has its own card.
+- Why Timbre exists (ink band): the quote is the subject, set large; beside it, two waveforms with the founder's voice from a public video and the AI copy on the call, near-identical; the founder's two paragraphs run in two columns below.
+- What we keep opens with a recording waveform that flattens to a line: the recording is used once, then deleted.
 - App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 
 ```
@@ -63,6 +71,8 @@ Caption: example sentence, and where the example audio comes from
 
 - The waveform pulses only while something is happening (a scan running or a clone being generated).
 - Button and toggle state changes are short colour transitions.
+- The three "How it works" steps rise into place with scroll (fade, rise 48 px, scale from 96 %): each on its own when stacked, staggered across the row from `md`. Browsers without scroll timelines get a timed pop-in instead, and only when the list starts below the fold.
+- Two landing figures are linked to scroll with CSS scroll timelines: the "after fixing" figure counts down from the "before" value while the fixed stretches go dark, and the recording waveform in "What we keep" flattens left to right. The family example card cross-fades (300 ms) when the tip in view changes. Without scroll timelines, or with reduced motion, each shows its finished state.
 - Everything respects `prefers-reduced-motion`.
 
 ## Icons

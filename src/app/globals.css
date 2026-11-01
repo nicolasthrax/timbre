@@ -25,6 +25,11 @@
   --success: #17663f;
   --warn: #8a5300;
   --danger: #b42318;
+  /* Ink band (founder story). Contrast on --ink: text 17:1, muted 8.5:1, accent 7.5:1. */
+  --ink: #0e1b26;
+  --on-ink: #ffffff;
+  --on-ink-muted: #a9b7c4;
+  --accent-on-ink: #8ea8f2;
 
   color-scheme: light;
 }
@@ -44,6 +49,10 @@
   --color-success: var(--success);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-on-ink-muted: var(--on-ink-muted);
+  --color-accent-on-ink: var(--accent-on-ink);
 
   --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
 
@@ -56,7 +65,17 @@
   --container-copy: 54ch;
   --container-copy-narrow: 44ch;
 
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
   --animate-wave: wave 1.6s ease-in-out infinite;
+  --animate-swap: swap 300ms var(--ease-out) both;
+
+  @keyframes swap {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
 
   @keyframes wave {
     0%,
@@ -93,6 +112,129 @@ body {
 
 dialog::backdrop {
   background: rgb(14 27 38 / 0.45);
+}
+
+/* "How it works" steps: timed pop-in fallback for browsers without scroll timelines (RevealList.tsx). */
+.reveal-list[data-armed] > li {
+  transition:
+    opacity 500ms var(--ease-out),
+    translate 600ms var(--ease-out),
+    scale 600ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-list[data-armed] > li:not([data-shown]) {
+  opacity: 0;
+  translate: 0 32px;
+  scale: 0.96;
+}
+
+/* Scroll-linked landing figures. Elsewhere each shows its finished state. */
+@property --fix-min {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.fix-count {
+  counter-reset: fix-min var(--fix-min);
+}
+
+.fix-count::after {
+  content: counter(fix-min);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Steps rise into place with scroll: each on its own when stacked, staggered across one row from md. */
+    .reveal-list > li {
+      animation: step-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    @media (min-width: 48rem) {
+      .reveal-list {
+        view-timeline-name: --steps;
+      }
+
+      .reveal-list > li {
+        animation-timeline: --steps;
+      }
+
+      .reveal-list > li:nth-child(1) {
+        animation-range: cover 0% cover 20%;
+      }
+
+      .reveal-list > li:nth-child(2) {
+        animation-range: cover 8% cover 28%;
+      }
+
+      .reveal-list > li:nth-child(3) {
+        animation-range: cover 16% cover 36%;
+      }
+    }
+
+    /* "What fixing looks like": the after figure counts down and fixed stretches go dark. */
+    .fix-example {
+      view-timeline-name: --fix;
+    }
+
+    .fix-count {
+      animation: fix-count linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
+    }
+
+    .fix-fade {
+      animation: fade-out linear both;
+      animation-timeline: --fix;
+      animation-range: cover 30% cover 55%;
+    }
+
+    /* "What we keep": the recording flattens to a line, left to right (RecordingFigure.tsx). */
+    .recording-figure {
+      view-timeline-name: --recording;
+    }
+
+    .recording-figure .wave-flatten > span {
+      animation: flatten linear both;
+      animation-timeline: --recording;
+      animation-range: cover calc(25% + var(--at) * 12%) cover calc(33% + var(--at) * 12%);
+    }
+  }
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    translate: 0 48px;
+    scale: 0.96;
+  }
+}
+
+@keyframes fix-count {
+  from {
+    --fix-min: var(--fix-from);
+  }
+  to {
+    --fix-min: var(--fix-to);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes flatten {
+  to {
+    transform: scaleY(calc(0.05 / var(--h)));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

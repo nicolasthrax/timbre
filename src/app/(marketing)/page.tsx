@@ -4,8 +4,13 @@ import { Suspense } from "react";
 import { ButtonLink } from "@/components/Button";
 import { DeletedNotice } from "@/components/DeletedNotice";
 import { ExampleClonePair } from "@/components/ExampleClonePair";
+import { FixExample } from "@/components/FixExample";
+import { FounderStory } from "@/components/FounderStory";
+import { RecordingFigure } from "@/components/RecordingFigure";
+import { RevealList } from "@/components/RevealList";
+import { ScrollTour } from "@/components/ScrollTour";
 import { faq } from "@/content/faq";
-import { exampleClone, familySection, finalCta, founder, hero, privacyPromise, steps } from "@/content/landing";
+import { exampleClone, familySection, finalCta, hero, privacyPromise, steps } from "@/content/landing";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -14,10 +19,22 @@ export const metadata: Metadata = {
   openGraph: { title: site.title, description: site.description },
 };
 
-function Section({ id, children, className }: { id?: string; children: React.ReactNode; className?: string }) {
+/**
+ * Sections are told apart by tone and space, not rules: the page alternates the
+ * pale page colour and white, and the founder story sits on the ink band.
+ */
+function Section({
+  id,
+  children,
+  tone = "page",
+}: {
+  id?: string;
+  children: React.ReactNode;
+  tone?: "page" | "surface";
+}) {
   return (
-    <section id={id} className={`scroll-mt-20 border-t border-border ${className ?? ""}`}>
-      <div className="mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6">{children}</div>
+    <section id={id} className={`scroll-mt-16 ${tone === "surface" ? "bg-surface" : ""}`}>
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-32">{children}</div>
     </section>
   );
 }
@@ -54,7 +71,7 @@ export default function LandingPage() {
           <ExampleClonePair />
           <figcaption id="example-caption" className="mt-4 max-w-copy text-sm text-muted">
             Example sentence: “{exampleClone.sentence}”
-            {!(exampleClone.realSrc && exampleClone.cloneSrc) && <span className="block mt-1">{exampleClone.pendingNote}</span>}
+            {!(exampleClone.realSrc && exampleClone.cloneSrc) && <span className="mt-1 block">{exampleClone.pendingNote}</span>}
           </figcaption>
         </figure>
 
@@ -66,9 +83,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <Section id="how-it-works">
+      <Section id="how-it-works" tone="surface">
         <SectionHeading>{steps.heading}</SectionHeading>
-        <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+        <RevealList className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.items.map((step, i) => (
             <li key={step.title} className="border-t-2 border-text pt-5">
               <p className="text-sm font-bold text-muted">Step {i + 1}</p>
@@ -76,43 +93,21 @@ export default function LandingPage() {
               <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
             </li>
           ))}
-        </ol>
+        </RevealList>
+        <FixExample />
       </Section>
 
       <Section id="family">
         <SectionHeading intro={familySection.intro}>{familySection.heading}</SectionHeading>
-        <dl className="mt-12 grid gap-8 md:grid-cols-3">
-          {familySection.tips.map((tip) => (
-            <div key={tip.title}>
-              <dt className="text-xl font-bold">{tip.title}</dt>
-              <dd className="mt-2 leading-relaxed text-muted">{tip.body}</dd>
-            </div>
-          ))}
-        </dl>
+        <ScrollTour stops={familySection.tips} />
         <p className="mt-10 max-w-copy text-muted">{familySection.note}</p>
       </Section>
 
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <SectionHeading>{founder.heading}</SectionHeading>
-          </div>
-          <figure className="max-w-copy lg:col-span-3">
-            <blockquote className="text-2xl leading-snug text-pretty">“{founder.quote}”</blockquote>
-            {founder.body.map((p) => (
-              <p key={p} className="mt-5 leading-relaxed text-muted">
-                {p}
-              </p>
-            ))}
-            <figcaption className="mt-6 text-sm">
-              <span className="font-bold">{founder.name}</span>, <span className="text-muted">{founder.role}</span>
-            </figcaption>
-          </figure>
-        </div>
-      </Section>
+      <FounderStory />
 
       <Section id="privacy">
         <SectionHeading>{privacyPromise.heading}</SectionHeading>
+        <RecordingFigure />
         <div className="mt-12 grid gap-x-12 gap-y-8 sm:grid-cols-2">
           {privacyPromise.points.map((p) => (
             <div key={p.title} className="max-w-copy">
@@ -123,7 +118,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      <Section id="faq">
+      <Section id="faq" tone="surface">
         <SectionHeading>Questions</SectionHeading>
         <div className="mt-10 max-w-3xl divide-y divide-border border-y border-border">
           {faq.map((item) => (

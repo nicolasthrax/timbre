@@ -3,7 +3,7 @@ import { Logo } from "@/components/Logo";
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-border">
+    <footer className="bg-surface">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
           <Logo />

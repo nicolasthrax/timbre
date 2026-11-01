@@ -38,6 +38,19 @@ export const steps = {
   ],
 };
 
+/**
+ * Before-and-after example under "How it works". Illustrative numbers, labelled
+ * as an example in the UI. Counts public videos with the user's voice and their
+ * total length, the measure the v0 YouTube scan uses (.plans/01-prd.md F4).
+ */
+export const fixExample = {
+  heading: "What fixing looks like",
+  before: { label: "Before", minutes: 47, videos: 12 },
+  after: { label: "After fixing", minutes: 9, videos: 3 },
+  caption:
+    "Example. Making old videos private took this channel from 12 public videos with the owner's voice, 47 minutes in total, to 3 videos and 9 minutes.",
+};
+
 export const founder = {
   heading: "Why Timbre exists",
   quote:
@@ -48,6 +61,12 @@ export const founder = {
   ],
   name: "Nicolas Fostier",
   role: "founder of Timbre",
+  /** Labels for the two waveforms beside the quote. */
+  voices: {
+    real: "Nicolas, in a public video",
+    copy: "The AI copy on the call",
+    caption: "AI can copy a voice from a few seconds of audio. The two are hard to tell apart.",
+  },
 };
 
 /** Founder's framing (.plans/pivot-review.md decision 7). Static tips only: no family features in v0. */
@@ -55,15 +74,31 @@ export const familySection = {
   heading: "Your voice is the weapon. Your parents are the target.",
   intro: "Scammers call parents and grandparents with a clone of their child's voice and a story about an emergency. Three things make that call fail.",
   tips: [
-    { title: "Agree a code word", body: "Pick a word only your family knows. A clone can copy how you sound, but it can't know the word." },
-    { title: "Let them hear a clone", body: "Play them yours after you try the test. Once they've heard how real a fake sounds, they know to be suspicious." },
-    { title: "Hang up and call back", body: "Tell them to end any urgent call and ring you back on the number they already have." },
+    {
+      title: "Agree a code word",
+      body: "Pick a word only your family knows. A clone can copy how you sound, but it can't know the word.",
+      example: { where: "“What's our word?”", detail: "What your parents ask before doing anything an urgent caller wants.", range: [0.1, 0.32] as [number, number] },
+    },
+    {
+      title: "Let them hear a clone",
+      body: "Play them yours after you try the test. Once they've heard how real a fake sounds, they know to be suspicious.",
+      example: { where: "Your clone, played once", detail: "On your phone, straight after your clone test.", range: [0.4, 0.62] as [number, number] },
+    },
+    {
+      title: "Hang up and call back",
+      body: "Tell them to end any urgent call and ring you back on the number they already have.",
+      example: { where: "“I'll call you back.”", detail: "Then they ring the number they already have for you.", range: [0.68, 0.9] as [number, number] },
+    },
   ],
   note: "Timbre doesn't screen calls or detect clones. It helps you and your family get ready for one.",
 };
 
 export const privacyPromise = {
   heading: "What we keep, and what we delete",
+  /** Shown with the waveform that flattens to a line as it scrolls. */
+  figure: {
+    caption: "Example. Your recording is used once to check it's you and make the clone, then deleted.",
+  },
   points: [
     {
       title: "Your recording is deleted",

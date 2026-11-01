@@ -4,10 +4,11 @@ The site uses direction C, "Where it was found", chosen from three hero explorat
 
 ## Subject
 
-- Product: Timbre AI, which shows people where their voice is public on Instagram, TikTok and YouTube and helps them remove it.
+- Product: Timbre AI, which lets people hear an AI clone of their own voice, shows how much of their voice is public on YouTube, and gives them steps to protect themselves and their family. See `.plans/01-prd.md` (v0.2).
 - Audience: people aged 18 to 30 in Hong Kong who post videos and have parents or grandparents who could get a fake call in their voice.
-- The landing page's job: get a visitor to start a free scan. It says what the risk is without fear tactics, and nothing claims Timbre detects clones or stops scams.
-- Fixed by the brief: the headline "How much of your voice is out there?", the CTA "Scan my voice — free" (the em dash is the brief's own wording), the founder story, and the waveform with lit segments as the signature visual.
+- The landing page's job: get a visitor to hear their own clone. It says what the risk is without fear tactics (every risk line is followed by an action), and nothing claims Timbre detects clones or stops scams.
+- Fixed by the brief: the founder story. The old headline ("How much of your voice is out there?") and CTA ("Scan my voice, free" with a dash) belong to the scan-first product and are replaced in stage 3 of `.plans/pivot-review.md`. The hero direction below (direction C) is revised in stage 4, before the landing page is rebuilt.
+- Copy rule: "audio never leaves your device" appears only next to the data-export upload feature (post-demo), never in general marketing copy.
 
 ## Type
 
@@ -43,18 +44,19 @@ The accent marks the one main action on a screen and the voice found in a wavefo
 
 ## Layout
 
-- Landing hero: the headline on the left with the subline on the right of the same row. The full-width example waveform sits below, with notes above its lit stretches, then the CTA row.
-- Landing sections: how a scan works (a real three-step sequence), the founder story, what we look for, what we keep, pricing, questions, and a closing CTA. Sections are separated by a rule, not by cards or backgrounds.
+- Landing hero (direction D, "Hear the difference", from stage 4 of `.plans/pivot-review.md`): the headline on the left; the subheading and a short explanation on the right of the same row. Below, full width, the example pair: a "Real" waveform and an "AI clone" waveform stacked with the same shape, because the point is that they look and sound alike. The real waveform uses unlit bars, the clone uses the accent. Then the CTA row. When the founder's example recording exists, each waveform gets a play button (the existing `ClonePlayer` controls); until then the caption marks the gap and there are no dead controls.
+- Landing sections: how it works (a real three-step sequence), the family section (three static tips), the founder story, what we keep and delete, questions, and a closing CTA. No pricing. Sections are separated by a rule, not by cards or backgrounds.
 - App: a sidebar from `lg` up and a top bar below it, with one main column capped at `max-w-5xl`.
 
 ```
-Timbre                                          Sign in  [Scan free]
-How much of your                    subline subline subline
-voice is out there?                 subline subline
-      [Instagram Reel]   [TikTok repost]     [YouTube vlog]
- |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-Example scan. We found 47 minutes ...
-[Scan my voice — free]  Free scan. No card needed. ...
+Timbre                                   How it works  FAQ  Sign in  [Hear my clone]
+Hear an AI clone of               Your voice can be copied in seconds.
+your own voice                    Hear it for yourself.
+                                  explanation explanation explanation
+Real      |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+AI clone  |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Caption: example sentence, and where the example audio comes from
+[Hear my clone]  Free. About two minutes. Recording deleted once the clone is made.
 ```
 
 ## Motion

@@ -13,5 +13,5 @@ export async function resolveHome(user: User): Promise<string> {
   const latest = scans[0];
   if (!latest) return "/onboarding/accounts";
   if (!latest.finishedAt) return `/scan/${latest.id}`;
-  return user.plan === "pro" ? "/dashboard" : "/results";
+  return "/dashboard";
 }

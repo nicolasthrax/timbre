@@ -3,7 +3,7 @@
 import { CalendarClock, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Banner } from "@/components/Banner";
 import { Button, ButtonLink } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -52,23 +52,18 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
 export function DashboardView() {
   const router = useRouter();
   const { me } = useSession();
-  const plan = me?.plan;
   const [platform, setPlatform] = useState<Platform | "all">("all");
   const [status, setStatus] = useState<SourceStatus | "all">("all");
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
 
-  const { data, error } = useAsync(() => Promise.all([api.listScans(), api.listSources()]), plan ?? "");
-
-  useEffect(() => {
-    if (plan && plan !== "pro") router.replace("/results");
-  }, [plan, router]);
+  const { data, error } = useAsync(() => Promise.all([api.listScans(), api.listSources()]), me?.id ?? "");
 
   async function runScan() {
     setStarting(true);
     setStartError(null);
     try {
-      const scan = await api.startScan("paid");
+      const scan = await api.startScan();
       router.push(`/scan/${scan.id}`);
     } catch (e) {
       setStartError(e instanceof Error ? e.message : "Couldn't start a scan.");
@@ -77,7 +72,7 @@ export function DashboardView() {
   }
 
   if (error) return <Banner tone="warn" title="We couldn't load your dashboard">{error.message}</Banner>;
-  if (!data || !me || plan !== "pro") return <ResultsSkeleton />;
+  if (!data || !me) return <ResultsSkeleton />;
 
   const [scans, sources] = data;
   const latest = scans[0];

@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Paywall } from "@/components/Paywall";
 import { SCENARIO_EVENT } from "@/components/ScenarioSync";
 import { api, type User } from "@/lib/api";
 
@@ -10,14 +9,12 @@ interface SessionValue {
   me: User | null | undefined;
   refresh: () => Promise<User | null>;
   setMe: (user: User | null) => void;
-  openPaywall: () => void;
 }
 
 const SessionContext = createContext<SessionValue | null>(null);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [me, setMe] = useState<User | null | undefined>(undefined);
-  const [paywallOpen, setPaywallOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     const user = await api.getMe();
@@ -38,19 +35,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refresh]);
 
-  const openPaywall = useCallback(() => setPaywallOpen(true), []);
-
-  const value = useMemo(() => ({ me, refresh, setMe, openPaywall }), [me, refresh, openPaywall]);
+  const value = useMemo(() => ({ me, refresh, setMe }), [me, refresh]);
 
   return (
     <SessionContext.Provider value={value}>
       {children}
-      <Paywall
-        open={paywallOpen}
-        lapsed={me?.plan === "lapsed"}
-        onClose={() => setPaywallOpen(false)}
-        onUpgraded={(user) => setMe(user)}
-      />
     </SessionContext.Provider>
   );
 }

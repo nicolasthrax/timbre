@@ -4,7 +4,7 @@ import { Logo } from "@/components/Logo";
 
 const links = [
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/#family", label: "Your family" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -25,7 +25,7 @@ export function MarketingHeader() {
             Sign in
           </Link>
           <ButtonLink href="/signin" size="sm" className="hidden sm:inline-flex">
-            Scan free
+            Hear my clone
           </ButtonLink>
         </div>
       </div>

@@ -8,7 +8,7 @@ export function MarketingFooter() {
         <div>
           <Logo />
           <p className="mt-2 max-w-sm text-sm text-muted">
-            We show where your voice is publicly exposed and help you reduce it. Made in Hong Kong.
+            Hear how easily your voice can be copied, and make it harder to fake. Made in Hong Kong.
           </p>
         </div>
         <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">

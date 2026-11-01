@@ -14,7 +14,7 @@ import { RevealList } from "@/components/RevealList";
 import { ScrollTour } from "@/components/ScrollTour";
 import { Waveform } from "@/components/Waveform";
 import { faq } from "@/content/faq";
-import { exampleClone, familySection, finalCta, hero, privacyPromise, steps } from "@/content/landing";
+import { familySection, finalCta, hero, privacyPromise, steps } from "@/content/landing";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -67,18 +67,10 @@ export default function LandingPage() {
           <h1 className="rise max-w-headline text-4xl font-bold leading-display tracking-tight sm:text-display lg:col-span-3">
             {hero.headline}
           </h1>
-          <div className="rise max-w-copy-narrow lg:col-span-2" style={delay(120)}>
-            <p className="text-xl font-bold leading-snug text-pretty">{hero.subheading}</p>
-            <p className="mt-3 text-lg leading-relaxed text-muted">{hero.subline}</p>
-          </div>
         </div>
 
-        <figure className="mx-auto mt-14 max-w-6xl px-4 sm:px-6" aria-labelledby="example-caption">
+        <figure className="mx-auto mt-14 max-w-6xl px-4 sm:px-6" aria-label="Your real voice next to an AI clone">
           <ExampleClonePair />
-          <figcaption id="example-caption" className="rise mt-4 max-w-copy text-sm text-muted" style={delay(1600)}>
-            Example sentence: “{exampleClone.sentence}”
-            {!(exampleClone.realSrc && exampleClone.cloneSrc) && <span className="mt-1 block">{exampleClone.pendingNote}</span>}
-          </figcaption>
         </figure>
 
         <div
